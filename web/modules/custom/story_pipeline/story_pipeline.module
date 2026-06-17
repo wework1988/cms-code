@@ -1,0 +1,198 @@
+<?php
+
+/**
+ * @file
+ * Story Pipeline hooks.
+ */
+
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Url;
+/**
+ * Implements hook_theme().
+ */
+function story_pipeline_theme($existing, $type, $theme, $path): array {
+  return [
+    'story_pipeline_progress' => [
+      'variables' => [
+        'progress' => [],
+        'story_id' => 0,
+      ],
+      'template' => 'story-pipeline-progress',
+    ],
+    'story_pipeline_workspace_nav' => [
+      'variables' => [
+        'primary' => [],
+        'secondary' => [],
+      ],
+      'template' => 'story-pipeline-workspace-nav',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_toolbar().
+ */
+function story_pipeline_toolbar(): array {
+  $account = \Drupal::currentUser();
+  $items = [];
+
+  if ($account->hasPermission('run story pipeline jobs')) {
+    $items['story_pipeline_runner'] = [
+      '#type' => 'toolbar_item',
+      'tab' => [
+        '#type' => 'link',
+        '#title' => (string) t('Run story jobs'),
+        '#url' => Url::fromRoute('story_pipeline.run'),
+        '#options' => [
+          'attributes' => [
+            'title' => (string) t('Run story jobs'),
+            'class' => ['toolbar-icon', 'toolbar-item'],
+          ],
+        ],
+      ],
+      '#weight' => 115,
+      '#cache' => ['contexts' => ['user.permissions']],
+    ];
+  }
+
+  if ($account->hasPermission('track stories')) {
+    $items['story_pipeline_planner'] = [
+      '#type' => 'toolbar_item',
+      'tab' => [
+        '#type' => 'link',
+        '#title' => (string) t('Story planner'),
+        '#url' => Url::fromRoute('story_pipeline.tracker'),
+        '#options' => [
+          'attributes' => [
+            'title' => (string) t('Story planner'),
+            'class' => ['toolbar-icon', 'toolbar-item'],
+          ],
+        ],
+      ],
+      '#weight' => 116,
+      '#cache' => ['contexts' => ['user.permissions']],
+    ];
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_help().
+ */
+function story_pipeline_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.story_pipeline') {
+    return (string) t('Story Pipeline: Story Type taxonomy + Story content type + REST API. See module README.md.');
+  }
+  return '';
+}
+
+/**
+ * Add Characters shortcut on story edit form.
+ */
+function story_pipeline_form_node_story_edit_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, string $form_id): void {
+  /** @var \Drupal\node\NodeInterface $node */
+  $node = $form_state->getFormObject()->getEntity();
+  if (!$node->id()) {
+    return;
+  }
+
+  $account = \Drupal::currentUser();
+  $allowed = FALSE;
+  foreach (\Drupal\story_pipeline\Access\StoryPipelineStaffAccessCheck::PERMISSIONS as $permission) {
+    if ($account->hasPermission($permission)) {
+      $allowed = TRUE;
+      break;
+    }
+  }
+  if (!$allowed) {
+    return;
+  }
+
+  $form['story_pipeline_characters_link'] = [
+    '#type' => 'link',
+    '#title' => t('Manage characters →'),
+    '#url' => Url::fromRoute('story_pipeline.story_characters', ['node' => $node->id()]),
+    '#weight' => -100,
+    '#prefix' => '<div class="story-pipeline-characters-link messages messages--info">',
+    '#suffix' => '</div>',
+    '#attributes' => ['class' => ['button', 'button--primary']],
+  ];
+}
+
+/**
+ * Hide Characters tab on non-story node edit forms.
+ */
+function story_pipeline_menu_local_tasks_alter(array &$data, $route_name, \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheability): void {
+  if (!in_array($route_name, ['entity.node.edit_form', 'entity.node.canonical'], TRUE)) {
+    return;
+  }
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node instanceof NodeInterface || $node->bundle() !== 'story') {
+    foreach (['story_pipeline.story_characters_tab', 'story_pipeline.story_characters_view_tab'] as $tab_id) {
+      if (isset($data['tabs'][0][$tab_id])) {
+        unset($data['tabs'][0][$tab_id]);
+      }
+    }
+  }
+}
+
+/**
+ * Configures form displays for Story and Story Type fields.
+ */
+function story_pipeline_configure_displays(): void {
+  $story_display = EntityFormDisplay::load('node.story.default');
+  if (!$story_display) {
+    $story_display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'story',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+  $components = [
+    'title' => ['type' => 'string_textfield', 'weight' => 0],
+    'field_story_type' => ['type' => 'options_select', 'weight' => 1],
+    'field_youtube_urls' => ['type' => 'string_textfield', 'weight' => 2],
+    'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 3],
+    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 4],
+    'field_full_story' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 6],
+    'field_status' => ['type' => 'options_select', 'weight' => 7],
+    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 8],
+    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 9],
+    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 10],
+    'field_scene_file' => ['type' => 'file_generic', 'weight' => 11],
+    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 12],
+    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 13],
+  ];
+  foreach ($components as $name => $options) {
+    $story_display->setComponent($name, $options);
+  }
+  $story_display->save();
+
+  $term_display = EntityFormDisplay::load('taxonomy_term.story_type.default');
+  if (!$term_display) {
+    $term_display = EntityFormDisplay::create([
+      'targetEntityType' => 'taxonomy_term',
+      'bundle' => 'story_type',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+  $term_components = [
+    'name' => ['type' => 'string_textfield', 'weight' => 0],
+    'field_master_prompt' => ['type' => 'text_textarea', 'weight' => 1],
+    'field_stage_a' => ['type' => 'text_textarea', 'weight' => 2],
+    'field_stage_b' => ['type' => 'text_textarea', 'weight' => 3],
+    'field_stage_c' => ['type' => 'text_textarea', 'weight' => 4],
+    'field_default_characters' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_pipeline_settings' => ['type' => 'text_textarea', 'weight' => 6],
+    'field_voice_id' => ['type' => 'string_textfield', 'weight' => 7],
+  ];
+  foreach ($term_components as $name => $options) {
+    $term_display->setComponent($name, $options);
+  }
+  $term_display->save();
+}

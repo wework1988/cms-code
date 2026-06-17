@@ -1,0 +1,81 @@
+story_pipeline.settings:
+  type: config_object
+  label: 'Story Pipeline settings'
+  mapping:
+    api_key:
+      type: string
+      label: 'Drupal API key'
+    automation_repo_path:
+      type: string
+      label: 'Automation repo path'
+    worker_path:
+      type: string
+      label: 'Worker folder path'
+    story_asset_path:
+      type: string
+      label: 'Story asset folder path'
+    pipeline_api_keys:
+      type: mapping
+      label: 'Pipeline API keys (all story types)'
+      mapping:
+        deepseek_api_key:
+          type: string
+          label: 'DeepSeek API key'
+        anthropic_api_key:
+          type: string
+          label: 'Anthropic API key'
+        elevenlabs_api_key:
+          type: string
+          label: 'ElevenLabs API key'
+    story_type_keys:
+      type: mapping
+      label: 'API keys per story type'
+      mapping:
+        general:
+          type: mapping
+          mapping:
+            deepseek_api_key:
+              type: string
+              label: 'DeepSeek API key'
+            anthropic_api_key:
+              type: string
+              label: 'Anthropic API key'
+            elevenlabs_api_key:
+              type: string
+              label: 'ElevenLabs API key'
+        crime:
+          type: mapping
+          mapping:
+            deepseek_api_key:
+              type: string
+              label: 'DeepSeek API key'
+            anthropic_api_key:
+              type: string
+              label: 'Anthropic API key'
+            elevenlabs_api_key:
+              type: string
+              label: 'ElevenLabs API key'
+        english:
+          type: mapping
+          mapping:
+            deepseek_api_key:
+              type: string
+              label: 'DeepSeek API key'
+            anthropic_api_key:
+              type: string
+              label: 'Anthropic API key'
+            elevenlabs_api_key:
+              type: string
+              label: 'ElevenLabs API key'
+        god_story:
+          type: mapping
+          mapping:
+            deepseek_api_key:
+              type: string
+              label: 'DeepSeek API key'
+            anthropic_api_key:
+              type: string
+              label: 'Anthropic API key'
+            elevenlabs_api_key:
+              type: string
+              label: 'ElevenLabs API key'

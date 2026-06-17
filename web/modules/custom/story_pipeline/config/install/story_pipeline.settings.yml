@@ -1,0 +1,28 @@
+_core:
+  default_config_hash: placeholder
+
+api_key: ''
+automation_repo_path: '/Users/averma/project/research-story-17thmay-automation'
+worker_path: '/Applications/MAMP/htdocs/story-pipeline-worker'
+story_asset_path: '/Users/averma/project/research-story-17thmay-automation/cms-generate-stories'
+pipeline_api_keys:
+  deepseek_api_key: ''
+  anthropic_api_key: ''
+  elevenlabs_api_key: ''
+story_type_keys:
+  general:
+    deepseek_api_key: ''
+    anthropic_api_key: ''
+    elevenlabs_api_key: ''
+  crime:
+    deepseek_api_key: ''
+    anthropic_api_key: ''
+    elevenlabs_api_key: ''
+  english:
+    deepseek_api_key: ''
+    anthropic_api_key: ''
+    elevenlabs_api_key: ''
+  god_story:
+    deepseek_api_key: ''
+    anthropic_api_key: ''
+    elevenlabs_api_key: ''

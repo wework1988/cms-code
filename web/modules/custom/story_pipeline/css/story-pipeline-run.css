@@ -1,0 +1,199 @@
+/**
+ * Progress bar on Run story jobs page.
+ */
+
+.story-pipeline-progress-wrap {
+  min-width: 12rem;
+  max-width: 22rem;
+}
+
+.story-pipeline-progress {
+  height: 0.65rem;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+
+.story-pipeline-progress__bar {
+  height: 100%;
+  width: 0;
+  background: #2563eb;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.story-pipeline-progress--running .story-pipeline-progress__bar {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+
+.story-pipeline-progress--done .story-pipeline-progress__bar {
+  background: #16a34a;
+}
+
+.story-pipeline-progress--error .story-pipeline-progress__bar {
+  background: #dc2626;
+}
+
+.story-pipeline-progress--stopped .story-pipeline-progress__bar {
+  background: #d97706;
+}
+
+.story-pipeline-progress--idle .story-pipeline-progress__bar {
+  background: #94a3b8;
+  width: 0 !important;
+}
+
+.story-pipeline-progress__pct {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.story-pipeline-progress__label {
+  display: block;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  margin-top: 0.15rem;
+}
+
+.story-pipeline-progress__detail {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.25;
+}
+
+.story-pipeline-progress--error .story-pipeline-progress__label {
+  color: #b91c1c;
+}
+
+.story-pipeline-progress--done .story-pipeline-progress__label {
+  color: #15803d;
+}
+
+.story-pipeline-actions .button {
+  margin: 0.15rem 0.25rem 0.15rem 0;
+}
+
+.story-pipeline-actions .button--small {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.story-pipeline-bulk {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.story-pipeline-bulk .form-actions {
+  margin-top: 0.75rem;
+}
+
+.story-pipeline-bulk .form-actions .button {
+  margin-right: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+table.story-pipeline-run-form .select-all {
+  width: 3rem;
+  text-align: center;
+}
+
+/* Backend console panel */
+.story-pipeline-console-wrap {
+  margin: 1.5rem 0;
+}
+
+.story-pipeline-console__intro {
+  margin: 0 0 0.75rem;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.story-pipeline-console__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.story-pipeline-console__status {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.story-pipeline-console__status--active {
+  color: #2563eb;
+}
+
+.story-pipeline-console__jobs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.story-pipeline-console__job-chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.story-pipeline-console__job-chip--running {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.story-pipeline-console__job-chip--done {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.story-pipeline-console__job-chip--error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.story-pipeline-console__body {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  height: 16rem;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #1e293b;
+}
+
+.story-pipeline-console__placeholder {
+  color: #64748b;
+  font-style: italic;
+}
+
+.story-pipeline-console__line {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 0.15rem;
+}
+
+.story-pipeline-console__line--error {
+  color: #fca5a5;
+}
+
+.story-pipeline-console__line--progress {
+  color: #93c5fd;
+}
+
+.story-pipeline-console__line--stage {
+  color: #86efac;
+}

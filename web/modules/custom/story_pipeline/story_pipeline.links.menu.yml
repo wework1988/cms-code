@@ -1,0 +1,41 @@
+story_pipeline.admin:
+  title: 'Story Pipeline'
+  description: 'Import prompts and API settings'
+  route_name: story_pipeline.settings
+  parent: system.admin_config_content
+  weight: 10
+
+story_pipeline.run:
+  title: 'Run story jobs'
+  description: 'Start storyboard and audio jobs (no terminal needed)'
+  route_name: story_pipeline.run
+  parent: system.admin_content
+  weight: 5
+
+story_pipeline.planner:
+  title: 'Story planner'
+  description: 'Plan and track stories with production checklist'
+  route_name: story_pipeline.tracker
+  parent: system.admin_content
+  weight: 6
+
+story_pipeline.main_run:
+  title: 'Run story jobs'
+  description: 'Start storyboard and audio jobs'
+  route_name: story_pipeline.run
+  menu_name: main
+  weight: 20
+
+story_pipeline.main_planner:
+  title: 'Story planner'
+  description: 'Plan and track upcoming stories'
+  route_name: story_pipeline.tracker
+  menu_name: main
+  weight: 21
+
+story_pipeline.character_library:
+  title: 'Character library'
+  description: 'Shared character looks for story pipeline'
+  route_name: story_pipeline.character_library
+  parent: system.admin_content
+  weight: 7

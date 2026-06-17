@@ -1,0 +1,20 @@
+{#
+  Progress bar for one story on Run jobs page.
+  Variables: progress (state, percent, label, detail), story_id
+#}
+<div class="story-pipeline-progress-wrap" data-story-progress="{{ story_id }}">
+  <div class="story-pipeline-progress story-pipeline-progress--{{ progress.state|default('idle') }}">
+    <div class="story-pipeline-progress__bar" style="width: {{ progress.state == 'idle' ? 0 : progress.percent|default(0) }}%;"></div>
+  </div>
+  <span class="story-pipeline-progress__pct">
+    {%- if progress.state == 'idle' -%}
+      —
+    {%- else -%}
+      {{ progress.percent|default(0) }}%
+    {%- endif -%}
+  </span>
+  <span class="story-pipeline-progress__label">{{ progress.label|default('') }}</span>
+  {% if progress.detail %}
+    <span class="story-pipeline-progress__detail">{{ progress.detail }}</span>
+  {% endif %}
+</div>

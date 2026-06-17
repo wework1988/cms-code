@@ -1,0 +1,19 @@
+use story pipeline api:
+  title: 'Use Story Pipeline API'
+  description: 'Create stories, trigger pipelines, and read outputs via REST API.'
+
+administer story pipeline:
+  title: 'Administer Story Pipeline'
+  description: 'Configure API keys and import prompts.'
+
+run story pipeline jobs:
+  title: 'Run Story Pipeline jobs'
+  description: 'Start storyboard and narration jobs from the admin UI.'
+
+track stories:
+  title: 'Use story planner'
+  description: 'Add and track planned stories with production checklists.'
+
+manage story characters:
+  title: 'Manage story characters'
+  description: 'Extract characters from stories, edit the character library, and apply locked looks.'

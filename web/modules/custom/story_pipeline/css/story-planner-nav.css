@@ -1,0 +1,54 @@
+/**
+ * Story planner navigation (separate from pipeline runner).
+ */
+
+.story-planner-nav-wrap {
+  margin: 0 0 1.25rem;
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__primary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__item {
+  margin: 0;
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__link {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav {
+  margin: 0;
+  padding: 0.65rem 1rem 0.5rem;
+  background: linear-gradient(180deg, #14532d 0%, #166534 100%);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__link {
+  color: #dcfce7;
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.story-planner-nav-wrap .story-pipeline-workspace-nav__item.is-active .story-pipeline-workspace-nav__link {
+  color: #fff;
+  background: #22c55e;
+  border-color: #4ade80;
+}

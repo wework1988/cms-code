@@ -1,0 +1,13 @@
+name: 'Story Pipeline'
+type: module
+description: 'Simple story pipeline — Story Type taxonomy with prompts, Story content type, REST API for generate-story and run-storyboard.'
+core_version_requirement: ^10 || ^11
+package: Custom
+dependencies:
+  - drupal:node
+  - drupal:taxonomy
+  - drupal:field
+  - drupal:text
+  - drupal:file
+  - drupal:user
+  - drupal:serialization

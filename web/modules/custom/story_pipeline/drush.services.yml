@@ -1,0 +1,8 @@
+services:
+  story_pipeline.commands:
+    class: Drupal\story_pipeline\Commands\StoryPipelineCommands
+    arguments:
+      - '@story_pipeline.manager'
+      - '@story_pipeline.character_library'
+    tags:
+      - { name: drush.command }

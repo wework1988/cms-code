@@ -1,0 +1,41 @@
+services:
+  story_pipeline.manager:
+    class: Drupal\story_pipeline\Service\StoryPipelineManager
+    arguments:
+      - '@entity_type.manager'
+      - '@file.repository'
+      - '@file_system'
+      - '@config.factory'
+      - '@logger.factory'
+      - '@story_pipeline.asset_storage'
+      - '@story_pipeline.character_library'
+  story_pipeline.asset_storage:
+    class: Drupal\story_pipeline\Service\StoryPipelineAssetStorage
+    arguments:
+      - '@config.factory'
+  story_pipeline.worker_launcher:
+    class: Drupal\story_pipeline\Service\WorkerLauncher
+    arguments:
+      - '@config.factory'
+      - '@file_system'
+      - '@logger.factory'
+      - '@file_url_generator'
+  story_pipeline.progress_parser:
+    class: Drupal\story_pipeline\Service\JobProgressParser
+    arguments:
+      - '@story_pipeline.worker_launcher'
+  story_pipeline.tracker:
+    class: Drupal\story_pipeline\Service\StoryTracker
+    arguments:
+      - '@database'
+  story_pipeline.planner_types:
+    class: Drupal\story_pipeline\StoryPlannerTypes
+    arguments:
+      - '@entity_type.manager'
+  story_pipeline.character_extractor:
+    class: Drupal\story_pipeline\Service\CharacterExtractor
+  story_pipeline.character_library:
+    class: Drupal\story_pipeline\Service\CharacterLibrary
+    arguments:
+      - '@entity_type.manager'
+      - '@story_pipeline.character_extractor'

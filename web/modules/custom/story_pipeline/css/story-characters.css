@@ -1,0 +1,55 @@
+.story-characters-table {
+  width: 100%;
+}
+
+.story-characters-table td {
+  vertical-align: top;
+}
+
+.story-characters-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.story-characters-badge--matched {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.story-characters-badge--new {
+  background: #fef7e0;
+  color: #b06000;
+}
+
+.story-characters-preview {
+  display: block;
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+  max-width: 28rem;
+}
+
+.story-characters-links {
+  margin: 0.75rem 0 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.story-characters-autocomplete {
+  min-width: 22rem;
+  max-width: 36rem;
+}
+
+.story-characters-table .form-item {
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.story-characters-edit-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+}

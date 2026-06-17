@@ -1,0 +1,39 @@
+story-pipeline-run:
+  version: 1.3
+  css:
+    theme:
+      css/story-pipeline-run.css: {}
+  js:
+    js/story-pipeline-run.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+story-tracker:
+  version: 1.3
+  css:
+    theme:
+      css/story-tracker.css: {}
+
+story-planner-drag:
+  version: 1.2
+  js:
+    js/story-planner-drag.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+story-planner-nav:
+  version: 1.0
+  css:
+    theme:
+      css/story-planner-nav.css: {}
+
+story-characters:
+  version: 1.1
+  css:
+    theme:
+      css/story-characters.css: {}
+  dependencies:
+    - core/drupal.autocomplete

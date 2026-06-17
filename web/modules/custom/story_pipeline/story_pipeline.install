@@ -1,0 +1,826 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install, update and uninstall hooks for Story Pipeline.
+ */
+
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\node\Entity\NodeType;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_install().
+ */
+function story_pipeline_install(): void {
+  // Story Type vocabulary.
+  if (!Vocabulary::load('story_type')) {
+    Vocabulary::create([
+      'vid' => 'story_type',
+      'name' => 'Story Type',
+      'description' => 'General, Crime, English, God Story — holds all pipeline prompts.',
+    ])->save();
+  }
+
+  // Taxonomy term fields (prompts live on each term).
+  $term_fields = [
+    'field_master_prompt' => 'Master prompt (story writing)',
+    'field_stage_a' => 'Stage A config',
+    'field_stage_b' => 'Stage B config',
+    'field_stage_c' => 'Stage C config',
+    'field_default_characters' => 'Default characters',
+    'field_pipeline_settings' => 'Pipeline settings (JSON)',
+  ];
+  foreach ($term_fields as $field_name => $label) {
+    story_pipeline_create_text_field('taxonomy_term', 'story_type', $field_name, $label);
+  }
+  story_pipeline_create_string_field('taxonomy_term', 'story_type', 'field_voice_id', 'ElevenLabs voice ID');
+
+  // Story content type.
+  if (!NodeType::load('story')) {
+    NodeType::create([
+      'type' => 'story',
+      'name' => 'Story',
+      'description' => 'One episode — script in, storyboard artifacts out.',
+    ])->save();
+  }
+
+  // Story node fields.
+  story_pipeline_create_text_field('node', 'story', 'field_characters_info', 'Characters info');
+  story_pipeline_create_text_field('node', 'story', 'field_full_story', 'Full story');
+  story_pipeline_create_text_field('node', 'story', 'field_story_meta', 'Story meta');
+  story_pipeline_create_text_field('node', 'story', 'field_stage_a_output', 'Stage A output');
+  story_pipeline_create_text_field('node', 'story', 'field_stage_b_output', 'Stage B output');
+
+  // YouTube URLs — unlimited strings.
+  if (!FieldStorageConfig::loadByName('node', 'field_youtube_urls')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_youtube_urls',
+      'entity_type' => 'node',
+      'type' => 'string',
+      'cardinality' => -1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_youtube_urls')) {
+    FieldConfig::create([
+      'field_name' => 'field_youtube_urls',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'YouTube URLs',
+      'settings' => [],
+    ])->save();
+  }
+
+  // Story type taxonomy reference.
+  if (!FieldStorageConfig::loadByName('node', 'field_story_type')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_story_type',
+      'entity_type' => 'node',
+      'type' => 'entity_reference',
+      'settings' => ['target_type' => 'taxonomy_term'],
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_story_type')) {
+    FieldConfig::create([
+      'field_name' => 'field_story_type',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'Story type',
+      'required' => TRUE,
+      'settings' => [
+        'handler' => 'default:taxonomy_term',
+        'handler_settings' => [
+          'target_bundles' => ['story_type' => 'story_type'],
+        ],
+      ],
+    ])->save();
+  }
+
+  // Status list field.
+  if (!FieldStorageConfig::loadByName('node', 'field_status')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_status',
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'settings' => [
+        'allowed_values' => [
+          'draft' => 'Draft',
+          'story_generated' => 'Story generated',
+          'storyboard_running' => 'Storyboard running',
+          'storyboard_done' => 'Storyboard done',
+          'stopped' => 'Stopped',
+          'failed' => 'Failed',
+        ],
+      ],
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_status')) {
+    FieldConfig::create([
+      'field_name' => 'field_status',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'Status',
+      'default_value' => [['value' => 'draft']],
+    ])->save();
+  }
+
+  // File fields for prompt.txt and scene.txt.
+  foreach (['field_prompt_file' => 'Prompt file', 'field_scene_file' => 'Scene file'] as $fname => $label) {
+    if (!FieldStorageConfig::loadByName('node', $fname)) {
+      FieldStorageConfig::create([
+        'field_name' => $fname,
+        'entity_type' => 'node',
+        'type' => 'file',
+        'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
+        'cardinality' => 1,
+      ])->save();
+    }
+    if (!FieldConfig::loadByName('node', 'story', $fname)) {
+      FieldConfig::create([
+        'field_name' => $fname,
+        'entity_type' => 'node',
+        'bundle' => 'story',
+        'label' => $label,
+        'settings' => ['file_extensions' => 'txt md', 'file_directory' => 'story-pipeline/[date:custom:Y-m]'],
+      ])->save();
+    }
+  }
+
+  // Default taxonomy terms.
+  $defaults = [
+    'general' => 'General',
+    'crime' => 'Crime',
+    'english' => 'English',
+    'god_story' => 'God Story',
+  ];
+  $settings_json = json_encode([
+    'model' => 'deepseek-v4-pro',
+    'scene_batch' => 8,
+    'max_tokens_a' => 65536,
+    'max_tokens_b' => 131072,
+    'max_tokens_c' => 65536,
+  ], JSON_PRETTY_PRINT);
+
+  foreach ($defaults as $machine => $label) {
+    $existing = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'story_type', 'name' => $label]);
+    if ($existing) {
+      continue;
+    }
+    Term::create([
+      'vid' => 'story_type',
+      'name' => $label,
+      'field_pipeline_settings' => ['value' => $settings_json],
+      'field_voice_id' => match ($machine) {
+        'general' => 'jHizw5Q9vzu8Pr4RakeJ',
+        'english' => 'rWZtlKG7bkWHglNRo3ZA',
+        'god_story' => 'hUJQi6S7KRkv2I6RdkI1',
+        default => '',
+      },
+    ])->save();
+  }
+
+  // Grant API permission to admin role.
+  story_pipeline_grant_staff_permissions();
+
+  // Default API key for local dev (change in admin UI).
+  $empty_keys = [
+    'deepseek_api_key' => '',
+    'anthropic_api_key' => '',
+    'elevenlabs_api_key' => '',
+  ];
+  \Drupal::configFactory()->getEditable('story_pipeline.settings')
+    ->set('api_key', bin2hex(random_bytes(16)))
+    ->set('automation_repo_path', '/Users/averma/project/research-story-17thmay-automation')
+    ->set('worker_path', '/Applications/MAMP/htdocs/story-pipeline-worker')
+    ->set('pipeline_api_keys', $empty_keys)
+    ->set('story_type_keys', [
+      'general' => $empty_keys,
+      'crime' => $empty_keys,
+      'english' => $empty_keys,
+      'god_story' => $empty_keys,
+    ])
+    ->save();
+
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Creates a text_long field storage + instance if missing.
+ */
+function story_pipeline_create_text_field(string $entity_type, string $bundle, string $field_name, string $label): void {
+  if (!FieldStorageConfig::loadByName($entity_type, $field_name)) {
+    FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'type' => 'text_long',
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName($entity_type, $bundle, $field_name)) {
+    FieldConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'bundle' => $bundle,
+      'label' => $label,
+    ])->save();
+  }
+}
+
+/**
+ * Implements hook_schema().
+ */
+function story_pipeline_schema(): array {
+  $schema['story_pipeline_tracker'] = [
+    'description' => 'Planned stories and production checklist (independent of content types).',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => TRUE,
+      ],
+      'story_written' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'image_prompt_generated' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'image_generated' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'digen_video_generated' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'completed_assigned' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => 'planning',
+      ],
+      'weight' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'expected_publish' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => FALSE,
+      ],
+      'story_type_tid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+      'story_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'changed' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'completed_assigned' => ['completed_assigned'],
+      'status' => ['status'],
+      'status_weight' => ['status', 'weight'],
+      'story_type_tid' => ['story_type_tid'],
+      'story_nid' => ['story_nid'],
+      'expected_publish' => ['expected_publish'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function story_pipeline_uninstall(): void {
+  $schema = story_pipeline_schema();
+  foreach (array_keys($schema) as $table) {
+    \Drupal::database()->schema()->dropTable($table);
+  }
+}
+
+/**
+ * Configure form displays on existing sites.
+ */
+function story_pipeline_update_9001(): void {
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Add image-prompts-only.txt and eleven-labs MP3 file fields on Story.
+ */
+function story_pipeline_update_9003(): void {
+  if (!FieldStorageConfig::loadByName('node', 'field_image_prompts_file')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_image_prompts_file',
+      'entity_type' => 'node',
+      'type' => 'file',
+      'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_image_prompts_file')) {
+    FieldConfig::create([
+      'field_name' => 'field_image_prompts_file',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'Image prompts file',
+      'settings' => ['file_extensions' => 'txt', 'file_directory' => 'story-pipeline/[date:custom:Y-m]'],
+    ])->save();
+  }
+
+  if (!FieldStorageConfig::loadByName('node', 'field_eleven_labs_files')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_eleven_labs_files',
+      'entity_type' => 'node',
+      'type' => 'file',
+      'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
+      'cardinality' => -1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_eleven_labs_files')) {
+    FieldConfig::create([
+      'field_name' => 'field_eleven_labs_files',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'ElevenLabs audio',
+      'settings' => ['file_extensions' => 'mp3', 'file_directory' => 'story-pipeline/eleven-labs/[date:custom:Y-m]'],
+    ])->save();
+  }
+
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Add per-story-type API keys structure to config.
+ */
+function story_pipeline_update_9002(): void {
+  $config = \Drupal::configFactory()->getEditable('story_pipeline.settings');
+  if ($config->get('story_type_keys')) {
+    return;
+  }
+  $empty = [
+    'deepseek_api_key' => '',
+    'anthropic_api_key' => '',
+    'elevenlabs_api_key' => '',
+  ];
+  $config->set('story_type_keys', [
+    'general' => $empty,
+    'crime' => $empty,
+    'english' => $empty,
+  ])->save();
+}
+
+/**
+ * Global pipeline API keys + import from automation repo .env.
+ */
+function story_pipeline_update_9004(): void {
+  $config = \Drupal::configFactory()->getEditable('story_pipeline.settings');
+  if (!$config->get('pipeline_api_keys')) {
+    $config->set('pipeline_api_keys', [
+      'deepseek_api_key' => '',
+      'anthropic_api_key' => '',
+      'elevenlabs_api_key' => '',
+    ]);
+    $config->save();
+  }
+
+  try {
+    \Drupal::service('story_pipeline.manager')->importKeysFromEnv(NULL, FALSE);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('story_pipeline')->warning('Could not auto-import API keys: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Add "stopped" status for cancelled jobs.
+ */
+function story_pipeline_update_9006(): void {
+  $storage = FieldStorageConfig::loadByName('node', 'field_status');
+  if (!$storage) {
+    return;
+  }
+  $allowed = $storage->getSetting('allowed_values') ?? [];
+  if (!isset($allowed['stopped'])) {
+    $allowed['stopped'] = 'Stopped';
+    $storage->setSetting('allowed_values', $allowed);
+    $storage->save();
+  }
+}
+
+/**
+ * Story outputs folder outside Drupal (prompts, scenes, audio, etc.).
+ */
+function story_pipeline_update_9007(): void {
+  $config = \Drupal::configFactory()->getEditable('story_pipeline.settings');
+  if (!$config->get('story_asset_path')) {
+    $config->set('story_asset_path', '/Users/averma/project/research-story-17thmay-automation/cms-generate-stories')->save();
+  }
+  $path = $config->get('story_asset_path');
+  if ($path && !is_dir($path)) {
+    @mkdir($path, 0775, TRUE);
+  }
+}
+
+/**
+ * Story tracker table + permission for administrators.
+ */
+function story_pipeline_update_9008(): void {
+  $schema = story_pipeline_schema();
+  $db_schema = \Drupal::database()->schema();
+  if (!$db_schema->tableExists('story_pipeline_tracker')) {
+    $db_schema->createTable('story_pipeline_tracker', $schema['story_pipeline_tracker']);
+  }
+
+  $admin_role = \Drupal::entityTypeManager()->getStorage('user_role')->load('administrator');
+  if ($admin_role) {
+    $admin_role->grantPermission('track stories');
+    $admin_role->save();
+  }
+}
+
+/**
+ * Grant story pipeline permissions to administrator role.
+ */
+function story_pipeline_grant_staff_permissions(): void {
+  $permissions = [
+    'manage story characters',
+    'run story pipeline jobs',
+    'administer story pipeline',
+    'use story pipeline api',
+    'track stories',
+  ];
+  $admin_role = \Drupal::entityTypeManager()->getStorage('user_role')->load('administrator');
+  if (!$admin_role) {
+    return;
+  }
+  foreach ($permissions as $permission) {
+    $admin_role->grantPermission($permission);
+  }
+  $admin_role->save();
+}
+
+/**
+ * Story planner: planning / in-progress / completed statuses + priority weight.
+ */
+function story_pipeline_update_9009(): void {
+  $schema = story_pipeline_schema();
+  $db = \Drupal::database();
+  $db_schema = $db->schema();
+
+  if ($db_schema->tableExists('story_pipeline_tracker')) {
+    if (!$db_schema->fieldExists('story_pipeline_tracker', 'status')) {
+      $db_schema->addField('story_pipeline_tracker', 'status', $schema['story_pipeline_tracker']['fields']['status']);
+    }
+    if (!$db_schema->fieldExists('story_pipeline_tracker', 'weight')) {
+      $db_schema->addField('story_pipeline_tracker', 'weight', $schema['story_pipeline_tracker']['fields']['weight']);
+    }
+
+    // Migrate existing rows (old UI had no planning queue).
+    $rows = $db->select('story_pipeline_tracker', 't')->fields('t')->execute();
+    $weight = 0;
+    foreach ($rows as $row) {
+      $status = !empty($row->completed_assigned) ? 'completed' : 'in_progress';
+      $db->update('story_pipeline_tracker')
+        ->fields([
+          'status' => $status,
+          'weight' => $weight++,
+        ])
+        ->condition('id', $row->id)
+        ->execute();
+    }
+  }
+}
+
+/**
+ * Story planner: story type (General / Crime / English taxonomy).
+ */
+function story_pipeline_update_9010(): void {
+  $schema = story_pipeline_schema();
+  $db = \Drupal::database();
+  $db_schema = $db->schema();
+
+  if ($db_schema->tableExists('story_pipeline_tracker')
+    && !$db_schema->fieldExists('story_pipeline_tracker', 'story_type_tid')) {
+    $db_schema->addField('story_pipeline_tracker', 'story_type_tid', $schema['story_pipeline_tracker']['fields']['story_type_tid']);
+    if (!$db_schema->indexExists('story_pipeline_tracker', 'story_type_tid')) {
+      $db_schema->addIndex('story_pipeline_tracker', 'story_type_tid', ['story_type_tid'], $schema['story_pipeline_tracker']);
+    }
+
+    $default_tid = \Drupal::service('story_pipeline.planner_types')->defaultTermId();
+    if ($default_tid) {
+      $db->update('story_pipeline_tracker')
+        ->fields(['story_type_tid' => $default_tid])
+        ->isNull('story_type_tid')
+        ->execute();
+    }
+  }
+}
+
+/**
+ * Run-jobs UI: worker path config + permission for administrators.
+ */
+function story_pipeline_update_9005(): void {
+  $config = \Drupal::configFactory()->getEditable('story_pipeline.settings');
+  if (!$config->get('worker_path')) {
+    $config->set('worker_path', '/Applications/MAMP/htdocs/story-pipeline-worker')->save();
+  }
+
+  $admin_role = \Drupal::entityTypeManager()->getStorage('user_role')->load('administrator');
+  if ($admin_role) {
+    $admin_role->grantPermission('run story pipeline jobs');
+    $admin_role->save();
+  }
+}
+
+/**
+ * Character library content type + story character roster field.
+ */
+function story_pipeline_update_9011(): void {
+  story_pipeline_install_character_library();
+
+  if (!FieldConfig::loadByName('node', 'story', 'field_character_roster')) {
+    story_pipeline_create_text_field('node', 'story', 'field_character_roster', 'Character roster (JSON, internal)');
+  }
+
+  $admin_role = \Drupal::entityTypeManager()->getStorage('user_role')->load('administrator');
+  if ($admin_role) {
+    $admin_role->grantPermission('manage story characters');
+    $admin_role->save();
+  }
+
+  // Seed library from repo character.txt if empty.
+  $count = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('type', 'character_library')
+    ->count()
+    ->execute();
+  if ((int) $count === 0) {
+    try {
+      $config = \Drupal::config('story_pipeline.settings');
+      $repo = $config->get('automation_repo_path');
+      $path = $repo . '/general-story/bifuracted-template/character.txt';
+      $term = \Drupal::service('story_pipeline.manager')->loadStoryTypeTerm('general');
+      $tid = $term ? (int) $term->id() : NULL;
+      \Drupal::service('story_pipeline.character_library')->importFromFile($path, $tid, TRUE);
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('story_pipeline')->warning('Character library seed import failed: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
+}
+
+/**
+ * Create character_library content type and fields.
+ */
+function story_pipeline_install_character_library(): void {
+  if (!NodeType::load('character_library')) {
+    NodeType::create([
+      'type' => 'character_library',
+      'name' => 'Character library',
+      'description' => 'Locked visual description for a recurring story character.',
+    ])->save();
+  }
+
+  story_pipeline_create_string_field('node', 'character_library', 'field_char_id', 'Character ID', TRUE);
+  story_pipeline_create_string_field('node', 'character_library', 'field_context_label', 'Context label', FALSE);
+  story_pipeline_create_text_field('node', 'character_library', 'field_match_aliases', 'Match aliases');
+  story_pipeline_create_text_field('node', 'character_library', 'field_locked_anchor', 'Locked visual prompt');
+  story_pipeline_create_text_field('node', 'character_library', 'field_negative_firewall', 'Do-not-misclassify rules');
+
+  if (!FieldStorageConfig::loadByName('node', 'field_story_type')) {
+    // Reuse existing story type reference storage from story content type install.
+  }
+  if (!FieldConfig::loadByName('node', 'character_library', 'field_story_type')) {
+    FieldConfig::create([
+      'field_name' => 'field_story_type',
+      'entity_type' => 'node',
+      'bundle' => 'character_library',
+      'label' => 'Story type',
+      'required' => FALSE,
+      'settings' => [
+        'handler' => 'default:taxonomy_term',
+        'handler_settings' => [
+          'target_bundles' => ['story_type' => 'story_type'],
+        ],
+      ],
+    ])->save();
+  }
+
+  $display = EntityFormDisplay::load('node.character_library.default');
+  if (!$display) {
+    $display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'character_library',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+  $components = [
+    'title' => ['type' => 'string_textfield', 'weight' => 0],
+    'field_char_id' => ['type' => 'string_textfield', 'weight' => 1],
+    'field_context_label' => ['type' => 'string_textfield', 'weight' => 2],
+    'field_story_type' => ['type' => 'options_select', 'weight' => 3],
+    'field_match_aliases' => ['type' => 'text_textarea', 'weight' => 4],
+    'field_locked_anchor' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_negative_firewall' => ['type' => 'text_textarea', 'weight' => 6],
+  ];
+  foreach ($components as $name => $options) {
+    $display->setComponent($name, $options);
+  }
+  $display->save();
+}
+
+/**
+ * Creates a string field storage + instance if missing.
+ */
+function story_pipeline_create_string_field(string $entity_type, string $bundle, string $field_name, string $label, bool $required = FALSE): void {
+  if (!FieldStorageConfig::loadByName($entity_type, $field_name)) {
+    FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'type' => 'string',
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName($entity_type, $bundle, $field_name)) {
+    FieldConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'bundle' => $bundle,
+      'label' => $label,
+      'required' => $required,
+    ])->save();
+  }
+}
+
+/**
+ * Re-sync character library aliases/anchors from repo character.txt.
+ */
+function story_pipeline_update_9012(): void {
+  try {
+    $config = \Drupal::config('story_pipeline.settings');
+    $repo = $config->get('automation_repo_path');
+    $path = $repo . '/general-story/bifuracted-template/character.txt';
+    $term = \Drupal::service('story_pipeline.manager')->loadStoryTypeTerm('general');
+    $tid = $term ? (int) $term->id() : NULL;
+    \Drupal::service('story_pipeline.character_library')->importFromFile($path, $tid, FALSE);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('story_pipeline')->warning('Character library resync failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Story plan field (character extraction source) + grant pipeline permissions.
+ */
+function story_pipeline_update_9013(): void {
+  if (!FieldConfig::loadByName('node', 'story', 'field_story_plan_raw')) {
+    story_pipeline_create_text_field('node', 'story', 'field_story_plan_raw', 'Story plan (with characters)');
+    $field = FieldConfig::loadByName('node', 'story', 'field_story_plan_raw');
+    if ($field) {
+      $field->setDescription('Paste the full planned story file here (validator + TOP 10 CHARACTERS + FULL SCRIPT). Used only for character extraction. Does not replace Full story for the pipeline.');
+      $field->save();
+    }
+  }
+
+  story_pipeline_configure_displays();
+  story_pipeline_grant_staff_permissions();
+}
+
+/**
+ * God Story type + ElevenLabs voice ID field on Story Type taxonomy.
+ */
+function story_pipeline_update_9014(): void {
+  story_pipeline_create_string_field('taxonomy_term', 'story_type', 'field_voice_id', 'ElevenLabs voice ID');
+
+  $term_display = EntityFormDisplay::load('taxonomy_term.story_type.default');
+  if ($term_display) {
+    $term_display->setComponent('field_voice_id', [
+      'type' => 'string_textfield',
+      'weight' => 7,
+    ]);
+    $term_display->save();
+  }
+
+  $settings_json = json_encode([
+    'model' => 'deepseek-v4-pro',
+    'scene_batch' => 8,
+    'max_tokens_a' => 65536,
+    'max_tokens_b' => 131072,
+    'max_tokens_c' => 65536,
+  ], JSON_PRETTY_PRINT);
+
+  $existing = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadByProperties(['vid' => 'story_type', 'name' => 'God Story']);
+  if ($existing) {
+    $term = reset($existing);
+    if ($term->hasField('field_voice_id') && $term->get('field_voice_id')->isEmpty()) {
+      $term->set('field_voice_id', 'hUJQi6S7KRkv2I6RdkI1');
+      $term->save();
+    }
+  }
+  else {
+    Term::create([
+      'vid' => 'story_type',
+      'name' => 'God Story',
+      'field_pipeline_settings' => ['value' => $settings_json],
+      'field_voice_id' => 'hUJQi6S7KRkv2I6RdkI1',
+    ])->save();
+  }
+
+  $config = \Drupal::configFactory()->getEditable('story_pipeline.settings');
+  $keys = $config->get('story_type_keys') ?? [];
+  if (!isset($keys['god_story'])) {
+    $empty_keys = [
+      'deepseek_api_key' => '',
+      'anthropic_api_key' => '',
+      'elevenlabs_api_key' => '',
+    ];
+    $keys['god_story'] = $empty_keys;
+    $config->set('story_type_keys', $keys)->save();
+  }
+}
+
+/**
+ * Import pipeline prompts into God Story if still empty.
+ */
+function story_pipeline_update_9015(): void {
+  $term = \Drupal::service('story_pipeline.manager')->loadStoryTypeTerm('god_story');
+  if (!$term) {
+    return;
+  }
+  $stage_a = trim((string) ($term->get('field_stage_a')->value ?? ''));
+  if ($stage_a === '') {
+    try {
+      \Drupal::service('story_pipeline.manager')->importPrompts();
+    }
+    catch (\Throwable $e) {
+      \Drupal::logger('story_pipeline')->warning('God Story prompt import failed: @msg', ['@msg' => $e->getMessage()]);
+    }
+  }
+}
+
+/**
+ * Story planner: link each row to a Drupal Story node.
+ */
+function story_pipeline_update_9016(): void {
+  $schema = story_pipeline_schema();
+  $db_schema = \Drupal::database()->schema();
+
+  if ($db_schema->tableExists('story_pipeline_tracker')
+    && !$db_schema->fieldExists('story_pipeline_tracker', 'story_nid')) {
+    $db_schema->addField('story_pipeline_tracker', 'story_nid', $schema['story_pipeline_tracker']['fields']['story_nid']);
+    if (!$db_schema->indexExists('story_pipeline_tracker', 'story_nid')) {
+      $db_schema->addIndex('story_pipeline_tracker', 'story_nid', ['story_nid'], $schema['story_pipeline_tracker']);
+    }
+  }
+}

@@ -1,0 +1,182 @@
+story_pipeline.api.create_story:
+  path: '/api/story-pipeline/stories'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::createStory'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+
+story_pipeline.api.get_story:
+  path: '/api/story-pipeline/stories/{story_id}'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::getStory'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+    story_id: \d+
+
+story_pipeline.api.generate_story:
+  path: '/api/story-pipeline/generate-story'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::generateStory'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+
+story_pipeline.api.run_storyboard:
+  path: '/api/story-pipeline/run-storyboard'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::runStoryboard'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+
+story_pipeline.api.bundle:
+  path: '/api/story-pipeline/stories/{story_id}/bundle'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::getBundle'
+  methods: [GET]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+    story_id: \d+
+
+story_pipeline.api.update_story:
+  path: '/api/story-pipeline/stories/{story_id}/update'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::updateStory'
+  methods: [PATCH, POST]
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Controller\StoryPipelineApiController::apiAccess'
+    story_id: \d+
+
+story_pipeline.settings:
+  path: '/admin/config/content/story-pipeline'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryPipelineSettingsForm'
+    _title: 'Story Pipeline settings'
+  requirements:
+    _permission: 'administer story pipeline'
+
+story_pipeline.run:
+  path: '/admin/content/story-pipeline/run'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryPipelineRunForm'
+    _title: 'Run story jobs'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.tracker:
+  path: '/admin/content/story-planner'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryTrackerForm'
+    _title: 'Story planner'
+    tab: 'planning'
+  requirements:
+    _permission: 'track stories'
+
+story_pipeline.tracker_in_progress:
+  path: '/admin/content/story-planner/in-progress'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryTrackerForm'
+    _title: 'Story planner'
+    tab: 'in_progress'
+  requirements:
+    _permission: 'track stories'
+
+story_pipeline.tracker_completed:
+  path: '/admin/content/story-planner/completed'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryTrackerForm'
+    _title: 'Story planner'
+    tab: 'completed'
+  requirements:
+    _permission: 'track stories'
+
+story_pipeline.progress_all:
+  path: '/admin/content/story-pipeline/progress.json'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineProgressController::allProgress'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.progress_story:
+  path: '/admin/content/story-pipeline/progress/{story_id}.json'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineProgressController::storyProgress'
+  requirements:
+    _permission: 'run story pipeline jobs'
+    story_id: \d+
+
+story_pipeline.console:
+  path: '/admin/content/story-pipeline/console.json'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineProgressController::console'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.launch_job:
+  path: '/admin/content/story-pipeline/launch/{node}/{job}'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineRunController::launchJob'
+  requirements:
+    _permission: 'run story pipeline jobs'
+    _entity_access: 'node.view'
+    _csrf_token: 'TRUE'
+    job: 'full_pipeline|generate|storyboard|storyboard_elevenlabs|elevenlabs'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.stop_job:
+  path: '/admin/content/story-pipeline/stop/{node}'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineRunController::stopJob'
+  requirements:
+    _permission: 'run story pipeline jobs'
+    _entity_access: 'node.view'
+    _csrf_token: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.download_asset:
+  path: '/admin/content/story-pipeline/asset/{node}'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineAssetController::download'
+  requirements:
+    _permission: 'run story pipeline jobs'
+    _entity_access: 'node.view'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.story_characters:
+  path: '/node/{node}/characters'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryCharactersForm'
+    _title: 'Story characters'
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Access\StoryCharactersAccessCheck::access'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.character_library:
+  path: '/admin/content/story-pipeline/characters'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\CharacterLibraryBrowseForm'
+    _title: 'Character library'
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Access\StoryPipelineStaffAccessCheck::access'
+
+story_pipeline.character_autocomplete:
+  path: '/admin/content/story-pipeline/character-autocomplete'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\CharacterLibraryAutocompleteController::handle'
+  requirements:
+    _custom_access: '\Drupal\story_pipeline\Access\StoryPipelineStaffAccessCheck::access'

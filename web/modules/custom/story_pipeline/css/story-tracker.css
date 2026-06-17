@@ -1,0 +1,202 @@
+/**
+ * Story tracker admin table.
+ */
+
+.story-tracker-form .story-tracker-table th {
+  text-align: center;
+  vertical-align: bottom;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.story-tracker-form .story-tracker-table th:first-child,
+.story-tracker-form .story-tracker-table td:first-child {
+  text-align: left;
+  min-width: 14rem;
+}
+
+.story-tracker-form .story-tracker-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.story-tracker-form .story-tracker-table input[type="checkbox"] {
+  margin: 0 auto;
+  display: block;
+}
+
+.story-tracker-form .story-tracker-table input[type="date"] {
+  max-width: 11rem;
+}
+
+.story-tracker-form fieldset {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #c9d1d9;
+  border-radius: 4px;
+}
+
+.story-tracker-form fieldset .form-item {
+  display: inline-block;
+  margin-right: 1.5rem;
+  vertical-align: bottom;
+}
+
+.story-tracker-form .button--danger {
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+/* Planning queue — drag reorder */
+.story-planner-planning-table th.story-planner-drag-cell,
+.story-planner-planning-table td.story-planner-drag-cell {
+  width: 3.5rem;
+  min-width: 3.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.story-planner-planning-table .story-planner-drag-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: -3px;
+  cursor: grab;
+  user-select: none;
+}
+
+.story-planner-planning-table .story-planner-drag-grip:hover {
+  background: #cbd5e1;
+}
+
+.story-planner-planning-table tr.story-planner-draggable-row {
+  cursor: default;
+}
+
+.story-planner-planning-table tr.story-planner-row--dragging {
+  cursor: grabbing;
+  background: #ecfdf5;
+  opacity: 0.85;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.2);
+}
+
+.story-planner-planning-table tr.story-planner-row--drop-target {
+  outline: 2px dashed #22c55e;
+  outline-offset: -2px;
+}
+
+.story-planner-planning-table tr.story-planner-draggable-row:hover {
+  background: #f8fafc;
+}
+
+.story-planner-planning-table .story-planner-priority {
+  display: inline-block;
+  min-width: 2rem;
+  font-weight: 700;
+  color: #166534;
+}
+
+.story-planner-planning-table .story-planner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.story-planner-planning-table td.story-col,
+.story-planner-planning-table th.story-col {
+  text-align: left;
+  min-width: 18rem;
+  max-width: 42rem;
+}
+
+.story-planner-order-changed .story-planner-priority {
+  color: #b45309;
+}
+
+/* Story type sections */
+.story-planner-type-section {
+  margin-bottom: 1.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.story-planner-type-section > legend {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+}
+
+.story-planner-type--general {
+  border-color: #86efac;
+  background: linear-gradient(180deg, #f0fdf4 0%, #fff 2.5rem);
+}
+
+.story-planner-type--general > legend {
+  color: #14532d;
+  background: #bbf7d0;
+}
+
+.story-planner-type--crime {
+  border-color: #fca5a5;
+  background: linear-gradient(180deg, #fef2f2 0%, #fff 2.5rem);
+}
+
+.story-planner-type--crime > legend {
+  color: #7f1d1d;
+  background: #fecaca;
+}
+
+.story-planner-type--english {
+  border-color: #93c5fd;
+  background: linear-gradient(180deg, #eff6ff 0%, #fff 2.5rem);
+}
+
+.story-planner-type--english > legend {
+  color: #1e3a8a;
+  background: #bfdbfe;
+}
+
+.story-planner-type--god_story {
+  border-color: #fcd34d;
+  background: linear-gradient(180deg, #fffbeb 0%, #fff 2.5rem);
+}
+
+.story-planner-type--god_story > legend {
+  color: #78350f;
+  background: #fde68a;
+}
+
+.story-planner-type-empty {
+  margin: 0.25rem 0 0;
+  color: #64748b;
+}
+
+.story-planner-type-select {
+  min-width: 7rem;
+}
+
+.story-planner-story-node {
+  min-width: 14rem;
+  max-width: 18rem;
+}
+
+.story-planner-node-links {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.story-planner-node-link {
+  text-decoration: none;
+}

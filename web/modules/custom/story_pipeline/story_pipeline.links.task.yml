@@ -1,0 +1,29 @@
+story_pipeline.planner_planning_tab:
+  route_name: story_pipeline.tracker
+  title: 'Planning'
+  base_route: story_pipeline.tracker
+  weight: 0
+
+story_pipeline.planner_in_progress_tab:
+  route_name: story_pipeline.tracker_in_progress
+  title: 'In progress'
+  base_route: story_pipeline.tracker
+  weight: 5
+
+story_pipeline.planner_completed_tab:
+  route_name: story_pipeline.tracker_completed
+  title: 'Completed'
+  base_route: story_pipeline.tracker
+  weight: 10
+
+story_pipeline.story_characters_tab:
+  route_name: story_pipeline.story_characters
+  title: 'Characters'
+  base_route: entity.node.edit_form
+  weight: 15
+
+story_pipeline.story_characters_view_tab:
+  route_name: story_pipeline.story_characters
+  title: 'Characters'
+  base_route: entity.node.canonical
+  weight: 15

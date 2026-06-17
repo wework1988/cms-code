@@ -1,0 +1,26 @@
+<nav class="story-pipeline-workspace-nav" aria-label="{{ 'Story Pipeline'|t }}">
+  <ul class="story-pipeline-workspace-nav__primary">
+    {% for link in primary %}
+      <li class="story-pipeline-workspace-nav__item{{ link.active ? ' is-active' : '' }}">
+        {% if link.active %}
+          <span class="story-pipeline-workspace-nav__link">{{ link.title }}</span>
+        {% else %}
+          <a class="story-pipeline-workspace-nav__link" href="{{ link.url }}">{{ link.title }}</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  {% if secondary %}
+    <ul class="story-pipeline-workspace-nav__secondary">
+      {% for link in secondary %}
+        <li class="story-pipeline-workspace-nav__item{{ link.active ? ' is-active' : '' }}">
+          {% if link.active %}
+            <span class="story-pipeline-workspace-nav__link story-pipeline-workspace-nav__link--secondary">{{ link.title }}</span>
+          {% else %}
+            <a class="story-pipeline-workspace-nav__link story-pipeline-workspace-nav__link--secondary" href="{{ link.url }}">{{ link.title }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</nav>

@@ -10,6 +10,7 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\story_pipeline\StoryPlannerNav;
 use Drupal\story_pipeline\StoryPlannerTypes;
+use Drupal\story_pipeline\Service\StoryPlannerNodeSync;
 use Drupal\story_pipeline\Service\StoryTracker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,6 +22,7 @@ class StoryTrackerForm extends FormBase {
   public function __construct(
     private readonly StoryTracker $tracker,
     private readonly StoryPlannerTypes $plannerTypes,
+    private readonly StoryPlannerNodeSync $nodeSync,
     private string $tab = 'planning',
   ) {}
 
@@ -33,6 +35,7 @@ class StoryTrackerForm extends FormBase {
     return new static(
       $container->get('story_pipeline.tracker'),
       $container->get('story_pipeline.planner_types'),
+      $container->get('story_pipeline.planner_node_sync'),
       $tab,
     );
   }
@@ -72,7 +75,7 @@ class StoryTrackerForm extends FormBase {
     $form['intro'] = [
       '#type' => 'markup',
       '#markup' => '<p>' . $this->t(
-        'Add stories by type (General, Crime, English, God Story). Stories are grouped below. Link each row to a <strong>Story node</strong> when the CMS episode exists. <strong>Drag the ⋮⋮ handle</strong> within each section to reorder priority, then click <strong>Save order &amp; dates</strong>.'
+        'Add stories by type (General, Crime, English, God Story). Each new plan creates a <strong>draft Story node</strong> automatically. Rows without a linked node show as <strong>Draft</strong> — use the link field to tag manually. <strong>Drag the ⋮⋮ handle</strong> within each section to reorder priority, then click <strong>Save order &amp; dates</strong>.'
       ) . '</p>',
     ];
 
@@ -99,7 +102,7 @@ class StoryTrackerForm extends FormBase {
       '#title' => $this->t('Expected publish date'),
     ];
     $form['add']['new_story_node'] = $this->buildStoryNodeElement(
-      $this->t('Link to story node'),
+      $this->t('Or link to existing node'),
       NULL,
       ['new_story_node']
     );
@@ -108,6 +111,17 @@ class StoryTrackerForm extends FormBase {
       '#value' => $this->t('Add to planning'),
       '#submit' => ['::addStory'],
       '#limit_validation_errors' => [['new_title'], ['new_story_type']],
+    ];
+
+    $form['tools'] = [
+      '#type' => 'actions',
+      '#weight' => -5,
+    ];
+    $form['tools']['sync_nodes'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Auto-link matching story nodes'),
+      '#submit' => ['::syncNodes'],
+      '#limit_validation_errors' => [],
     ];
 
     $stories = $this->tracker->loadByStatus(StoryTracker::STATUS_PLANNING);
@@ -174,7 +188,8 @@ class StoryTrackerForm extends FormBase {
         $this->t('Drag'),
         $this->t('Priority'),
         $this->t('Story'),
-        $this->t('Story node'),
+        $this->t('Node'),
+        $this->t('Link node'),
         $this->t('Type'),
         $this->t('Expected publish'),
         $this->t('Actions'),
@@ -213,8 +228,11 @@ class StoryTrackerForm extends FormBase {
         '#wrapper_attributes' => ['class' => ['story-col']],
         '#markup' => '<strong>' . htmlspecialchars($story->title, ENT_QUOTES, 'UTF-8') . '</strong>',
       ];
+      $table[$id]['node_status'] = $this->buildNodeStatusElement(
+        !empty($story->story_nid) ? (int) $story->story_nid : NULL
+      );
       $table[$id]['story_node'] = $this->buildStoryNodeElement(
-        $this->t('Story node'),
+        $this->t('Link node'),
         !empty($story->story_nid) ? (int) $story->story_nid : NULL,
         ['type_' . $machine, 'stories', $id, 'story_node']
       );
@@ -369,7 +387,8 @@ class StoryTrackerForm extends FormBase {
       '#type' => 'table',
       '#header' => [
         $this->t('Story'),
-        $this->t('Story node'),
+        $this->t('Node'),
+        $this->t('Link node'),
         $this->t('Type'),
         $this->t('Story written'),
         $this->t('Image prompt generated'),
@@ -387,8 +406,11 @@ class StoryTrackerForm extends FormBase {
       $table[$id]['title'] = [
         '#markup' => '<strong>' . htmlspecialchars($story->title, ENT_QUOTES, 'UTF-8') . '</strong>',
       ];
+      $table[$id]['node_status'] = $this->buildNodeStatusElement(
+        !empty($story->story_nid) ? (int) $story->story_nid : NULL
+      );
       $table[$id]['story_node'] = $this->buildStoryNodeElement(
-        $this->t('Story node'),
+        $this->t('Link node'),
         !empty($story->story_nid) ? (int) $story->story_nid : NULL,
         ['type_' . $machine, 'stories', $id, 'story_node']
       );
@@ -552,11 +574,46 @@ class StoryTrackerForm extends FormBase {
     $date = $form_state->getValue('new_expected_publish') ?: NULL;
     $type_tid = (int) $form_state->getValue('new_story_type');
     $story_nid = $this->tracker->normalizeStoryNid($form_state->getValue('new_story_node'));
-    $this->tracker->add($title, $date, $type_tid, $story_nid);
-    $this->messenger()->addStatus($this->t('Story "@title" added to Planning (@type).', [
-      '@title' => $title,
-      '@type' => $this->plannerTypes->labelForTid($type_tid),
-    ]));
+    if ($story_nid) {
+      $this->tracker->add($title, $date, $type_tid, $story_nid);
+      $this->messenger()->addStatus($this->t('Story "@title" added to Planning (@type), linked to node #@nid.', [
+        '@title' => $title,
+        '@type' => $this->plannerTypes->labelForTid($type_tid),
+        '@nid' => $story_nid,
+      ]));
+    }
+    else {
+      $story_nid = (int) $this->nodeSync->createNode($title, $type_tid)->id();
+      $this->tracker->add($title, $date, $type_tid, $story_nid);
+      $this->messenger()->addStatus($this->t('Story "@title" added to Planning (@type). Draft node #@nid created.', [
+        '@title' => $title,
+        '@type' => $this->plannerTypes->labelForTid($type_tid),
+        '@nid' => $story_nid,
+      ]));
+    }
+    $form_state->setRedirectUrl(Url::fromRoute('story_pipeline.tracker'));
+  }
+
+  /**
+   * Submit handler: auto-link planner rows to existing story nodes by title.
+   */
+  public function syncNodes(array &$form, FormStateInterface $form_state): void {
+    $stats = $this->nodeSync->linkUnlinkedPlans();
+    if ($stats['linked'] > 0) {
+      $linked_msg = $stats['linked'] === 1
+        ? $this->t('Linked 1 planner row to an existing story node.')
+        : $this->t('Linked @count planner rows to existing story nodes.', ['@count' => $stats['linked']]);
+      $this->messenger()->addStatus($linked_msg);
+    }
+    if ($stats['draft'] > 0) {
+      $draft_msg = $stats['draft'] === 1
+        ? $this->t('1 row still has no matching node (shown as Draft).')
+        : $this->t('@count rows still have no matching node (shown as Draft).', ['@count' => $stats['draft']]);
+      $this->messenger()->addStatus($draft_msg);
+    }
+    if ($stats['linked'] === 0 && $stats['draft'] === 0) {
+      $this->messenger()->addStatus($this->t('All planner rows are already linked to story nodes.'));
+    }
     $form_state->setRedirectUrl(Url::fromRoute('story_pipeline.tracker'));
   }
 
@@ -601,6 +658,34 @@ class StoryTrackerForm extends FormBase {
       'completed' => 'story_pipeline.tracker_completed',
       default => 'story_pipeline.tracker',
     };
+  }
+
+  /**
+   * Linked node badge or Draft label for a planner row.
+   */
+  private function buildNodeStatusElement(?int $story_nid): array {
+    if (!$story_nid) {
+      return [
+        '#markup' => '<span class="story-planner-node-status story-planner-node-status--draft">' . $this->t('Draft') . '</span>',
+      ];
+    }
+
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($story_nid);
+    if (!$node instanceof NodeInterface || $node->bundle() !== 'story') {
+      return [
+        '#markup' => '<span class="story-planner-node-status story-planner-node-status--draft">' . $this->t('Draft') . '</span>',
+      ];
+    }
+
+    $status = $node->get('field_status')->value ?? 'draft';
+    $label = htmlspecialchars($node->label(), ENT_QUOTES, 'UTF-8');
+    $edit_url = htmlspecialchars($node->toUrl('edit-form')->toString(), ENT_QUOTES, 'UTF-8');
+    return [
+      '#markup' => '<div class="story-planner-node-status story-planner-node-status--linked">'
+        . '<a href="' . $edit_url . '" class="story-planner-node-status__title">#' . (int) $node->id() . ' · ' . $label . '</a>'
+        . '<span class="story-planner-node-status__badge">' . htmlspecialchars((string) $status, ENT_QUOTES, 'UTF-8') . '</span>'
+        . '</div>',
+    ];
   }
 
   /**

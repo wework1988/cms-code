@@ -62,8 +62,40 @@ story_pipeline.run:
   defaults:
     _form: '\Drupal\story_pipeline\Form\StoryPipelineRunForm'
     _title: 'Run story jobs'
+    tab: 'active'
   requirements:
     _permission: 'run story pipeline jobs'
+
+story_pipeline.run_completed:
+  path: '/admin/content/story-pipeline/run/completed'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryPipelineRunForm'
+    _title: 'Run story jobs'
+    tab: 'completed'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.run_live:
+  path: '/admin/content/story-pipeline/run/live'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryPipelineRunForm'
+    _title: 'Run story jobs'
+    tab: 'live'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.move_to_live:
+  path: '/admin/content/story-pipeline/move-to-live/{node}'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryPipelineRunController::moveToLive'
+  requirements:
+    _permission: 'run story pipeline jobs'
+    _entity_access: 'node.view'
+    _csrf_token: 'TRUE'
+  options:
+    parameters:
+      node:
+        type: entity:node
 
 story_pipeline.tracker:
   path: '/admin/content/story-planner'

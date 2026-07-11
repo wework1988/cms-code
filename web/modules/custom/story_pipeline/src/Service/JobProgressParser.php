@@ -46,12 +46,16 @@ class JobProgressParser {
       'log_url' => $log_url,
     ];
 
-    if ($status === 'storyboard_done') {
+    if ($status === 'storyboard_done' || $status === 'live') {
       return [
         'state' => 'done',
         'percent' => 100,
-        'label' => (string) t('Complete'),
-        'detail' => (string) t('All outputs uploaded to Drupal'),
+        'label' => $status === 'live'
+          ? (string) t('Live')
+          : (string) t('Complete'),
+        'detail' => $status === 'live'
+          ? (string) t('Published or handed off')
+          : (string) t('All outputs uploaded to Drupal'),
         'log_url' => $log_url,
       ];
     }

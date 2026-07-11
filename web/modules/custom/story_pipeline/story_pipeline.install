@@ -114,6 +114,7 @@ function story_pipeline_install(): void {
           'story_generated' => 'Story generated',
           'storyboard_running' => 'Storyboard running',
           'storyboard_done' => 'Storyboard done',
+          'live' => 'Live',
           'stopped' => 'Stopped',
           'failed' => 'Failed',
         ],
@@ -132,25 +133,12 @@ function story_pipeline_install(): void {
   }
 
   // File fields for prompt.txt and scene.txt.
-  foreach (['field_prompt_file' => 'Prompt file', 'field_scene_file' => 'Scene file'] as $fname => $label) {
-    if (!FieldStorageConfig::loadByName('node', $fname)) {
-      FieldStorageConfig::create([
-        'field_name' => $fname,
-        'entity_type' => 'node',
-        'type' => 'file',
-        'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
-        'cardinality' => 1,
-      ])->save();
-    }
-    if (!FieldConfig::loadByName('node', 'story', $fname)) {
-      FieldConfig::create([
-        'field_name' => $fname,
-        'entity_type' => 'node',
-        'bundle' => 'story',
-        'label' => $label,
-        'settings' => ['file_extensions' => 'txt md', 'file_directory' => 'story-pipeline/[date:custom:Y-m]'],
-      ])->save();
-    }
+  foreach ([
+    'field_prompt_file' => 'Prompt file',
+    'field_scene_file' => 'Scene file',
+    'field_story_raw_file' => 'Raw story file',
+  ] as $fname => $label) {
+    story_pipeline_create_story_file_field($fname, $label, $fname === 'field_story_raw_file' ? 'txt md text' : 'txt md');
   }
 
   // Default taxonomy terms.
@@ -182,7 +170,7 @@ function story_pipeline_install(): void {
       'field_voice_id' => match ($machine) {
         'general' => 'jHizw5Q9vzu8Pr4RakeJ',
         'english' => 'rWZtlKG7bkWHglNRo3ZA',
-        'god_story' => 'hUJQi6S7KRkv2I6RdkI1',
+        'god_story' => 'FZkK3TvQ0pjyDmT8fzIW',
         default => '',
       },
     ])->save();
@@ -232,6 +220,37 @@ function story_pipeline_create_text_field(string $entity_type, string $bundle, s
       'bundle' => $bundle,
       'label' => $label,
     ])->save();
+  }
+}
+
+/**
+ * Creates a file field storage + story instance if missing.
+ */
+function story_pipeline_create_story_file_field(string $field_name, string $label, string $extensions = 'txt md'): void {
+  if (!FieldStorageConfig::loadByName('node', $field_name)) {
+    FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'type' => 'file',
+      'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', $field_name)) {
+    $field = FieldConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => $label,
+      'settings' => [
+        'file_extensions' => $extensions,
+        'file_directory' => 'story-pipeline/[date:custom:Y-m]',
+      ],
+    ]);
+    if ($field_name === 'field_story_raw_file') {
+      $field->setDescription('Upload the full story output file (validator, TOP 10 CHARACTERS, script, etc.). Saved to the story asset folder as script/raw-story.txt when you save or run jobs.');
+    }
+    $field->save();
   }
 }
 
@@ -764,7 +783,7 @@ function story_pipeline_update_9014(): void {
   if ($existing) {
     $term = reset($existing);
     if ($term->hasField('field_voice_id') && $term->get('field_voice_id')->isEmpty()) {
-      $term->set('field_voice_id', 'hUJQi6S7KRkv2I6RdkI1');
+      $term->set('field_voice_id', 'FZkK3TvQ0pjyDmT8fzIW');
       $term->save();
     }
   }
@@ -773,7 +792,7 @@ function story_pipeline_update_9014(): void {
       'vid' => 'story_type',
       'name' => 'God Story',
       'field_pipeline_settings' => ['value' => $settings_json],
-      'field_voice_id' => 'hUJQi6S7KRkv2I6RdkI1',
+      'field_voice_id' => 'FZkK3TvQ0pjyDmT8fzIW',
     ])->save();
   }
 
@@ -822,5 +841,58 @@ function story_pipeline_update_9016(): void {
     if (!$db_schema->indexExists('story_pipeline_tracker', 'story_nid')) {
       $db_schema->addIndex('story_pipeline_tracker', 'story_nid', ['story_nid'], $schema['story_pipeline_tracker']);
     }
+  }
+}
+
+/**
+ * Raw story file upload on Story nodes + asset folder sync as script/raw-story.*.
+ */
+function story_pipeline_update_9017(): void {
+  story_pipeline_create_story_file_field('field_story_raw_file', 'Raw story file', 'txt md text');
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Auto-link existing planner rows to story nodes by title match.
+ */
+function story_pipeline_update_9018(): void {
+  if (!\Drupal::database()->schema()->tableExists('story_pipeline_tracker')) {
+    return;
+  }
+  $stats = \Drupal::service('story_pipeline.planner_node_sync')->linkUnlinkedPlans();
+  \Drupal::logger('story_pipeline')->notice('Story planner node sync: @linked linked, @draft still draft.', [
+    '@linked' => $stats['linked'],
+    '@draft' => $stats['draft'],
+  ]);
+}
+
+/**
+ * Sync general-story bifurcated templates into Story Type taxonomy terms.
+ */
+function story_pipeline_update_9019(): void {
+  try {
+    $report = \Drupal::service('story_pipeline.manager')->importPrompts();
+    \Drupal::logger('story_pipeline')->notice('Prompt import after template update: @report', [
+      '@report' => json_encode($report),
+    ]);
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('story_pipeline')->warning('Prompt import failed: @msg', ['@msg' => $e->getMessage()]);
+  }
+}
+
+/**
+ * Add "live" status for stories moved off the Completed tab.
+ */
+function story_pipeline_update_9020(): void {
+  $storage = FieldStorageConfig::loadByName('node', 'field_status');
+  if (!$storage) {
+    return;
+  }
+  $allowed = $storage->getSetting('allowed_values') ?? [];
+  if (!isset($allowed['live'])) {
+    $allowed['live'] = 'Live';
+    $storage->setSetting('allowed_values', $allowed);
+    $storage->save();
   }
 }

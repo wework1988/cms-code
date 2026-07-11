@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\story_pipeline\Service\WorkerLauncher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -27,6 +28,7 @@ class StoryPipelineRunController extends ControllerBase {
 
   public function __construct(
     private readonly WorkerLauncher $launcher,
+    private readonly RequestStack $requestStack,
   ) {}
 
   /**
@@ -35,6 +37,7 @@ class StoryPipelineRunController extends ControllerBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('story_pipeline.worker_launcher'),
+      $container->get('request_stack'),
     );
   }
 
@@ -109,10 +112,41 @@ class StoryPipelineRunController extends ControllerBase {
   }
 
   /**
+   * Mark a completed story as live.
+   */
+  public function moveToLive(NodeInterface $node): RedirectResponse {
+    if ($node->bundle() !== 'story') {
+      throw new AccessDeniedHttpException();
+    }
+
+    try {
+      $this->launcher->markLive($node);
+      $this->messenger()->addStatus($this->t(
+        'Moved “@title” to Live.',
+        ['@title' => $node->getTitle()]
+      ));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('Could not move to Live: @msg', ['@msg' => $e->getMessage()]));
+      return $this->redirectToRunPage('completed');
+    }
+
+    return $this->redirectToRunPage('live');
+  }
+
+  /**
    * Redirect back to the Run jobs form.
    */
-  private function redirectToRunPage(): RedirectResponse {
-    return new RedirectResponse(Url::fromRoute('story_pipeline.run')->toString());
+  private function redirectToRunPage(?string $tab = NULL): RedirectResponse {
+    if ($tab === NULL) {
+      $tab = (string) ($this->requestStack->getCurrentRequest()?->query->get('tab') ?? 'active');
+    }
+    $route = match ($tab) {
+      'completed' => 'story_pipeline.run_completed',
+      'live' => 'story_pipeline.run_live',
+      default => 'story_pipeline.run',
+    };
+    return new RedirectResponse(Url::fromRoute($route)->toString());
   }
 
 }

@@ -1,0 +1,293 @@
+================================================================================
+CHAR_PM_01 — Character (senior prime-ministerial figure)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Modi
+Narendra Modi
+prime minister
+senior prime-ministerial figure
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic senior Indian prime-ministerial figure, elderly South Asian statesman, around 65–75 years old, fair-to-medium skin tone, neatly combed short white hair, full white beard, rimless eyeglasses, sharp observant eyes, defined cheek lines, calm composed expression, mature authoritative presence, wearing a light brown or mustard kurta under a brown checked sleeveless Nehru jacket, seated with statesmanlike posture, steady visionary gaze, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no heavyset home-ministerial build, no smooth bald crown with side hair fringe, no thin-rimmed oval silver spectacles, no dark navy sleeveless jacket, no broad rounded face, no exact real-person likeness.
+
+================================================================================
+CHAR_HOME_01 — Character (senior home-ministerial figure)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Amit Shah
+Amitbhai Shah
+home minister
+senior home-ministerial figure
+senior Gujarat political strategist
+main protagonist
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic senior Indian home-ministerial figure, early 60s, heavyset solid build, broad rounded face, warm medium-brown skin, smooth bald crown with short grey-white hair around the sides and back, short close-cropped salt-and-grey beard and moustache, focused dark eyes behind thin-rimmed oval silver spectacles, wearing a light cream long-sleeve kurta under a structured dark navy sleeveless Nehru jacket with high collar and dark front buttons, serious astute unsmiling expression, squared shoulders, level fixed gaze, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no senior prime-ministerial appearance, no neatly combed full white hair, no rimless eyeglasses, no mustard kurta, no brown checked sleeveless jacket, no slim statesman face, no sharp cheekbone prime-ministerial look, no long flowing white beard, no visionary smile, no exact real-person likeness.
+
+================================================================================
+CHAR_bangaldesi_01 — Character (Bangladeshi Muslim migrant)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Bangladeshi migrant
+Bangladeshi Muslim migrant
+illegal Bangladeshi crosser
+migrant protagonist
+archetypal migrant
+lone migrant
+the migrant
+illegal migrant
+illegal तरीके से भारत में आया
+भारत में आया
+सीमा पार करके भारत में आ रहा है
+border पार करने के बाद
+कोई आदमी सीमा पार करके भारत में आ रहा है
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Elderly South Asian Bangladeshi Muslim migrant, around 65–75 years old, medium build, weathered hardened face with deep forehead lines, heavy eyelids, tired dark eyes with a guarded suspicious stare, broad nose, dark under-eye shadows, tight jaw, natural skin texture, long thick bright orange henna-dyed beard with slightly uneven natural edges and grey roots near the chin and cheeks, plain white skull cap, loose light sky-blue kurta with a simple chest pocket and a small white pen tucked inside, worn rubber sandals, hard uneasy expression, furtive watchful posture, shoulders slightly hunched, body angled away from light, complicit illegal-crosser presence rather than sympathy framing, documentary realism, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no young gaunt man, no clean-shaven migrant, no patchy teenage stubble, no innocent expression, no gentle face, no warm smile, no friendly smile, no sympathetic victim framing, no soft beauty lighting, no saintly glow, no open friendly posture, no hopeful refugee look, no terrorist coding, no militant posture, no weapon, no exact real-person likeness.
+
+REFERENCE PORTRAIT PROMPT — FOR MANUAL IMAGE GENERATION ONLY:
+Create a cinematic hand-drawn 2D matte painting portrait of an elderly South Asian Muslim man, around 65–75 years old, medium build, standing front-facing in a calm serious pose. He has a long thick bright orange henna-dyed beard, slightly uneven and natural, with grey roots near the chin and cheeks. His face is weathered with deep forehead lines, heavy eyelids, tired eyes, broad nose, dark under-eye shadows, and natural skin texture. He wears a plain white skull cap and a loose light sky-blue kurta with a simple chest pocket and a small white pen tucked inside.
+
+Background: blue corrugated metal shutter with horizontal lines, slightly out of focus but still clearly visible. Lighting is natural outdoor daylight, soft but realistic, coming from the front-left, creating mild shadows on the face and beard. Composition is a vertical close portrait from chest to head, centered subject, documentary realism, street photography framing.
+
+Style: 2D digital illustration, hand-drawn matte painting, clean but realistic linework, muted documentary color palette, flat cel shading with subtle texture, realistic facial proportions, culturally accurate clothing, grounded everyday street setting.
+
+Avoid: photorealism, 3D render, cartoon exaggeration, fantasy look, glossy skin, perfect beard, modern fashion, dramatic cinematic overlighting, text, watermark, logo.
+
+================================================================================
+CHAR_DICTATOR_01 — Character (East African military dictator / main antagonist)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Idi Amin
+Idi Amin Dada
+ईदी अमीन
+ईदी अमीन दादा
+अमीन दादा
+तानाशाह
+dictator
+Uganda dictator
+main antagonist
+main subject
+laughing soldier
+हंसता हुआ सैनिक
+cannibal dictator
+field marshal
+President for Life
+खलनायक
+राक्षस
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic East African military dictator figure, very tall imposing stature around 6 feet 4 inches, heavy powerful muscular build, broad rounded face, deep dark intense eyes, wide unsettling grin capable of sudden cruelty, dark brown skin, strong jaw, short cropped hair, mature commanding authoritative presence, authoritarian chest-out posture, menacing celebratory energy when in power, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no medium-height lean president, no round wire-rimmed spectacles, no Western business suit, no British colonial pith helmet, no terrified civilian hunch, no South Asian merchant features, no emotionless shadow torturer flat stare, no young pregnant woman, no Arabic royal thobe refuge host, no exact real-person likeness.
+
+================================================================================
+CHAR_PRESIDENT_01 — Character (East African post-colonial president / rival leader)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Milton Obote
+मिल्टन ओबोटे
+Obote
+Uganda first president
+first president
+राष्ट्रपति
+prime minister turned president
+Singapore summit
+सिंगापुर
+exiled president
+ओबोटे
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic East African post-colonial president figure, medium height, lean narrow face, closely trimmed moustache, round wire-rimmed spectacles, deep brown skin, tired intellectual gaze, wearing 1960s-70s Western formal dark suit with white shirt and narrow tie, dignified statesman posture when in office, drawn exhausted expression when exiled, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no towering 6-foot-4 muscular dictator build, no broad cruel grin, no khaki field marshal uniform with gold medals, no peaked military cap, no Arabic white thobe, no British colonial rifle regiment drill formation, no exact real-person likeness.
+
+================================================================================
+CHAR_COLONIAL_01 — Character (British colonial African rifle regiment — collective)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+King African Rifles
+किंग अफ्रीकन राइफल्स
+British colonial army
+ब्रिटिश औपनिवेशिक सेना
+British Army
+colonial soldiers
+British trainers
+Mau Mau suppression
+cook recruit
+बावर्ची
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic British colonial African rifle regiment soldiers, disciplined formation, khaki British colonial military uniforms with generic pith helmets, broad belts and puttees, medium brown and olive tones, stiff formal posture, upright drill discipline, stern unsmiling expressions, generic colonial-era insignia rendered as plain shapes only, collective institutional menace, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no single towering dictator protagonist, no gold-medal field marshal uniform, no broad smiling cruelty, no Western presidential suit, no terrified Ugandan civilian crowd, no plain-clothes torturer agents, no exact real-person likeness.
+
+================================================================================
+CHAR_UGANDAN_CIV_01 — Character (Uganda common people — collective)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Uganda people
+युगांडा की आम जनता
+Ugandan civilians
+common people
+victims
+आम जनता
+massacre victims
+rural population
+ग्रामीण
+terrorized population
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic Ugandan civilian population, diverse mix of elderly, young adults, women, and children, varied East African facial features, dark brown skin tones, frightened wide eyes, hunched fearful body language, trembling hands, muted terror in posture, wearing 1970s rural African clothing in faded colourful fabrics, simple cotton dresses, wrap skirts, plain shirts, bare feet or worn sandals, documentary realism, victims of state terror, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no military dictator authority posture, no gold medals or peaked cap, no British colonial pith helmets, no presidential suit, no South Asian sari or kurta merchant dress, no emotionless torturer shadow agents, no olive-green Tanzanian army uniforms, no exact real-person likeness.
+
+================================================================================
+CHAR_ASIAN_COMM_01 — Character (South Asian merchant community in Uganda — collective)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Asian community
+Indian community
+भारतीय समुदाय
+एशियाई समुदाय
+South Asian merchants
+expelled traders
+90-day expulsion
+निष्कासन
+Uganda Asian families
+shopkeepers
+factory owners
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic South Asian merchant community families in 1970s Uganda, Indian and Pakistani ethnic features, medium to medium-dark skin tones, anxious weary expressions, wearing mix of 1970s South Asian dress — cotton saris in muted colours, kurta-pajama sets, occasional Western business suits on men, shopkeepers and factory workers, middle-class prosperity turned to sudden panic, clutching belongings or suitcases, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no East African dictator military uniform, no British colonial khaki drill formation, no terrified rural Ugandan wrap-cloth peasants, no torturer plain grey civilian menace, no Tanzanian olive-green soldiers, no exact real-person likeness.
+
+================================================================================
+CHAR_SRB_AGENT_01 — Character (state security torturer agents — collective)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+State Research Bureau
+स्टेट रिसर्च ब्यूरो
+SRB agents
+torture agents
+security agents
+यातना-तंत्र
+intelligence agents
+state security
+जल्लाद
+torture chamber
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic Ugandan state security torturer agents, plain civilian clothing in drab 1970s greys and browns, lean or average build, flat emotionless faces, cold dead eyes without mercy, shadow-dwelling posture emerging from darkness, identityless bureaucratic menace, occasional dark plain military fatigues, machine-like cruelty, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no towering dictator with medals and broad grin, no presidential suit and round glasses, no British colonial pith helmets, no diverse terrified civilian families, no South Asian merchant clothing, no victorious Tanzanian olive-green army, no exact real-person likeness.
+
+================================================================================
+CHAR_EXILED_MIN_01 — Character (exiled minister whistleblower)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Emmanuel Bla
+Emmanuel Blair
+इमानुएल ब्लर
+Henry Kyemba
+हेनरी ख्याम्बा
+exiled minister
+निर्वासित मंत्री
+whistleblower minister
+book author
+London exile
+टाइपराइटर
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic East African exiled government minister whistleblower figure, middle-aged around 50s, lean weary face showing grim resolve, deep brown skin, short grey-flecked hair, sharp tired eyes behind ordinary reading glasses, wearing 1970s Western London suit in charcoal grey, white shirt, loosened tie, hands aged and tired at a manual typewriter, exhausted but determined expression bearing witness to atrocities, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no towering dictator build, no military medals, no presidential statesman in office, no British colonial uniform, no terrified civilian crowd, no torturer shadow agent, no pregnant young woman victim, no Saudi royal thobe, no exact real-person likeness.
+
+================================================================================
+CHAR_TANZ_ARMY_01 — Character (Tanzanian liberation army — collective)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Tanzania army
+तंजानिया की सेना
+Tanzanian soldiers
+liberation army
+Kampala invasion
+1978 invasion
+Uganda War
+invading force
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic Tanzanian liberation army soldiers, 1978-79 African military uniforms in faded olive-green, helmets and canvas webbing, medium build East African soldiers, dusty battle-worn faces, grim determined expressions, fatigued but victorious posture when taking Kampala, disciplined rifle-ready stance, collective liberating force, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no khaki Ugandan dictator field marshal uniform, no British colonial pith helmets, no presidential Western suit, no plain-clothes SRB torturers, no South Asian merchant families, no Saudi white thobe royalty, no exact real-person likeness.
+
+================================================================================
+CHAR_VICTIM_WIFE_01 — Character (young pregnant victim / dictator's wife)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Kay Adroa
+fourth wife
+चौथी पत्नी
+Amin wife
+pregnant victim
+गर्भवती
+prison victim
+पीड़ित पात्र
+butchered wife
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic young East African woman victim figure, early 20s, slender pregnant silhouette, dark brown skin, large frightened eyes, round youthful face, traditional 1970s East African wrap cloth and patterned garment, bare arms vulnerable, hands protective around belly, terror and helpless resignation, dim harsh prison-light atmosphere, brief tragic presence, non-identifiable face, not an exact real-person likeness.
+
+NEGATIVE IDENTITY FIREWALL:
+no towering muscular dictator, no military medals, no presidential suit, no British colonial soldiers, no South Asian merchant dress, no torturer agent menace, no Tanzanian olive-green army, no Saudi royal elder statesman, no exact real-person likeness.
+
+================================================================================
+CHAR_SAUDI_INST_01 — Character (Saudi royal institutional asylum hosts)
+================================================================================
+
+MATCH ALIASES — PIPELINE ONLY, NEVER COPY TO IMAGE PROMPT:
+Saudi royal family
+सऊदी अरब की रॉयल फैमिली
+Saudi Arabia refuge
+Saudi hosts
+political asylum
+Jeddah refuge
+royal palace
+1980 exile
+no justice
+
+LOCKED CHARACTER ANCHOR — COPY VERBATIM EVERY TIME:
+Symbolic Saudi Arabian royal institutional figures, formal Arabic white thobes and red-checkered ghutra head coverings, dignified but cold impassive faces, older statesmen posture seated in palace setting, no warmth or welcome in expression, political asylum granted without justice, generic palace marble backdrop, distant ceremonial presence, non-identifiable faces, not exact real-person likenesses.
+
+NEGATIVE IDENTITY FIREWALL:
+no East African dictator military uniform, no Ugandan civilian terror, no British colonial khaki, no Western presidential suit, no torturer shadow agents, no Tanzanian army olive-green, no young pregnant African woman, no exact real-person likeness.

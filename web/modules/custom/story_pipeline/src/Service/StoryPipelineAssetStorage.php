@@ -76,9 +76,9 @@ class StoryPipelineAssetStorage {
   }
 
   /**
-   * Absolute path to one story's asset folder.
+   * Resolve asset folder path without creating directories (read-only).
    */
-  public function storyDir(NodeInterface $node): ?string {
+  public function resolveStoryDir(NodeInterface $node): ?string {
     $root = $this->rootPath();
     if ($root === NULL || $node->bundle() !== 'story') {
       return NULL;
@@ -112,6 +112,15 @@ class StoryPipelineAssetStorage {
       $dest = $type_root . DIRECTORY_SEPARATOR . $slug . '-' . $node->id();
     }
 
+    return $dest;
+  }
+
+  /**
+   * Create story folder layout + meta files (call only when writing assets).
+   */
+  private function ensureStoryDir(NodeInterface $node, string $dest): string {
+    $type = $this->storyTypeMachine($node);
+    $type_root = dirname($dest);
     if (!is_dir($type_root)) {
       mkdir($type_root, 0775, TRUE);
     }
@@ -124,9 +133,6 @@ class StoryPipelineAssetStorage {
     }
 
     $meta_dir = $dest . DIRECTORY_SEPARATOR . 'meta';
-    if (!is_dir($meta_dir)) {
-      mkdir($meta_dir, 0775, TRUE);
-    }
     file_put_contents($meta_dir . DIRECTORY_SEPARATOR . 'drupal-node-id.txt', (string) $node->id() . "\n");
     file_put_contents($meta_dir . DIRECTORY_SEPARATOR . 'story-title.txt', $node->getTitle() . "\n");
     file_put_contents($meta_dir . DIRECTORY_SEPARATOR . 'story-type.txt', $type . "\n");
@@ -135,14 +141,26 @@ class StoryPipelineAssetStorage {
   }
 
   /**
+   * Absolute path to one story's asset folder (creates layout when writing).
+   */
+  public function storyDir(NodeInterface $node): ?string {
+    $dest = $this->resolveStoryDir($node);
+    if ($dest === NULL) {
+      return NULL;
+    }
+    return $this->ensureStoryDir($node, $dest);
+  }
+
+  /**
    * Write a text file under a story folder subdir.
    */
   public function saveText(NodeInterface $node, string $subdir, string $filename, string $content): ?string {
-    $story_dir = $this->storyDir($node);
-    if ($story_dir === NULL) {
+    $dest = $this->resolveStoryDir($node);
+    if ($dest === NULL) {
       return NULL;
     }
-    $dir = $story_dir . DIRECTORY_SEPARATOR . $subdir;
+    $this->ensureStoryDir($node, $dest);
+    $dir = $dest . DIRECTORY_SEPARATOR . $subdir;
     if (!is_dir($dir)) {
       mkdir($dir, 0775, TRUE);
     }
@@ -159,12 +177,78 @@ class StoryPipelineAssetStorage {
   }
 
   /**
-   * List known asset files for API / UI.
+   * Copy the uploaded raw story file to script/raw-story.{ext} in the asset folder.
+   */
+  public function syncRawStoryFile(NodeInterface $node): ?string {
+    if (!$node->hasField('field_story_raw_file') || $node->get('field_story_raw_file')->isEmpty()) {
+      return NULL;
+    }
+
+    $file = $node->get('field_story_raw_file')->entity;
+    if ($file === NULL) {
+      return NULL;
+    }
+
+    $uri = $file->getFileUri();
+    $path = \Drupal::service('file_system')->realpath($uri);
+    if ($path === FALSE || !is_readable($path)) {
+      return NULL;
+    }
+
+    $content = file_get_contents($path);
+    if ($content === FALSE || $content === '') {
+      return NULL;
+    }
+
+    $extension = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+    $filename = match ($extension) {
+      'txt', 'md', 'text' => 'raw-story.txt',
+      default => $extension !== '' ? 'raw-story.' . $extension : 'raw-story.txt',
+    };
+
+    return $this->saveBinary($node, 'script', $filename, $content);
+  }
+
+  /**
+   * Read raw story file text from the node upload or asset folder.
+   */
+  public function readRawStoryFileText(NodeInterface $node): string {
+    if ($node->hasField('field_story_raw_file') && !$node->get('field_story_raw_file')->isEmpty()) {
+      $file = $node->get('field_story_raw_file')->entity;
+      if ($file !== NULL) {
+        $path = \Drupal::service('file_system')->realpath($file->getFileUri());
+        if ($path !== FALSE && is_readable($path)) {
+          $content = file_get_contents($path);
+          if ($content !== FALSE && trim($content) !== '') {
+            return $content;
+          }
+        }
+      }
+    }
+
+    $dir = $this->resolveStoryDir($node);
+    if ($dir !== NULL && is_dir($dir)) {
+      foreach (['raw-story.txt', 'raw-story.md', 'raw-story.text'] as $name) {
+        $path = $dir . DIRECTORY_SEPARATOR . 'script' . DIRECTORY_SEPARATOR . $name;
+        if (is_readable($path)) {
+          $content = file_get_contents($path);
+          if ($content !== FALSE && trim($content) !== '') {
+            return $content;
+          }
+        }
+      }
+    }
+
+    return '';
+  }
+
+  /**
+   * List known asset files for API / UI (does not create folders).
    *
    * @return array<string, mixed>
    */
   public function assetIndex(NodeInterface $node): array {
-    $dir = $this->storyDir($node);
+    $dir = $this->resolveStoryDir($node);
     if ($dir === NULL || !is_dir($dir)) {
       return [];
     }
@@ -177,6 +261,7 @@ class StoryPipelineAssetStorage {
     $map = [
       'script/FULL_STORY.txt' => 'full_story',
       'script/story_meta.txt' => 'story_meta',
+      'script/raw-story.txt' => 'raw_story',
       'prompts/prompt.txt' => 'prompt',
       'scenes/scene.txt' => 'scene',
       'image-prompts/image-prompts-only.txt' => 'image_prompts',
@@ -207,8 +292,8 @@ class StoryPipelineAssetStorage {
    * Resolve relative path inside story folder; blocks traversal.
    */
   public function resolveRelativePath(NodeInterface $node, string $relative): ?string {
-    $dir = $this->storyDir($node);
-    if ($dir === NULL) {
+    $dir = $this->resolveStoryDir($node);
+    if ($dir === NULL || !is_dir($dir)) {
       return NULL;
     }
     $relative = str_replace('\\', '/', $relative);

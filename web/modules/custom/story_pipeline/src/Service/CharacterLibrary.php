@@ -103,8 +103,176 @@ class CharacterLibrary {
    */
   public function extractWithMatches(NodeInterface $story): array {
     $plan_text = $this->getStoryPlanText($story);
-    $story_type_tid = $this->storyTypeTid($story);
     $extracted = $this->extractor->extract($plan_text);
+    return $this->attachLibraryMatches($story, $extracted);
+  }
+
+  /**
+   * Plain text from uploaded raw story file (Drupal field or asset folder).
+   */
+  public function getRawStoryFileText(NodeInterface $story): string {
+    return \Drupal::service('story_pipeline.asset_storage')->readRawStoryFileText($story);
+  }
+
+  /**
+   * Whether the story has an uploaded raw file or on-disk raw-story copy.
+   */
+  public function hasRawStoryFile(NodeInterface $story): bool {
+    return $this->getRawStoryFileText($story) !== '';
+  }
+
+  /**
+   * Parse a pasted character block and attach library matches.
+   *
+   * Preserves existing tags when character names match the saved roster.
+   *
+   * @return list<array<string, mixed>>
+   */
+  public function parsePastedCharacters(string $raw, NodeInterface $story): array {
+    $raw = trim($raw);
+    if ($raw === '') {
+      throw new \InvalidArgumentException('Paste your character list first.');
+    }
+
+    $parsed = $this->extractor->extract($raw);
+    if ($parsed === []) {
+      $wrapped = "TOP 10 CHARACTERS IN THE STORY\n==================================================\n\n" . $raw;
+      $parsed = $this->extractor->extract($wrapped);
+    }
+
+    if ($parsed === []) {
+      throw new \InvalidArgumentException(
+        'Could not parse any characters. Use TOP 10 CHARACTERS with numbered entries (1. Name) and field labels (Story importance, Visual identity, etc.).'
+      );
+    }
+
+    return $this->attachLibraryMatches($story, $parsed);
+  }
+
+  /**
+   * Load characters for display: saved roster first, then plan extract, then pipeline.
+   *
+   * The roster holds the full extracted list (e.g. 10 rows) with tagging state.
+   * field_characters_info only contains applied pipeline characters (e.g. 4).
+   *
+   * @return list<array<string, mixed>>
+   */
+  public function loadCharactersForStory(NodeInterface $story): array {
+    $roster = $this->loadRoster($story);
+    if ($roster !== []) {
+      return $this->attachLibraryMatches($story, $roster);
+    }
+
+    $extracted = $this->extractWithMatches($story);
+    if ($extracted !== []) {
+      return $extracted;
+    }
+
+    return $this->charactersFromPipelineField($story);
+  }
+
+  /**
+   * Summary counts for tagged and pipeline-applied characters.
+   *
+   * @return array{total: int, tagged: int, untagged: int, applied: int}
+   */
+  public function getCharacterStatus(NodeInterface $story): array {
+    $characters = $this->loadCharactersForStory($story);
+    $tagged = 0;
+    foreach ($characters as $character) {
+      if (!empty($character['library_nid'])) {
+        $tagged++;
+      }
+    }
+
+    $applied = count($this->parseCharacterTxt($story->get('field_characters_info')->value ?? ''));
+
+    return [
+      'total' => count($characters),
+      'tagged' => $tagged,
+      'untagged' => count($characters) - $tagged,
+      'applied' => $applied,
+    ];
+  }
+
+  /**
+   * Build character rows from field_characters_info (after Apply to pipeline).
+   *
+   * @return list<array<string, mixed>>
+   */
+  public function charactersFromPipelineField(NodeInterface $story): array {
+    if (!$story->hasField('field_characters_info') || $story->get('field_characters_info')->isEmpty()) {
+      return [];
+    }
+
+    $parsed = $this->parseCharacterTxt($story->get('field_characters_info')->value ?? '');
+    if ($parsed === []) {
+      return [];
+    }
+
+    $rows = [];
+    foreach ($parsed as $record) {
+      $char_id = (string) ($record['char_id'] ?? '');
+      $lib = $char_id !== '' ? $this->findLibraryRecordByCharId($char_id) : NULL;
+      $name = (string) ($record['title'] ?? $char_id);
+
+      $rows[] = [
+        'name' => $name,
+        'story_importance' => '',
+        'visual_identity' => '',
+        'clothing' => '',
+        'emotional_arc' => '',
+        'continuity_note' => '',
+        'raw_block' => (string) ($record['locked_anchor'] ?? $name),
+        'library_nid' => $lib['nid'] ?? NULL,
+        'char_id' => $char_id,
+        'match_status' => $lib ? 'linked' : 'applied',
+        'locked_anchor' => (string) ($record['locked_anchor'] ?? ''),
+        'negative_firewall' => (string) ($record['negative_firewall'] ?? ''),
+        'context_label' => (string) ($record['context_label'] ?? ''),
+        'aliases' => $record['aliases'] ?? $this->defaultAliases($name),
+        'applied_to_pipeline' => TRUE,
+        'library_label' => $lib ? $this->formatAutocompleteLabel($lib) : '',
+      ];
+    }
+
+    return $rows;
+  }
+
+  /**
+   * Find a published library entry by character ID.
+   */
+  public function findLibraryRecordByCharId(string $char_id): ?array {
+    $char_id = strtoupper(trim($char_id));
+    if ($char_id === '') {
+      return NULL;
+    }
+
+    $nids = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('type', 'character_library')
+      ->condition('status', 1)
+      ->condition('field_char_id', $char_id)
+      ->range(0, 1)
+      ->execute();
+
+    if (!$nids) {
+      return NULL;
+    }
+
+    $node = $this->entityTypeManager->getStorage('node')->load((int) reset($nids));
+    return $node instanceof NodeInterface ? $this->nodeToRecord($node) : NULL;
+  }
+
+  /**
+   * Attach library matches to pre-parsed character rows (e.g. from DeepSeek).
+   *
+   * @param list<array<string, mixed>> $extracted
+   *
+   * @return list<array<string, mixed>>
+   */
+  public function attachLibraryMatches(NodeInterface $story, array $extracted): array {
+    $story_type_tid = $this->storyTypeTid($story);
 
     $roster = $this->loadRoster($story);
     $roster_by_name = [];
@@ -371,8 +539,11 @@ class CharacterLibrary {
   /**
    * Persist extracted roster on the story node.
    */
-  public function saveRoster(NodeInterface $story, array $roster): void {
+  public function saveRoster(NodeInterface $story, array $roster, bool $allow_empty = FALSE): void {
     if (!$story->hasField('field_character_roster')) {
+      return;
+    }
+    if ($roster === [] && !$allow_empty && $this->loadRoster($story) !== []) {
       return;
     }
     $story->set('field_character_roster', ['value' => json_encode($roster, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)]);

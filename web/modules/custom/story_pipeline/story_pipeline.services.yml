@@ -20,6 +20,7 @@ services:
       - '@file_system'
       - '@logger.factory'
       - '@file_url_generator'
+      - '@story_pipeline.asset_storage'
   story_pipeline.progress_parser:
     class: Drupal\story_pipeline\Service\JobProgressParser
     arguments:
@@ -28,6 +29,12 @@ services:
     class: Drupal\story_pipeline\Service\StoryTracker
     arguments:
       - '@database'
+  story_pipeline.planner_node_sync:
+    class: Drupal\story_pipeline\Service\StoryPlannerNodeSync
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@story_pipeline.planner_types'
   story_pipeline.planner_types:
     class: Drupal\story_pipeline\StoryPlannerTypes
     arguments:
@@ -39,3 +46,11 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@story_pipeline.character_extractor'
+  story_pipeline.character_ai_extractor:
+    class: Drupal\story_pipeline\Service\CharacterAiExtractor
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+      - '@story_pipeline.character_extractor'
+      - '@story_pipeline.manager'

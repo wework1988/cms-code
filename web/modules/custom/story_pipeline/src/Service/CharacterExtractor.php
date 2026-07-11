@@ -40,13 +40,17 @@ class CharacterExtractor {
    * Convert Drupal rich-text / HTML story plan into plain text for parsing.
    */
   public function normalizePlainText(string $text): string {
-    $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $text = str_replace(["\xc2\xa0", '&nbsp;'], ' ', $text);
     $text = preg_replace('/<br\s*\/?>/i', "\n", $text) ?? $text;
     $text = preg_replace('/<\/p>\s*<p[^>]*>/i', "\n\n", $text) ?? $text;
     $text = preg_replace('/<\/?p[^>]*>/i', "\n", $text) ?? $text;
     $text = strip_tags($text);
+    $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $text = preg_replace("/\r\n|\r/", "\n", $text) ?? $text;
+    // Separator glued to "1." → put number on its own line.
+    $text = preg_replace('/=+\s*(\d+\.\s+)/', "\n$1", $text) ?? $text;
+    // Inline numbered characters: "...note.2. Name" → separate lines.
+    $text = preg_replace('/\.(\d+\.\s+)/', ".\n$1", $text) ?? $text;
     $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? $text;
     return trim($text);
   }

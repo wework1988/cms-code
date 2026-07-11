@@ -200,3 +200,46 @@
 .story-planner-node-link {
   text-decoration: none;
 }
+
+.story-planner-node-status {
+  display: inline-block;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.story-planner-node-status--draft {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #664d03;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.story-planner-node-status--linked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.story-planner-node-status__title {
+  color: #0b5ed7;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.story-planner-node-status__title:hover {
+  text-decoration: underline;
+}
+
+.story-planner-node-status__badge {
+  background: #e7f1ff;
+  border-radius: 3px;
+  color: #495057;
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.35rem;
+  text-transform: lowercase;
+  width: fit-content;
+}

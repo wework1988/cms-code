@@ -31,6 +31,7 @@ class WorkerLauncher {
     private readonly FileSystemInterface $fileSystem,
     private readonly LoggerChannelFactoryInterface $loggerFactory,
     private readonly FileUrlGeneratorInterface $fileUrlGenerator,
+    private readonly StoryPipelineAssetStorage $assetStorage,
   ) {}
 
   /**
@@ -57,6 +58,10 @@ class WorkerLauncher {
     }
     if (!isset(self::JOBS[$job])) {
       throw new \InvalidArgumentException('Unknown job: ' . $job);
+    }
+
+    if ($this->assetStorage->isEnabled() && $job !== 'elevenlabs') {
+      $this->assetStorage->syncRawStoryFile($node);
     }
 
     $worker_path = $this->workerPath();
@@ -313,6 +318,7 @@ class WorkerLauncher {
       'story_generated' => (string) t('Script ready — run storyboard next'),
       'storyboard_running' => (string) t('Job running… refresh in a few minutes'),
       'storyboard_done' => (string) t('Complete'),
+      'live' => (string) t('Live'),
       'stopped' => (string) t('Stopped'),
       'failed' => (string) t('Failed — ask admin or check log'),
       default => $status,
@@ -367,6 +373,38 @@ class WorkerLauncher {
       return TRUE;
     }
     return $this->findStoryRunningPids((int) $node->id()) !== [];
+  }
+
+  /**
+   * Run jobs page tab: active, completed, or live.
+   */
+  public function runListBucket(NodeInterface $node): string {
+    $status = $node->get('field_status')->value ?? 'draft';
+    if ($status === 'live') {
+      return 'live';
+    }
+    if ($status === 'storyboard_done') {
+      return 'completed';
+    }
+    return 'active';
+  }
+
+  /**
+   * Mark a finished story as live (moves it off the Completed tab).
+   */
+  public function markLive(NodeInterface $node): void {
+    if ($node->bundle() !== 'story') {
+      throw new \InvalidArgumentException('Not a story node.');
+    }
+    $node->set('field_status', ['value' => 'live']);
+    $node->save();
+  }
+
+  /**
+   * Whether a story belongs on the active (first) tab.
+   */
+  public function isRunListActive(NodeInterface $node): bool {
+    return $this->runListBucket($node) === 'active';
   }
 
   /**

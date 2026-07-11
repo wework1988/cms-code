@@ -6,8 +6,11 @@
  */
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Url;
+use Drupal\views\ViewExecutable;
 /**
  * Implements hook_theme().
  */
@@ -119,12 +122,94 @@ function story_pipeline_form_node_story_edit_form_alter(array &$form, \Drupal\Co
     '#suffix' => '</div>',
     '#attributes' => ['class' => ['button', 'button--primary']],
   ];
+
+  /** @var \Drupal\story_pipeline\Service\CharacterLibrary $character_library */
+  $character_library = \Drupal::service('story_pipeline.character_library');
+  $status = $character_library->getCharacterStatus($node);
+  if ($status['total'] > 0 || $status['applied'] > 0) {
+    $parts = [];
+    if ($status['total'] > 0) {
+      $parts[] = t('@tagged of @total tagged', [
+        '@tagged' => $status['tagged'],
+        '@total' => $status['total'],
+      ]);
+    }
+    if ($status['applied'] > 0) {
+      $parts[] = t('@count in pipeline', ['@count' => $status['applied']]);
+    }
+    $form['story_pipeline_characters_status'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="story-pipeline-characters-status messages messages--status">' . implode(' · ', $parts) . '</div>',
+      '#weight' => -99,
+    ];
+  }
 }
 
 /**
- * Hide Characters tab on non-story node edit forms.
+ * Default admin content listing to stories; add Stories / All content tabs.
+ */
+function story_pipeline_views_pre_view(ViewExecutable $view, $display_id, array &$args): void {
+  if ($view->id() !== 'content' || $display_id !== 'page_1') {
+    return;
+  }
+  if (\Drupal::request()->query->get('all') === '1') {
+    return;
+  }
+  $input = $view->getExposedInput();
+  if (isset($input['type']) && $input['type'] !== '' && $input['type'] !== NULL) {
+    return;
+  }
+  $input['type'] = 'story';
+  $view->setExposedInput($input);
+}
+
+/**
+ * Send filter reset to the All content tab (all types, no default story filter).
+ */
+function story_pipeline_form_views_exposed_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
+  /** @var \Drupal\views\ViewExecutable|null $view */
+  $view = $form_state->get('view');
+  if (!$view || $view->id() !== 'content' || $view->current_display !== 'page_1') {
+    return;
+  }
+  if (isset($form['actions']['reset'])) {
+    $form['actions']['reset']['#submit'][] = 'story_pipeline_content_exposed_reset_submit';
+  }
+}
+
+/**
+ * Submit handler: redirect reset to All content listing.
+ */
+function story_pipeline_content_exposed_reset_submit(array &$form, FormStateInterface $form_state): void {
+  $form_state->setRedirect('view.content.page_1', [], ['query' => ['all' => '1']]);
+}
+
+/**
+ * Hide Characters tab on non-story node edit forms; add content admin tabs.
  */
 function story_pipeline_menu_local_tasks_alter(array &$data, $route_name, \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheability): void {
+  if ($route_name === 'view.content.page_1') {
+    $show_all = \Drupal::request()->query->get('all') === '1';
+    unset($data['tabs'][0]['system.admin_content']);
+    $data['tabs'][0]['story_pipeline.content_stories'] = [
+      '#theme' => 'menu_local_task',
+      '#link' => [
+        'title' => t('Stories'),
+        'url' => Url::fromRoute('view.content.page_1'),
+      ],
+      '#active' => !$show_all,
+    ];
+    $data['tabs'][0]['story_pipeline.content_all'] = [
+      '#theme' => 'menu_local_task',
+      '#link' => [
+        'title' => t('All content'),
+        'url' => Url::fromRoute('view.content.page_1', [], ['query' => ['all' => '1']]),
+      ],
+      '#active' => $show_all,
+    ];
+    $cacheability->addCacheContexts(['url.query_args:all']);
+  }
+
   if (!in_array($route_name, ['entity.node.edit_form', 'entity.node.canonical'], TRUE)) {
     return;
   }
@@ -135,6 +220,23 @@ function story_pipeline_menu_local_tasks_alter(array &$data, $route_name, \Drupa
         unset($data['tabs'][0][$tab_id]);
       }
     }
+    return;
+  }
+
+  /** @var \Drupal\story_pipeline\Service\CharacterLibrary $character_library */
+  $character_library = \Drupal::service('story_pipeline.character_library');
+  $status = $character_library->getCharacterStatus($node);
+  if ($status['applied'] > 0 || $status['tagged'] > 0 || $status['total'] > 0) {
+    $label = (string) t('Characters (@tagged/@total)', [
+      '@tagged' => $status['tagged'],
+      '@total' => $status['total'],
+    ]);
+    foreach (['story_pipeline.story_characters_tab', 'story_pipeline.story_characters_view_tab'] as $tab_id) {
+      if (isset($data['tabs'][0][$tab_id])) {
+        $data['tabs'][0][$tab_id]['#link']['title'] = $label;
+      }
+    }
+    $cacheability->addCacheableDependency($node);
   }
 }
 
@@ -156,16 +258,17 @@ function story_pipeline_configure_displays(): void {
     'field_story_type' => ['type' => 'options_select', 'weight' => 1],
     'field_youtube_urls' => ['type' => 'string_textfield', 'weight' => 2],
     'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 3],
-    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 4],
-    'field_full_story' => ['type' => 'text_textarea', 'weight' => 5],
-    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 6],
-    'field_status' => ['type' => 'options_select', 'weight' => 7],
-    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 8],
-    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 9],
-    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 10],
-    'field_scene_file' => ['type' => 'file_generic', 'weight' => 11],
-    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 12],
-    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 13],
+    'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 4],
+    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_full_story' => ['type' => 'text_textarea', 'weight' => 6],
+    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 7],
+    'field_status' => ['type' => 'options_select', 'weight' => 8],
+    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 9],
+    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 10],
+    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 11],
+    'field_scene_file' => ['type' => 'file_generic', 'weight' => 12],
+    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 13],
+    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 14],
   ];
   foreach ($components as $name => $options) {
     $story_display->setComponent($name, $options);
@@ -195,4 +298,31 @@ function story_pipeline_configure_displays(): void {
     $term_display->setComponent($name, $options);
   }
   $term_display->save();
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function story_pipeline_entity_insert(EntityInterface $entity): void {
+  story_pipeline_sync_raw_story_file($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function story_pipeline_entity_update(EntityInterface $entity): void {
+  story_pipeline_sync_raw_story_file($entity);
+}
+
+/**
+ * Copy uploaded raw story file to story asset folder (script/raw-story.*).
+ */
+function story_pipeline_sync_raw_story_file(EntityInterface $entity): void {
+  if (!$entity instanceof NodeInterface || $entity->bundle() !== 'story') {
+    return;
+  }
+  if (!$entity->hasField('field_story_raw_file')) {
+    return;
+  }
+  \Drupal::service('story_pipeline.asset_storage')->syncRawStoryFile($entity);
 }

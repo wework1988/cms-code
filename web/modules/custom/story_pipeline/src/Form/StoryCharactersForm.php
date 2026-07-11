@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\story_pipeline\Service\CharacterAiExtractor;
 use Drupal\story_pipeline\Service\CharacterLibrary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,12 +19,15 @@ class StoryCharactersForm extends FormBase {
 
   private ?CharacterLibrary $characterLibrary = NULL;
 
+  private ?CharacterAiExtractor $characterAiExtractor = NULL;
+
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     $instance = new static();
     $instance->characterLibrary = $container->get('story_pipeline.character_library');
+    $instance->characterAiExtractor = $container->get('story_pipeline.character_ai_extractor');
     return $instance;
   }
 
@@ -32,6 +36,13 @@ class StoryCharactersForm extends FormBase {
    */
   protected function library(): CharacterLibrary {
     return $this->characterLibrary ??= \Drupal::service('story_pipeline.character_library');
+  }
+
+  /**
+   * DeepSeek character extraction service.
+   */
+  protected function aiExtractor(): CharacterAiExtractor {
+    return $this->characterAiExtractor ??= \Drupal::service('story_pipeline.character_ai_extractor');
   }
 
   /**
@@ -54,16 +65,18 @@ class StoryCharactersForm extends FormBase {
 
     $characters = $form_state->get('characters');
     if ($characters === NULL) {
-      $characters = $this->library()->extractWithMatches($node);
+      $characters = $this->library()->loadCharactersForStory($node);
       $form_state->set('characters', $characters);
     }
+
+    $status = $this->library()->getCharacterStatus($node);
 
     $form['#attached']['library'][] = 'story_pipeline/story-characters';
 
     $form['intro'] = [
       '#type' => 'markup',
       '#markup' => '<p>' . $this->t(
-        'Paste your planned story in <strong>Story plan (with characters)</strong>, extract the list, then <strong>tag</strong> each row to an existing library character using the autocomplete box. If the story name differs slightly (e.g. “Masood Azhar (Villain)”), search and link manually — the story name can be saved as a new alias. Leave <strong>Full story</strong> unchanged for the pipeline.'
+        'Fastest: paste your <strong>TOP 10 CHARACTERS</strong> block below and click <strong>Import pasted characters</strong>. Or extract from the story plan with DeepSeek / local parser. The full list is saved on this story — reopen anytime to tag more. Then <strong>Apply all to story pipeline</strong> when ready.'
       ) . '</p>',
     ];
 
@@ -84,26 +97,99 @@ class StoryCharactersForm extends FormBase {
       '#attributes' => ['class' => ['button', 'button--small']],
     ];
 
+    if ($status['total'] > 0 || $status['applied'] > 0) {
+      $form['status_summary'] = [
+        '#type' => 'markup',
+        '#markup' => $this->buildStatusSummary($status),
+        '#weight' => -10,
+      ];
+    }
+
+    $form['paste_import'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Paste character list directly'),
+      '#open' => $characters === [],
+      '#attributes' => ['class' => ['story-characters-paste']],
+      '#weight' => -5,
+    ];
+    $form['paste_import']['format_help'] = [
+      '#type' => 'markup',
+      '#markup' => '<p class="story-characters-paste-help">' . $this->t(
+        'Paste your <code>TOP 10 CHARACTERS IN THE STORY</code> block here (with <code>1. Name</code>, Story importance, Visual identity, etc.). No DeepSeek needed. Existing library tags are kept when names match.'
+      ) . '</p>',
+    ];
+    $form['paste_import']['paste_text'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Character data'),
+      '#title_display' => 'invisible',
+      '#rows' => 18,
+      '#default_value' => $form_state->get('paste_text') ?? '',
+      '#attributes' => ['class' => ['story-characters-paste-textarea']],
+      '#placeholder' => "TOP 10 CHARACTERS IN THE STORY\n==================================================\n\n1. Ajit Doval / National Security Advisor\n  Story importance: ...\n  Visual identity: ...\n  Clothing / era look: ...\n  Emotional arc: ...\n  Continuity note: ...",
+    ];
+    $form['paste_import']['actions'] = ['#type' => 'actions'];
+    $form['paste_import']['actions']['import_paste'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Import pasted characters'),
+      '#submit' => ['::submitImportPaste'],
+      '#limit_validation_errors' => [['paste_import', 'paste_text']],
+      '#button_type' => $characters === [] ? 'primary' : 'default',
+    ];
+    if ($this->library()->hasRawStoryFile($node)) {
+      $form['paste_import']['actions']['import_raw_file'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Import from uploaded raw story file'),
+        '#submit' => ['::submitImportRawFile'],
+        '#limit_validation_errors' => [],
+      ];
+    }
+
     $plan_text = trim($this->library()->getStoryPlanText($node));
-    if ($plan_text === '') {
+    $has_source = $plan_text !== '' || !$node->get('field_full_story')->isEmpty();
+    if (!$has_source) {
       $form['warning'] = [
         '#type' => 'markup',
-        '#markup' => '<div class="messages messages--warning">' . $this->t('No story plan yet. On the story edit form, paste your planned file (with TOP 10 CHARACTERS + FULL SCRIPT) into <strong>Story plan (with characters)</strong>. Leave <strong>Full story</strong> as-is for the pipeline.') . '</div>',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('No story text yet. On the story edit form, paste your planned file or full script into <strong>Story plan (with characters)</strong> and/or <strong>Full story</strong>, then save.') . '</div>',
       ];
     }
 
     $form['actions_top'] = ['#type' => 'actions'];
+    if ($this->aiExtractor()->isAvailable()) {
+      $form['actions_top']['extract_ai'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Extract with DeepSeek'),
+        '#submit' => ['::submitExtractAi'],
+        '#limit_validation_errors' => [],
+      ];
+    }
+    else {
+      $form['actions_top']['extract_ai_unavailable'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('DeepSeek API key not set — add it at <a href=":url">Story Pipeline settings</a> to use AI extraction.', [
+          ':url' => Url::fromRoute('story_pipeline.settings')->toString(),
+        ]) . '</div>',
+      ];
+    }
     $form['actions_top']['extract'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Extract characters from story'),
+      '#value' => $this->t('Extract from text (local parser)'),
       '#submit' => ['::submitExtract'],
       '#limit_validation_errors' => [],
     ];
 
     if ($characters === []) {
-      $form['empty'] = [
-        '#markup' => '<p><em>' . $this->t('No characters extracted yet. Your story should include a TOP 10 CHARACTERS section (like the planned story files).') . '</em></p>',
-      ];
+      if ($status['applied'] > 0) {
+        $form['empty'] = [
+          '#markup' => '<p><em>' . $this->t('Could not re-parse characters from story plan, but @count character(s) are already applied to the pipeline. Re-extract to edit tagging.', [
+            '@count' => $status['applied'],
+          ]) . '</em></p>',
+        ];
+      }
+      else {
+        $form['empty'] = [
+          '#markup' => '<p><em>' . $this->t('No characters loaded yet. Paste your TOP 10 CHARACTERS block above and click <strong>Import pasted characters</strong>, or extract from the story plan below.') . '</em></p>',
+        ];
+      }
       return $form;
     }
 
@@ -127,6 +213,12 @@ class StoryCharactersForm extends FormBase {
 
       if ($is_linked && $match_status === 'matched') {
         $badge = '<span class="story-characters-badge story-characters-badge--matched">' . $this->t('Auto-matched: @id', ['@id' => $character['char_id']]) . '</span>';
+      }
+      elseif ($is_linked && $match_status === 'linked') {
+        $badge = '<span class="story-characters-badge story-characters-badge--matched">' . $this->t('Tagged: @id', ['@id' => $character['char_id']]) . '</span>';
+      }
+      elseif (!empty($character['applied_to_pipeline'])) {
+        $badge = '<span class="story-characters-badge story-characters-badge--applied">' . $this->t('Applied to pipeline: @id', ['@id' => $character['char_id']]) . '</span>';
       }
       elseif ($is_linked) {
         $badge = '<span class="story-characters-badge story-characters-badge--matched">' . $this->t('Tagged: @id', ['@id' => $character['char_id']]) . '</span>';
@@ -291,7 +383,84 @@ class StoryCharactersForm extends FormBase {
   }
 
   /**
-   * Re-extract characters from full story.
+   * Import characters from pasted text block.
+   */
+  public function submitImportPaste(array &$form, FormStateInterface $form_state): void {
+    $nid = (int) $form_state->get('story_nid');
+    $node = $this->loadStory($nid);
+    if (!$node) {
+      return;
+    }
+
+    $paste = trim((string) $form_state->getValue(['paste_import', 'paste_text']));
+    $form_state->set('paste_text', $paste);
+
+    if ($paste === '') {
+      $this->messenger()->addError($this->t('Paste your character list first.'));
+      $form_state->setRebuild(TRUE);
+      return;
+    }
+
+    try {
+      $characters = $this->library()->parsePastedCharacters($paste, $node);
+      $this->aiExtractor()->mergeCharactersIntoPlan($node, $characters);
+      $node = $this->loadStory($nid);
+      if (!$node) {
+        return;
+      }
+      $this->library()->saveRoster($node, $characters);
+      $form_state->set('characters', $characters);
+      $this->messenger()->addStatus($this->t('Imported @count character(s) from paste. List saved — reopen anytime without re-importing.', [
+        '@count' => count($characters),
+      ]));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('Import failed: @msg', ['@msg' => $e->getMessage()]));
+    }
+
+    $form_state->setRebuild(TRUE);
+  }
+
+  /**
+   * Import characters from the story node's uploaded raw story file.
+   */
+  public function submitImportRawFile(array &$form, FormStateInterface $form_state): void {
+    $nid = (int) $form_state->get('story_nid');
+    $node = $this->loadStory($nid);
+    if (!$node) {
+      return;
+    }
+
+    $raw = $this->library()->getRawStoryFileText($node);
+    if ($raw === '') {
+      $this->messenger()->addError($this->t('No raw story file found. Upload one on the story edit form (Raw story file field) and save.'));
+      $form_state->setRebuild(TRUE);
+      return;
+    }
+
+    try {
+      $characters = $this->library()->parsePastedCharacters($raw, $node);
+      $this->aiExtractor()->mergeCharactersIntoPlan($node, $characters);
+      $node = $this->loadStory($nid);
+      if (!$node) {
+        return;
+      }
+      $this->library()->saveRoster($node, $characters);
+      $form_state->set('characters', $characters);
+      $form_state->set('paste_text', $raw);
+      $this->messenger()->addStatus($this->t('Imported @count character(s) from raw story file.', [
+        '@count' => count($characters),
+      ]));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('Import failed: @msg', ['@msg' => $e->getMessage()]));
+    }
+
+    $form_state->setRebuild(TRUE);
+  }
+
+  /**
+   * Re-extract characters using the local text parser.
    */
   public function submitExtract(array &$form, FormStateInterface $form_state): void {
     $nid = (int) $form_state->get('story_nid');
@@ -300,9 +469,48 @@ class StoryCharactersForm extends FormBase {
       return;
     }
     $characters = $this->library()->extractWithMatches($node);
+    if ($characters === []) {
+      $characters = $this->library()->loadCharactersForStory($node);
+    }
+    else {
+      $this->library()->saveRoster($node, $characters);
+    }
     $form_state->set('characters', $characters);
-    $this->library()->saveRoster($node, $characters);
-    $this->messenger()->addStatus($this->t('Extracted @count character(s).', ['@count' => count($characters)]));
+    $this->messenger()->addStatus($this->t('Extracted @count character(s) using local parser.', ['@count' => count($characters)]));
+    if ($characters === []) {
+      $this->messenger()->addWarning($this->t('No characters found. Try <strong>Extract with DeepSeek</strong> if your paste is not in TOP 10 CHARACTERS format.'));
+    }
+    $form_state->setRebuild(TRUE);
+  }
+
+  /**
+   * Extract characters via DeepSeek and write formatted block to story plan.
+   */
+  public function submitExtractAi(array &$form, FormStateInterface $form_state): void {
+    $nid = (int) $form_state->get('story_nid');
+    $node = $this->loadStory($nid);
+    if (!$node) {
+      return;
+    }
+
+    try {
+      $extracted = $this->aiExtractor()->extractCharacters($node);
+      $this->aiExtractor()->mergeCharactersIntoPlan($node, $extracted);
+      $node = $this->loadStory($nid);
+      if (!$node) {
+        return;
+      }
+      $characters = $this->library()->attachLibraryMatches($node, $extracted);
+      $form_state->set('characters', $characters);
+      $this->library()->saveRoster($node, $characters);
+      $this->messenger()->addStatus($this->t('DeepSeek extracted @count character(s). Full list saved — reopen this tab anytime without re-running DeepSeek.', [
+        '@count' => count($characters),
+      ]));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('DeepSeek extraction failed: @msg', ['@msg' => $e->getMessage()]));
+    }
+
     $form_state->setRebuild(TRUE);
   }
 
@@ -467,9 +675,11 @@ class StoryCharactersForm extends FormBase {
     }
 
     $this->library()->applyToStory($node, $library_nids);
+    $node = $this->loadStory($nid) ?? $node;
     $this->library()->saveRoster($node, $characters);
-    $this->messenger()->addStatus($this->t('Applied @count character(s) to story pipeline (Characters info field).', [
+    $this->messenger()->addStatus($this->t('Applied @count character(s) to story pipeline. @total total character(s) kept in this list.', [
       '@count' => count($library_nids),
+      '@total' => count($characters),
     ]));
   }
 
@@ -486,6 +696,33 @@ class StoryCharactersForm extends FormBase {
   private function loadStory(int $nid): ?NodeInterface {
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     return $node instanceof NodeInterface && $node->bundle() === 'story' ? $node : NULL;
+  }
+
+  /**
+   * Render tagged/applied summary banner.
+   *
+   * @param array{total: int, tagged: int, untagged: int, applied: int} $status
+   */
+  private function buildStatusSummary(array $status): string {
+    $items = [];
+    if ($status['total'] > 0) {
+      $items[] = $this->t('<strong>@tagged</strong> of <strong>@total</strong> tagged to library', [
+        '@tagged' => $status['tagged'],
+        '@total' => $status['total'],
+      ])->render();
+      if ($status['untagged'] > 0) {
+        $items[] = $this->t('<strong>@count</strong> not tagged yet', ['@count' => $status['untagged']])->render();
+      }
+    }
+    if ($status['applied'] > 0) {
+      $items[] = $this->t('<strong>@count</strong> applied to story pipeline (Characters info)', [
+        '@count' => $status['applied'],
+      ])->render();
+    }
+
+    return '<div class="story-characters-status messages messages--status"><ul class="story-characters-status-list"><li>'
+      . implode('</li><li>', $items)
+      . '</li></ul></div>';
   }
 
 }

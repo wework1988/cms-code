@@ -88,6 +88,20 @@ class StoryPipelineSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Generate new Drupal API key on save'),
     ];
 
+    $form['prompts'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Story type prompts'),
+      '#description' => $this->t('Stage A/B/C templates and character library are imported from <code>general-story/bifuracted-template/</code> in the automation repo (with CMS module fallback).'),
+      '#open' => FALSE,
+      '#weight' => 3,
+    ];
+    $form['prompts']['import_prompts'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Import prompts from automation repo'),
+      '#submit' => ['::importPrompts'],
+      '#limit_validation_errors' => [],
+    ];
+
     $form['keys'] = [
       '#type' => 'details',
       '#title' => $this->t('Pipeline API keys (all story types)'),
@@ -140,6 +154,26 @@ class StoryPipelineSettingsForm extends ConfigFormBase {
 
     $config->save();
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Re-import stage templates and master prompts into Story Type terms.
+   */
+  public function importPrompts(array &$form, FormStateInterface $form_state): void {
+    try {
+      $report = \Drupal::service('story_pipeline.manager')->importPrompts();
+      $parts = [];
+      foreach ($report as $type => $status) {
+        $parts[] = $type . ': ' . $status;
+      }
+      $this->messenger()->addStatus($this->t('Prompt import finished: @report', [
+        '@report' => implode('; ', $parts),
+      ]));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('Prompt import failed: @msg', ['@msg' => $e->getMessage()]));
+    }
+    $form_state->setRedirect('story_pipeline.settings');
   }
 
 }

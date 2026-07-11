@@ -29,6 +29,26 @@ class StoryPipelineManager {
     'god_story' => 'general-story',
   ];
 
+  /**
+   * Master story-writing prompts (repo-relative paths).
+   */
+  private const MASTER_PROMPT_MAP = [
+    'general' => 'story-making-prompts/v1-claude-latest-19june-with-charaacters',
+    'crime' => 'story-making-prompts/crime-story-claude-8thjune',
+    'english' => 'story-making-prompts/english-story-master',
+    'god_story' => 'story-making-prompts/v1-claude-latest-19june-with-charaacters',
+  ];
+
+  /**
+   * Bifurcated stage template filenames on Story Type terms.
+   */
+  private const STAGE_TEMPLATE_FILES = [
+    'field_stage_a' => 'stage-a-story-config.md',
+    'field_stage_b' => 'stage-b-scene-breakdown.md',
+    'field_stage_c' => 'stage-c-image-motion.md',
+    'field_default_characters' => 'character.txt',
+  ];
+
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
     private readonly FileRepositoryInterface $fileRepository,
@@ -285,6 +305,7 @@ class StoryPipelineManager {
       if (array_key_exists('story_meta', $data) && (string) $data['story_meta'] !== '') {
         $this->assetStorage->saveText($node, 'script', 'story_meta.txt', (string) $data['story_meta']);
       }
+      $this->assetStorage->syncRawStoryFile($node);
       if (!empty($data['stage_a_output'])) {
         $this->assetStorage->saveText($node, 'prompts', 'output_config_' . $slug . '.md', (string) $data['stage_a_output']);
       }
@@ -625,13 +646,6 @@ class StoryPipelineManager {
       throw new \RuntimeException('Automation repo path not found: ' . $repo_path);
     }
 
-    $master_map = [
-      'general' => 'story-making-prompts/general-story',
-      'crime' => 'story-making-prompts/crime-story-claude-8thjune',
-      'english' => 'story-making-prompts/general-story',
-      'god_story' => 'story-making-prompts/god story',
-    ];
-
     $report = [];
     foreach (self::TYPE_MAP as $machine => $folder) {
       $term = $this->loadStoryTypeTerm($machine);
@@ -640,21 +654,16 @@ class StoryPipelineManager {
         continue;
       }
 
-      $base = $repo_path . '/' . $folder . '/bifuracted-template';
-      $files = [
-        'field_stage_a' => $base . '/stage-a-story-config.md',
-        'field_stage_b' => $base . '/stage-b-scene-breakdown.md',
-        'field_stage_c' => $base . '/stage-c-image-motion.md',
-        'field_default_characters' => $base . '/character.txt',
-      ];
-      foreach ($files as $field => $path) {
-        if (is_readable($path)) {
+      foreach (self::STAGE_TEMPLATE_FILES as $field => $filename) {
+        $path = $this->resolveBifurcatedTemplatePath($repo_path, $folder, $filename);
+        if ($path) {
           $term->set($field, ['value' => file_get_contents($path)]);
         }
       }
 
-      $master_path = $repo_path . '/' . ($master_map[$machine] ?? '');
-      if (is_readable($master_path)) {
+      $master_rel = self::MASTER_PROMPT_MAP[$machine] ?? '';
+      $master_path = $master_rel !== '' ? $repo_path . '/' . $master_rel : '';
+      if ($master_path !== '' && is_readable($master_path)) {
         $term->set('field_master_prompt', ['value' => file_get_contents($master_path)]);
       }
 
@@ -668,6 +677,31 @@ class StoryPipelineManager {
     }
 
     return $report;
+  }
+
+  /**
+   * Resolve a bifurcated template file (automation repo, then CMS module bundle).
+   */
+  public function resolveBifurcatedTemplatePath(string $repo_path, string $folder, string $filename): ?string {
+    $candidates = [
+      $repo_path . '/' . $folder . '/bifuracted-template/' . $filename,
+    ];
+    if ($folder === 'general-story') {
+      $candidates[] = $this->modulePath() . '/prompts/general-story/bifuracted-template/' . $filename;
+    }
+    foreach ($candidates as $path) {
+      if (is_readable($path)) {
+        return $path;
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * Absolute path to the story_pipeline module directory.
+   */
+  private function modulePath(): string {
+    return \Drupal::service('extension.list.module')->getPath('story_pipeline');
   }
 
   /**

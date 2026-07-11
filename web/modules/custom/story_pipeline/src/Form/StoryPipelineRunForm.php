@@ -13,6 +13,7 @@ use Drupal\story_pipeline\Batch\StoryPipelineBatch;
 use Drupal\story_pipeline\Service\JobProgressParser;
 use Drupal\story_pipeline\Service\StoryPipelineManager;
 use Drupal\story_pipeline\Service\WorkerLauncher;
+use Drupal\story_pipeline\StoryRunNav;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -25,17 +26,21 @@ class StoryPipelineRunForm extends FormBase {
     private readonly WorkerLauncher $launcher,
     private readonly StoryPipelineManager $manager,
     private readonly JobProgressParser $progressParser,
+    private string $tab = 'active',
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
+    $route_match = \Drupal::routeMatch();
+    $tab = $route_match->getRouteObject()?->getDefault('tab') ?? 'active';
     return new static(
       $container->get('entity_type.manager'),
       $container->get('story_pipeline.worker_launcher'),
       $container->get('story_pipeline.manager'),
       $container->get('story_pipeline.progress_parser'),
+      $tab,
     );
   }
 
@@ -49,9 +54,20 @@ class StoryPipelineRunForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state): array {
+  public function buildForm(array $form, FormStateInterface $form_state, ?string $tab = 'active'): array {
+    $this->tab = $tab;
+    $is_completed_tab = $this->tab === 'completed';
+    $is_live_tab = $this->tab === 'live';
+    $is_archive_tab = $is_completed_tab || $is_live_tab;
+
     $form['#attached']['library'][] = 'story_pipeline/story-pipeline-run';
     $form['#attributes']['class'][] = 'story-pipeline-run-form';
+    if ($is_completed_tab) {
+      $form['#attributes']['class'][] = 'story-pipeline-run-form--completed';
+    }
+    if ($is_live_tab) {
+      $form['#attributes']['class'][] = 'story-pipeline-run-form--live';
+    }
     $form['#attached']['drupalSettings']['storyPipelineRun'] = [
       'progressUrl' => Url::fromRoute('story_pipeline.progress_all')->toString(),
       'consoleUrl' => Url::fromRoute('story_pipeline.console')->toString(),
@@ -59,37 +75,43 @@ class StoryPipelineRunForm extends FormBase {
       'consolePollIntervalMs' => 4000,
     ];
 
-    $form['console_panel'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Backend console'),
-      '#open' => TRUE,
-      '#attributes' => ['class' => ['story-pipeline-console-wrap']],
-      '#weight' => 100,
-    ];
-    $form['console_panel']['intro'] = [
-      '#markup' => '<p class="story-pipeline-console__intro">' . $this->t(
-        'Live output from background jobs on your Mac (same as the terminal log). Updates every few seconds while jobs run.'
-      ) . '</p>',
-    ];
-    $form['console_panel']['toolbar'] = [
-      '#markup' => '<div class="story-pipeline-console__toolbar">'
-        . '<span id="story-pipeline-console-status" class="story-pipeline-console__status">' . $this->t('Waiting for jobs…') . '</span>'
-        . '<div id="story-pipeline-console-jobs" class="story-pipeline-console__jobs"></div>'
-        . '<button type="button" id="story-pipeline-console-pause" class="button button--small" aria-pressed="false">' . $this->t('Pause') . '</button>'
-        . '<button type="button" id="story-pipeline-console-clear" class="button button--small">' . $this->t('Clear') . '</button>'
-        . '</div>',
-    ];
-    $form['console_panel']['body'] = [
-      '#markup' => '<div id="story-pipeline-console-body" class="story-pipeline-console__body" tabindex="0">'
-        . '<div class="story-pipeline-console__placeholder">' . $this->t('Log output will appear here when you start a job.') . '</div>'
-        . '</div>',
-    ];
+    $form['run_nav'] = StoryRunNav::buildTopNav();
+
+    if (!$is_archive_tab) {
+      $form['console_panel'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Backend console'),
+        '#open' => TRUE,
+        '#attributes' => ['class' => ['story-pipeline-console-wrap']],
+        '#weight' => 100,
+      ];
+      $form['console_panel']['intro'] = [
+        '#markup' => '<p class="story-pipeline-console__intro">' . $this->t(
+          'Live output from background jobs on your Mac (same as the terminal log). Updates every few seconds while jobs run.'
+        ) . '</p>',
+      ];
+      $form['console_panel']['toolbar'] = [
+        '#markup' => '<div class="story-pipeline-console__toolbar">'
+          . '<span id="story-pipeline-console-status" class="story-pipeline-console__status">' . $this->t('Waiting for jobs…') . '</span>'
+          . '<div id="story-pipeline-console-jobs" class="story-pipeline-console__jobs"></div>'
+          . '<button type="button" id="story-pipeline-console-pause" class="button button--small" aria-pressed="false">' . $this->t('Pause') . '</button>'
+          . '<button type="button" id="story-pipeline-console-clear" class="button button--small">' . $this->t('Clear') . '</button>'
+          . '</div>',
+      ];
+      $form['console_panel']['body'] = [
+        '#markup' => '<div id="story-pipeline-console-body" class="story-pipeline-console__body" tabindex="0">'
+          . '<div class="story-pipeline-console__placeholder">' . $this->t('Log output will appear here when you start a job.') . '</div>'
+          . '</div>',
+      ];
+    }
 
     $form['intro'] = [
       '#type' => 'markup',
-      '#markup' => '<p>' . $this->t(
-        'Click a button to <strong>start</strong> a job. Progress updates automatically every few seconds (or refresh the page). Jobs run in the background and can take 10–20 minutes.'
-      ) . '</p>',
+      '#markup' => '<p>' . match ($this->tab) {
+        'completed' => $this->t('Stories whose pipeline job finished successfully. Download outputs below, move them to <strong>Live</strong> when published, or start a new job if you need to re-run.'),
+        'live' => $this->t('Stories marked as live (published or handed off). They no longer appear in Completed.'),
+        default => $this->t('Click a button to <strong>start</strong> a job. Progress updates automatically every few seconds (or refresh the page). Jobs run in the background and can take 10–20 minutes.'),
+      } . '</p>',
     ];
 
     if (!$this->launcher->isShellAvailable()) {
@@ -137,6 +159,42 @@ class StoryPipelineRunForm extends FormBase {
     }
 
     $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($ids);
+    $target_bucket = match ($this->tab) {
+      'completed' => 'completed',
+      'live' => 'live',
+      default => 'active',
+    };
+    $nodes = array_values(array_filter(
+      $nodes,
+      fn($node) => $node instanceof NodeInterface
+        && $this->runListBucket($node) === $target_bucket,
+    ));
+
+    if (!$is_archive_tab) {
+      usort($nodes, function (NodeInterface $a, NodeInterface $b): int {
+        $a_running = $this->launcher->hasActiveJob($a)
+          || ($a->get('field_status')->value ?? '') === 'storyboard_running';
+        $b_running = $this->launcher->hasActiveJob($b)
+          || ($b->get('field_status')->value ?? '') === 'storyboard_running';
+        if ($a_running !== $b_running) {
+          return $b_running <=> $a_running;
+        }
+        return $b->getChangedTime() <=> $a->getChangedTime();
+      });
+    }
+
+    if ($nodes === []) {
+      $empty_message = match ($this->tab) {
+        'completed' => $this->t('No completed jobs yet — finished stories will appear here.'),
+        'live' => $this->t('No live stories yet — move finished stories here from Completed.'),
+        default => $this->t('No stories ready or in progress.'),
+      };
+      $form['empty'] = [
+        '#markup' => '<p><em>' . $empty_message . '</em></p>',
+      ];
+      return $form;
+    }
+
     $header = [
       'title' => $this->t('Story'),
       'type' => $this->t('Type'),
@@ -144,9 +202,14 @@ class StoryPipelineRunForm extends FormBase {
       'status' => $this->t('Status'),
       'log' => $this->t('Job log'),
       'outputs' => $this->t('Outputs'),
-      'stop' => $this->t('Stop'),
-      'start' => $this->t('Start job'),
     ];
+    if ($is_completed_tab) {
+      $header['move_live'] = $this->t('Move to Live');
+    }
+    if (!$is_live_tab) {
+      $header['stop'] = $this->t('Stop');
+      $header['start'] = $this->t('Start job');
+    }
 
     $options = [];
     $pick_options = [];
@@ -218,7 +281,11 @@ class StoryPipelineRunForm extends FormBase {
         '#type' => 'container',
         '#attributes' => ['class' => ['story-pipeline-actions']],
       ];
-      foreach (['full_pipeline', 'generate', 'storyboard', 'storyboard_elevenlabs', 'elevenlabs'] as $job) {
+      // Completed tab: narration audio only — storyboard is already done.
+      $row_jobs = $is_completed_tab
+        ? ['elevenlabs']
+        : ['full_pipeline', 'generate', 'storyboard', 'storyboard_elevenlabs', 'elevenlabs'];
+      foreach ($row_jobs as $job) {
         $job_links[$job] = [
           '#type' => 'link',
           '#title' => WorkerLauncher::jobLabels()[$job],
@@ -228,7 +295,7 @@ class StoryPipelineRunForm extends FormBase {
       }
 
       $progress = $this->progressParser->getProgress($node);
-      $options[$nid] = [
+      $row = [
         'title' => [
           'data' => [
             '#markup' => '<strong>' . $node->getTitle() . '</strong><br><small>#' . $nid . ' · <a href="' .
@@ -249,21 +316,39 @@ class StoryPipelineRunForm extends FormBase {
         ],
         'log' => ['data' => ['#markup' => $log_cell]],
         'outputs' => ['data' => ['#markup' => $outputs ? implode(' · ', $outputs) : '—']],
-        'stop' => $stop_cell,
-        'start' => ['data' => $job_links],
       ];
+      if ($is_completed_tab) {
+        $row['move_live'] = [
+          'data' => [
+            '#type' => 'link',
+            '#title' => $this->t('Move to Live'),
+            '#url' => $this->actionUrl('story_pipeline.move_to_live', ['node' => $nid]),
+            '#attributes' => ['class' => ['button', 'button--small', 'button--primary']],
+          ],
+        ];
+      }
+      if (!$is_live_tab) {
+        $row['stop'] = $stop_cell;
+        $row['start'] = ['data' => $job_links];
+      }
+      $options[$nid] = $row;
     }
 
     $form['stories'] = [
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $options,
-      '#empty' => $this->t('No stories found.'),
+      '#empty' => match ($this->tab) {
+        'completed' => $this->t('No completed jobs yet.'),
+        'live' => $this->t('No live stories yet.'),
+        default => $this->t('No stories ready or in progress.'),
+      },
       '#js_select' => TRUE,
       '#multiple' => TRUE,
     ];
 
-    $form['bulk'] = [
+    if (!$is_archive_tab) {
+      $form['bulk'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Bulk actions (selected stories)'),
       '#attributes' => ['class' => ['story-pipeline-bulk']],
@@ -304,6 +389,46 @@ class StoryPipelineRunForm extends FormBase {
       '#value' => $this->t('Stop selected jobs'),
       '#submit' => ['::submitBulkStop'],
     ];
+    }
+
+    if ($is_completed_tab) {
+      $form['bulk_audio'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Narration audio (selected stories)'),
+        '#attributes' => ['class' => ['story-pipeline-bulk', 'story-pipeline-bulk--audio']],
+      ];
+      $form['bulk_audio']['hint'] = [
+        '#markup' => '<p>' . $this->t('Tick the <strong>checkbox</strong> for one or more finished stories, then click the button below. Only the checked rows run — one story at a time in order. Does <strong>not</strong> rebuild storyboard.') . '</p>',
+      ];
+      $form['bulk_audio']['actions'] = [
+        '#type' => 'actions',
+      ];
+      $form['bulk_audio']['actions']['run_elevenlabs'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Create narration audio only for selected'),
+        '#submit' => ['::submitBulkJob'],
+        '#bulk_job' => 'elevenlabs',
+        '#button_type' => 'primary',
+      ];
+
+      $form['bulk_live'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Move to Live (selected stories)'),
+        '#attributes' => ['class' => ['story-pipeline-bulk', 'story-pipeline-bulk--live']],
+      ];
+      $form['bulk_live']['hint'] = [
+        '#markup' => '<p>' . $this->t('Select stories using the table checkboxes, then move them to the <strong>Live</strong> tab.') . '</p>',
+      ];
+      $form['bulk_live']['actions'] = [
+        '#type' => 'actions',
+      ];
+      $form['bulk_live']['actions']['move_live'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Move selected to Live'),
+        '#submit' => ['::submitBulkMoveToLive'],
+        '#button_type' => 'primary',
+      ];
+    }
 
     return $form;
   }
@@ -313,9 +438,51 @@ class StoryPipelineRunForm extends FormBase {
    */
   private function actionUrl(string $route, array $params): Url {
     $url = Url::fromRoute($route, $params);
-    return $url->setOption('query', [
+    $query = [
       'token' => \Drupal::csrfToken()->get($url->getInternalPath()),
-    ]);
+    ];
+    if ($this->tab !== 'active') {
+      $query['tab'] = $this->tab;
+    }
+    return $url->setOption('query', $query);
+  }
+
+  /**
+   * Active, completed, or live tab bucket.
+   */
+  private function runListBucket(NodeInterface $node): string {
+    $launcher_bucket = $this->launcher->runListBucket($node);
+    if ($launcher_bucket === 'live') {
+      return 'live';
+    }
+    if ($launcher_bucket === 'completed') {
+      return 'completed';
+    }
+    if ($this->isCompletedFromProgress($node)) {
+      return 'completed';
+    }
+    return 'active';
+  }
+
+  /**
+   * Job finished (100%) even if Drupal status has not synced yet.
+   */
+  private function isCompletedFromProgress(NodeInterface $node): bool {
+    $status = $node->get('field_status')->value ?? 'draft';
+    if ($status === 'live') {
+      return FALSE;
+    }
+    $progress = $this->progressParser->getProgress($node);
+    if ($progress['state'] !== 'done' || $progress['percent'] < 100) {
+      return FALSE;
+    }
+    $status = $node->get('field_status')->value ?? 'draft';
+    if ($status === 'story_generated') {
+      return FALSE;
+    }
+    $last = $this->launcher->lastJobInfo($node);
+    $action = (string) ($last['action'] ?? '');
+    return in_array($action, ['storyboard', 'storyboard_elevenlabs', 'full_pipeline', 'elevenlabs'], TRUE);
   }
 
   /**
@@ -326,36 +493,35 @@ class StoryPipelineRunForm extends FormBase {
   private function getSelectedStoryIds(array $form, FormStateInterface $form_state): array {
     $nids = [];
 
+    // tableselect: checked rows have value = node ID; unchecked rows are 0.
     $selected = $form_state->getValue('stories');
     if (!is_array($selected) || $selected === []) {
       $selected = $form_state->getUserInput()['stories'] ?? [];
     }
     if (is_array($selected)) {
-      foreach (array_filter($selected) as $key => $value) {
-        if (is_numeric($key) && (int) $key > 0) {
-          $nids[] = (int) $key;
-        }
+      foreach ($selected as $value) {
         if (is_numeric($value) && (int) $value > 0) {
           $nids[] = (int) $value;
         }
       }
     }
 
+    // Active tab only: optional duplicate picker (same IDs, deduped below).
     $bulk = $form_state->getValue('bulk');
     if (!is_array($bulk)) {
       $bulk = $form_state->getUserInput()['bulk'] ?? [];
     }
     $pick = is_array($bulk['story_pick'] ?? NULL) ? $bulk['story_pick'] : [];
-    foreach (array_filter($pick) as $key => $value) {
-      if (is_numeric($key) && (int) $key > 0) {
-        $nids[] = (int) $key;
-      }
+    foreach ($pick as $key => $value) {
       if (is_numeric($value) && (int) $value > 0) {
         $nids[] = (int) $value;
       }
+      elseif (is_numeric($key) && (int) $key > 0 && $value) {
+        $nids[] = (int) $key;
+      }
     }
 
-    return array_values(array_unique(array_filter($nids)));
+    return array_values(array_unique($nids));
   }
 
   /**
@@ -385,6 +551,15 @@ class StoryPipelineRunForm extends FormBase {
       return;
     }
 
+    $this->messenger()->addStatus($this->t(
+      'Starting “@job” for @count story/stories: @ids',
+      [
+        '@job' => WorkerLauncher::jobLabels()[$job] ?? $job,
+        '@count' => count($nids),
+        '@ids' => implode(', ', array_map(static fn(int $id): string => '#' . $id, $nids)),
+      ]
+    ));
+
     batch_set([
       'title' => $this->t('Starting sequential story queue…'),
       'operations' => [
@@ -397,6 +572,13 @@ class StoryPipelineRunForm extends FormBase {
       'progress_message' => $this->t('Starting queue…'),
       'results' => ['requested' => count($nids)],
     ]);
+
+    $redirect = match ($this->tab) {
+      'completed' => 'story_pipeline.run_completed',
+      'live' => 'story_pipeline.run_live',
+      default => 'story_pipeline.run',
+    };
+    $form_state->setRedirect($redirect);
   }
 
   /**
@@ -430,6 +612,46 @@ class StoryPipelineRunForm extends FormBase {
     foreach ($result['errors'] as $nid => $msg) {
       $this->messenger()->addError($this->t('Story @id: @msg', ['@id' => $nid, '@msg' => $msg]));
     }
+  }
+
+  /**
+   * Bulk move selected stories to Live.
+   */
+  public function submitBulkMoveToLive(array &$form, FormStateInterface $form_state): void {
+    $nodes = $this->getSelectedNodes($form, $form_state);
+    if ($nodes === []) {
+      $this->messenger()->addError($this->t('Select at least one story (checkbox in the first column).'));
+      return;
+    }
+
+    $moved = 0;
+    foreach ($nodes as $node) {
+      if ($this->runListBucket($node) !== 'completed') {
+        continue;
+      }
+      try {
+        $this->launcher->markLive($node);
+        $moved++;
+      }
+      catch (\Throwable $e) {
+        $this->messenger()->addError($this->t('Story @id: @msg', [
+          '@id' => $node->id(),
+          '@msg' => $e->getMessage(),
+        ]));
+      }
+    }
+
+    if ($moved === 0) {
+      $this->messenger()->addWarning($this->t('No selected stories were moved to Live.'));
+      return;
+    }
+
+    $this->messenger()->addStatus($this->formatPlural(
+      $moved,
+      '1 story moved to Live.',
+      '@count stories moved to Live.',
+    ));
+    $form_state->setRedirect('story_pipeline.run_live');
   }
 
   /**

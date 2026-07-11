@@ -24,6 +24,49 @@
   color: #b06000;
 }
 
+.story-characters-badge--applied {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+
+.story-characters-status {
+  margin: 0 0 1rem;
+}
+
+.story-characters-status-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.story-pipeline-characters-status {
+  margin-bottom: 0.75rem;
+}
+
+.story-characters-paste {
+  margin: 0 0 1.25rem;
+  padding: 0.5rem 1rem 1rem;
+  border: 1px solid #c9d1d9;
+  border-radius: 4px;
+  background: #f6f8fa;
+}
+
+.story-characters-paste-help {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.story-characters-paste-textarea {
+  width: 100%;
+  max-width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.story-characters-paste .form-actions {
+  margin-top: 0.75rem;
+}
+
 .story-characters-preview {
   display: block;
   white-space: pre-wrap;

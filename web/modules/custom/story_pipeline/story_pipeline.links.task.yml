@@ -1,3 +1,21 @@
+story_pipeline.run_active_tab:
+  route_name: story_pipeline.run
+  title: 'Ready & in progress'
+  base_route: story_pipeline.run
+  weight: 0
+
+story_pipeline.run_completed_tab:
+  route_name: story_pipeline.run_completed
+  title: 'Completed'
+  base_route: story_pipeline.run
+  weight: 5
+
+story_pipeline.run_live_tab:
+  route_name: story_pipeline.run_live
+  title: 'Live'
+  base_route: story_pipeline.run
+  weight: 10
+
 story_pipeline.planner_planning_tab:
   route_name: story_pipeline.tracker
   title: 'Planning'

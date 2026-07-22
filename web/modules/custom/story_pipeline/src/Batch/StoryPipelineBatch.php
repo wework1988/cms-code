@@ -10,7 +10,7 @@ namespace Drupal\story_pipeline\Batch;
 final class StoryPipelineBatch {
 
   /**
-   * Start a sequential queue (one story after another) for all selected IDs.
+   * Start bulk jobs for all selected IDs (parallel launch).
    *
    * @param int[] $nids
    */
@@ -27,7 +27,7 @@ final class StoryPipelineBatch {
     }
 
     try {
-      $result = \Drupal::service('story_pipeline.worker_launcher')->launchSequential($ordered, $job);
+      $result = \Drupal::service('story_pipeline.worker_launcher')->launchBulk($ordered, $job);
       $context['results']['started'] = $result['started'];
       $context['results']['errors'] = $result['errors'];
     }
@@ -47,7 +47,7 @@ final class StoryPipelineBatch {
 
     if ($started !== []) {
       $messenger->addStatus(t(
-        'Sequential queue started for @count story/stories (@ids). They run one after another — the next story starts only when the previous finishes. Safe to close the browser.',
+        'Started @count story job(s) (@ids). They run in parallel in the background. Safe to close the browser.',
         [
           '@count' => count($started),
           '@ids' => implode(', ', array_map(static fn($id) => '#' . $id, $started)),
@@ -56,7 +56,7 @@ final class StoryPipelineBatch {
     }
     foreach ($errors as $nid => $msg) {
       if ($nid === 'queue') {
-        $messenger->addError(t('Could not start queue: @msg', ['@msg' => $msg]));
+        $messenger->addError(t('Could not start bulk jobs: @msg', ['@msg' => $msg]));
       }
       else {
         $messenger->addError(t('Story @id: @msg', ['@id' => $nid, '@msg' => $msg]));

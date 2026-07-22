@@ -134,14 +134,120 @@ class WorkerLauncher {
   }
 
   /**
-   * Start the same job on multiple stories — one after another (sequential queue).
+   * Start the same job on multiple stories.
    *
    * @param \Drupal\node\NodeInterface[] $nodes
    *
    * @return array{started: int[], errors: array<int, string>}
    */
   public function launchBulk(array $nodes, string $job, int $stagger_seconds = 0): array {
-    return $this->launchSequential($nodes, $job);
+    if (!isset(self::JOBS[$job])) {
+      throw new \InvalidArgumentException('Unknown job: ' . $job);
+    }
+
+    $ids = [];
+    foreach ($nodes as $node) {
+      if ($node instanceof NodeInterface && $node->bundle() === 'story') {
+        $ids[] = (int) $node->id();
+      }
+    }
+    $ids = array_values(array_unique($ids));
+
+    if ($ids === []) {
+      return ['started' => [], 'errors' => []];
+    }
+
+    // Keep single-story behavior exactly the same.
+    if (count($ids) === 1) {
+      try {
+        foreach ($nodes as $node) {
+          if ($node instanceof NodeInterface && (int) $node->id() === $ids[0]) {
+            $this->launch($node, $job);
+            return ['started' => $ids, 'errors' => []];
+          }
+        }
+      }
+      catch (\Throwable $e) {
+        return ['started' => [], 'errors' => [$ids[0] => $e->getMessage()]];
+      }
+    }
+
+    // Multi-story bulk: use run_multi.sh --parallel so CMS reliably launches
+    // all selected stories in one background command.
+    $worker_path = $this->workerPath();
+    $run_multi = $worker_path . '/run_multi.sh';
+    if (!is_file($run_multi)) {
+      throw new \RuntimeException('run_multi.sh not found: ' . $run_multi);
+    }
+
+    [$log_uri, $log_path] = $this->prepareLogFile($ids[0], 'bulk-' . $job);
+    $multi_job = $this->multiJobName($job);
+    $escaped_ids = implode(' ', array_map('escapeshellarg', array_map('strval', $ids)));
+
+    $asset_root = trim((string) $this->configFactory->get('story_pipeline.settings')->get('story_asset_path'));
+    $env_prefix = '';
+    if ($asset_root !== '') {
+      $env_prefix = 'export STORY_ASSET_ROOT=' . escapeshellarg($asset_root) . ' && ';
+    }
+
+    $shell = sprintf(
+      'cd %s && %snohup %s --parallel %s %s >> %s 2>&1 & echo $!',
+      escapeshellarg($worker_path),
+      $env_prefix,
+      escapeshellarg('./run_multi.sh'),
+      escapeshellarg($multi_job),
+      $escaped_ids,
+      escapeshellarg($log_path)
+    );
+
+    $this->loggerFactory->get('story_pipeline')->info('Launching parallel bulk @job for stories @ids', [
+      '@job' => $job,
+      '@ids' => implode(',', $ids),
+    ]);
+
+    $pid_raw = trim((string) shell_exec($shell));
+    $pid = is_numeric($pid_raw) ? (int) $pid_raw : NULL;
+
+    $errors = [];
+    $started = [];
+    $bulk_meta = json_encode([
+      'parallel_bulk' => TRUE,
+      'job' => $job,
+      'story_ids' => $ids,
+      'started' => date('c'),
+      'log' => $log_path,
+      'log_uri' => $log_uri,
+      'pid' => $pid,
+    ], JSON_UNESCAPED_SLASHES);
+
+    $status = 'storyboard_running';
+    foreach ($nodes as $node) {
+      if (!$node instanceof NodeInterface || !in_array((int) $node->id(), $ids, TRUE)) {
+        continue;
+      }
+      try {
+        $meta = json_encode([
+          'last_job' => [
+            'action' => $job,
+            'label' => (string) self::jobLabels()[$job] . ' (parallel bulk)',
+            'started' => date('c'),
+            'log' => $log_path,
+            'log_uri' => $log_uri,
+            'pid' => $pid,
+            'bulk' => json_decode($bulk_meta, TRUE),
+          ],
+        ], JSON_UNESCAPED_SLASHES);
+        $node->set('field_status', ['value' => $status]);
+        $node->set('field_story_meta', ['value' => $meta]);
+        $node->save();
+        $started[] = (int) $node->id();
+      }
+      catch (\Throwable $e) {
+        $errors[(int) $node->id()] = $e->getMessage();
+      }
+    }
+
+    return ['started' => $started, 'errors' => $errors];
   }
 
   /**

@@ -354,7 +354,7 @@ class StoryPipelineRunForm extends FormBase {
       '#attributes' => ['class' => ['story-pipeline-bulk']],
     ];
     $form['bulk']['hint'] = [
-      '#markup' => '<p>' . $this->t('Select stories using the <strong>table checkboxes</strong> (first column) and/or the list below. Bulk jobs run <strong>one story after another</strong> (not in parallel) — the next story starts only when the previous one finishes. Each story can take many hours.') . '</p>',
+      '#markup' => '<p>' . $this->t('Select stories using the <strong>table checkboxes</strong> (first column) and/or the list below. Bulk jobs launch <strong>in parallel</strong> in the background. Each story can still take many hours.') . '</p>',
     ];
     $form['bulk']['story_pick'] = [
       '#type' => 'checkboxes',
@@ -398,7 +398,7 @@ class StoryPipelineRunForm extends FormBase {
         '#attributes' => ['class' => ['story-pipeline-bulk', 'story-pipeline-bulk--audio']],
       ];
       $form['bulk_audio']['hint'] = [
-        '#markup' => '<p>' . $this->t('Tick the <strong>checkbox</strong> for one or more finished stories, then click the button below. Only the checked rows run — one story at a time in order. Does <strong>not</strong> rebuild storyboard.') . '</p>',
+        '#markup' => '<p>' . $this->t('Tick the <strong>checkbox</strong> for one or more finished stories, then click the button below. Only the checked rows run, launched in parallel. Does <strong>not</strong> rebuild storyboard.') . '</p>',
       ];
       $form['bulk_audio']['actions'] = [
         '#type' => 'actions',
@@ -561,7 +561,7 @@ class StoryPipelineRunForm extends FormBase {
     ));
 
     batch_set([
-      'title' => $this->t('Starting sequential story queue…'),
+      'title' => $this->t('Starting selected story jobs…'),
       'operations' => [
         [
           [StoryPipelineBatch::class, 'launchSequentialQueue'],
@@ -569,7 +569,7 @@ class StoryPipelineRunForm extends FormBase {
         ],
       ],
       'finished' => [StoryPipelineBatch::class, 'finished'],
-      'progress_message' => $this->t('Starting queue…'),
+      'progress_message' => $this->t('Starting jobs…'),
       'results' => ['requested' => count($nids)],
     ]);
 

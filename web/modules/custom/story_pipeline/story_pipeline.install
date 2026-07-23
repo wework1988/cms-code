@@ -896,3 +896,55 @@ function story_pipeline_update_9020(): void {
     $storage->save();
   }
 }
+
+/**
+ * Bilingual story support: English script, checkbox, and English narration files.
+ */
+function story_pipeline_update_9021(): void {
+  story_pipeline_create_text_field('node', 'story', 'field_full_story_english', 'Full story (English)');
+
+  if (!FieldStorageConfig::loadByName('node', 'field_bilingual')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_bilingual',
+      'entity_type' => 'node',
+      'type' => 'boolean',
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_bilingual')) {
+    FieldConfig::create([
+      'field_name' => 'field_bilingual',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'Has Hindi and English versions',
+      'description' => 'When checked, narration jobs can generate Hindi audio, English audio, or both.',
+    ])->save();
+  }
+
+  if (!FieldStorageConfig::loadByName('node', 'field_eleven_labs_files_english')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_eleven_labs_files_english',
+      'entity_type' => 'node',
+      'type' => 'file',
+      'settings' => ['target_type' => 'file', 'display_field' => FALSE, 'display_default' => FALSE],
+      'cardinality' => -1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_eleven_labs_files_english')) {
+    FieldConfig::create([
+      'field_name' => 'field_eleven_labs_files_english',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'ElevenLabs audio (English)',
+      'settings' => ['file_extensions' => 'mp3', 'file_directory' => 'story-pipeline/eleven-labs-english/[date:custom:Y-m]'],
+    ])->save();
+  }
+
+  $full_story = FieldConfig::loadByName('node', 'story', 'field_full_story');
+  if ($full_story) {
+    $full_story->setLabel('Full story (Hindi)');
+    $full_story->save();
+  }
+
+  story_pipeline_configure_displays();
+}

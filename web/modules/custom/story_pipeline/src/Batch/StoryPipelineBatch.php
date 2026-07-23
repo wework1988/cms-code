@@ -13,8 +13,9 @@ final class StoryPipelineBatch {
    * Start bulk jobs for all selected IDs (parallel launch).
    *
    * @param int[] $nids
+   * @param array{audio_languages?: string[]} $options
    */
-  public static function launchSequentialQueue(array $nids, string $job, array &$context): void {
+  public static function launchSequentialQueue(array $nids, string $job, array $options, array &$context): void {
     $context['results']['requested'] = count($nids);
 
     $storage = \Drupal::entityTypeManager()->getStorage('node');
@@ -27,7 +28,7 @@ final class StoryPipelineBatch {
     }
 
     try {
-      $result = \Drupal::service('story_pipeline.worker_launcher')->launchBulk($ordered, $job);
+      $result = \Drupal::service('story_pipeline.worker_launcher')->launchBulk($ordered, $job, 0, $options);
       $context['results']['started'] = $result['started'];
       $context['results']['errors'] = $result['errors'];
     }

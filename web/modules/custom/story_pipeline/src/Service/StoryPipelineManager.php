@@ -93,6 +93,35 @@ class StoryPipelineManager {
   }
 
   /**
+   * Whether this story can generate Hindi and/or English narration.
+   *
+   * English audio options appear when Full story (English) has content.
+   */
+  public function supportsBilingualAudio(NodeInterface $node): bool {
+    if ($node->bundle() !== 'story') {
+      return FALSE;
+    }
+    if (!$node->hasField('field_full_story_english')) {
+      return FALSE;
+    }
+    return trim(strip_tags((string) ($node->get('field_full_story_english')->value ?? ''))) !== '';
+  }
+
+  /**
+   * ElevenLabs voice ID from the English Story Type taxonomy term (tid 3).
+   */
+  public function getEnglishVoiceId(): string {
+    $term = $this->entityTypeManager->getStorage('taxonomy_term')->load(3);
+    if (!$term instanceof TermInterface) {
+      $term = $this->loadStoryTypeTerm('english');
+    }
+    if (!$term instanceof TermInterface || !$term->hasField('field_voice_id')) {
+      return '';
+    }
+    return trim((string) ($term->get('field_voice_id')->value ?? ''));
+  }
+
+  /**
    * Build API response array for a story node.
    */
   public function serializeStory(NodeInterface $node): array {
@@ -115,6 +144,7 @@ class StoryPipelineManager {
     $image_prompts_url = NULL;
     $story_asset_folder = NULL;
     $eleven_labs_urls = [];
+    $eleven_labs_english_urls = [];
 
     if ($this->assetStorage->isEnabled()) {
       $index = $this->assetStorage->assetIndex($node);
@@ -130,6 +160,14 @@ class StoryPipelineManager {
           $url = $this->assetDownloadUrl($node, $rel);
           if ($url) {
             $eleven_labs_urls[] = $url;
+          }
+        }
+      }
+      if (!empty($index['files']['audio_english']) && is_array($index['files']['audio_english'])) {
+        foreach ($index['files']['audio_english'] as $rel) {
+          $url = $this->assetDownloadUrl($node, $rel);
+          if ($url) {
+            $eleven_labs_english_urls[] = $url;
           }
         }
       }
@@ -155,6 +193,14 @@ class StoryPipelineManager {
         }
       }
     }
+    if ($eleven_labs_english_urls === [] && $node->hasField('field_eleven_labs_files_english')) {
+      foreach ($node->get('field_eleven_labs_files_english') as $item) {
+        $file = $item->entity;
+        if ($file) {
+          $eleven_labs_english_urls[] = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+        }
+      }
+    }
 
     return [
       'id' => (string) $node->id(),
@@ -164,6 +210,9 @@ class StoryPipelineManager {
       'youtube_urls' => $urls,
       'characters_info' => $node->get('field_characters_info')->value ?? '',
       'full_story' => $node->get('field_full_story')->value ?? '',
+      'full_story_english' => $node->hasField('field_full_story_english')
+        ? ($node->get('field_full_story_english')->value ?? '') : '',
+      'bilingual' => $node->hasField('field_bilingual') ? (bool) $node->get('field_bilingual')->value : FALSE,
       'story_meta' => $node->get('field_story_meta')->value ?? '',
       'stage_a_output' => $node->get('field_stage_a_output')->value ?? '',
       'stage_b_output' => $node->get('field_stage_b_output')->value ?? '',
@@ -171,6 +220,7 @@ class StoryPipelineManager {
       'scene_file_url' => $scene_url,
       'image_prompts_file_url' => $image_prompts_url,
       'eleven_labs_file_urls' => $eleven_labs_urls,
+      'eleven_labs_file_urls_english' => $eleven_labs_english_urls,
       'story_asset_folder' => $story_asset_folder,
     ];
   }
@@ -192,6 +242,10 @@ class StoryPipelineManager {
       : '';
     if ($voice_id !== '') {
       $settings['voice_id'] = $voice_id;
+    }
+    $english_voice_id = $this->getEnglishVoiceId();
+    if ($english_voice_id !== '') {
+      $settings['english_voice_id'] = $english_voice_id;
     }
 
     $characters = $node->get('field_characters_info')->value ?? '';
@@ -216,6 +270,9 @@ class StoryPipelineManager {
         'id' => (string) $node->id(),
         'title' => $node->getTitle(),
         'full_story' => $node->get('field_full_story')->value ?? '',
+        'full_story_english' => $node->hasField('field_full_story_english')
+          ? ($node->get('field_full_story_english')->value ?? '') : '',
+        'bilingual' => $node->hasField('field_bilingual') ? (bool) $node->get('field_bilingual')->value : FALSE,
         'characters_info' => $characters,
         'story_type' => $type,
         'youtube_urls' => array_column($node->get('field_youtube_urls')->getValue(), 'value'),
@@ -284,6 +341,7 @@ class StoryPipelineManager {
   public function updateStoryFromWorker(NodeInterface $node, array $data): NodeInterface {
     $map = [
       'full_story' => 'field_full_story',
+      'full_story_english' => 'field_full_story_english',
       'story_meta' => 'field_story_meta',
       'stage_a_output' => 'field_stage_a_output',
       'stage_b_output' => 'field_stage_b_output',
@@ -301,6 +359,10 @@ class StoryPipelineManager {
       if (array_key_exists('full_story', $data) && (string) $data['full_story'] !== '') {
         $plain = strip_tags((string) $data['full_story']);
         $this->assetStorage->saveText($node, 'script', 'FULL_STORY.txt', $plain);
+      }
+      if (array_key_exists('full_story_english', $data) && (string) $data['full_story_english'] !== '') {
+        $plain = strip_tags((string) $data['full_story_english']);
+        $this->assetStorage->saveText($node, 'script', 'FULL_STORY_ENGLISH.txt', $plain);
       }
       if (array_key_exists('story_meta', $data) && (string) $data['story_meta'] !== '') {
         $this->assetStorage->saveText($node, 'script', 'story_meta.txt', (string) $data['story_meta']);
@@ -324,7 +386,10 @@ class StoryPipelineManager {
       $this->attachFile($node, 'field_image_prompts_file', $data['image_prompts_file_content'], 'image-prompts-only.txt');
     }
     if (!empty($data['eleven_labs_files']) && is_array($data['eleven_labs_files'])) {
-      $this->attachBinaryFiles($node, 'field_eleven_labs_files', $data['eleven_labs_files']);
+      $this->attachBinaryFiles($node, 'field_eleven_labs_files', $data['eleven_labs_files'], 'audio');
+    }
+    if (!empty($data['eleven_labs_files_english']) && is_array($data['eleven_labs_files_english'])) {
+      $this->attachBinaryFiles($node, 'field_eleven_labs_files_english', $data['eleven_labs_files_english'], 'audio/english');
     }
 
     if ($this->assetStorage->isEnabled()) {
@@ -361,8 +426,10 @@ class StoryPipelineManager {
    *
    * Each item: ['filename' => 'scene-01.mp3', 'content_base64' => '...'].
    */
-  public function attachBinaryFiles(NodeInterface $node, string $field_name, array $files): void {
-    $directory = 'public://story-pipeline/eleven-labs';
+  public function attachBinaryFiles(NodeInterface $node, string $field_name, array $files, string $asset_subdir = 'audio'): void {
+    $directory = $field_name === 'field_eleven_labs_files_english'
+      ? 'public://story-pipeline/eleven-labs-english'
+      : 'public://story-pipeline/eleven-labs';
     $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
     $items = [];
@@ -380,7 +447,7 @@ class StoryPipelineManager {
       $items[] = ['target_id' => $file->id()];
 
       if ($this->assetStorage->isEnabled()) {
-        $this->assetStorage->saveBinary($node, 'audio', $filename, $raw);
+        $this->assetStorage->saveBinary($node, $asset_subdir, $filename, $raw);
       }
     }
 
@@ -442,7 +509,32 @@ class StoryPipelineManager {
         ];
       }
       if ($entries !== []) {
-        $this->attachBinaryFiles($node, 'field_eleven_labs_files', $entries);
+        $this->attachBinaryFiles($node, 'field_eleven_labs_files', $entries, 'audio');
+        $changed = TRUE;
+      }
+    }
+
+    if ($node->hasField('field_eleven_labs_files_english')
+      && $node->get('field_eleven_labs_files_english')->isEmpty()
+      && !empty($index['files']['audio_english'])
+      && is_array($index['files']['audio_english'])) {
+      $entries = [];
+      foreach ($index['files']['audio_english'] as $rel) {
+        $path = $this->assetStorage->resolveRelativePath($node, $rel);
+        if ($path === NULL || !is_readable($path)) {
+          continue;
+        }
+        $raw = file_get_contents($path);
+        if ($raw === FALSE || $raw === '') {
+          continue;
+        }
+        $entries[] = [
+          'filename' => basename($path),
+          'content_base64' => base64_encode($raw),
+        ];
+      }
+      if ($entries !== []) {
+        $this->attachBinaryFiles($node, 'field_eleven_labs_files_english', $entries, 'audio/english');
         $changed = TRUE;
       }
     }

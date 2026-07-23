@@ -21,6 +21,7 @@ services:
       - '@logger.factory'
       - '@file_url_generator'
       - '@story_pipeline.asset_storage'
+      - '@story_pipeline.manager'
   story_pipeline.progress_parser:
     class: Drupal\story_pipeline\Service\JobProgressParser
     arguments:

@@ -32,6 +32,7 @@ class WorkerLauncher {
     private readonly LoggerChannelFactoryInterface $loggerFactory,
     private readonly FileUrlGeneratorInterface $fileUrlGenerator,
     private readonly StoryPipelineAssetStorage $assetStorage,
+    private readonly StoryPipelineManager $manager,
   ) {}
 
   /**
@@ -50,9 +51,11 @@ class WorkerLauncher {
   /**
    * Start a background worker job for a story node.
    *
+   * @param array{audio_languages?: string[]} $options
+   *
    * @throws \RuntimeException
    */
-  public function launch(NodeInterface $node, string $job): void {
+  public function launch(NodeInterface $node, string $job, array $options = []): void {
     if ($node->bundle() !== 'story') {
       throw new \InvalidArgumentException('Not a story node.');
     }
@@ -100,14 +103,7 @@ class WorkerLauncher {
     $pid = is_numeric($pid_raw) ? (int) $pid_raw : NULL;
 
     $meta = json_encode([
-      'last_job' => [
-        'action' => $job,
-        'label' => (string) self::jobLabels()[$job],
-        'started' => date('c'),
-        'log' => $log_path,
-        'log_uri' => $log_uri,
-        'pid' => $pid,
-      ],
+      'last_job' => $this->buildLastJobMeta($job, $log_path, $log_uri, $pid, $options),
     ], JSON_UNESCAPED_SLASHES);
 
     $status_map = [
@@ -134,13 +130,93 @@ class WorkerLauncher {
   }
 
   /**
+   * Build last_job metadata stored on the story node.
+   *
+   * @param array{audio_languages?: string[]} $options
+   *
+   * @return array<string, mixed>
+   */
+  private function buildLastJobMeta(string $job, string $log_path, string $log_uri, ?int $pid, array $options = [], ?string $label_suffix = NULL): array {
+    $label = (string) self::jobLabels()[$job];
+    if ($label_suffix) {
+      $label .= $label_suffix;
+    }
+    $audio_languages = $this->normalizeAudioLanguages($options['audio_languages'] ?? []);
+    if ($audio_languages !== ['hindi'] && $audio_languages !== []) {
+      $label .= ' (' . $this->audioLanguagesLabel($audio_languages) . ')';
+    }
+
+    $meta = [
+      'action' => $job,
+      'label' => $label,
+      'started' => date('c'),
+      'log' => $log_path,
+      'log_uri' => $log_uri,
+      'pid' => $pid,
+    ];
+    if ($audio_languages !== []) {
+      $meta['audio_languages'] = $audio_languages;
+    }
+    return $meta;
+  }
+
+  /**
+   * Normalize audio language selection for worker jobs.
+   *
+   * @param string[] $languages
+   *
+   * @return string[]
+   */
+  public function normalizeAudioLanguages(array $languages): array {
+    $normalized = [];
+    foreach ($languages as $language) {
+      $key = strtolower(trim((string) $language));
+      if ($key === 'both') {
+        $normalized[] = 'hindi';
+        $normalized[] = 'english';
+        continue;
+      }
+      if (in_array($key, ['hindi', 'english'], TRUE)) {
+        $normalized[] = $key;
+      }
+    }
+    $normalized = array_values(array_unique($normalized));
+    return $normalized === [] ? ['hindi'] : $normalized;
+  }
+
+  /**
+   * Default narration language when the UI does not pass ?audio=.
+   */
+  public function defaultAudioLanguage(NodeInterface $node): string {
+    return $this->manager->supportsBilingualAudio($node) ? 'both' : 'hindi';
+  }
+
+  /**
+   * Human-readable audio language label.
+   *
+   * @param string[] $languages
+   */
+  private function audioLanguagesLabel(array $languages): string {
+    $has_hindi = in_array('hindi', $languages, TRUE);
+    $has_english = in_array('english', $languages, TRUE);
+    if ($has_hindi && $has_english) {
+      return 'Hindi + English';
+    }
+    if ($has_english) {
+      return 'English';
+    }
+    return 'Hindi';
+  }
+
+  /**
    * Start the same job on multiple stories.
    *
    * @param \Drupal\node\NodeInterface[] $nodes
+   * @param array{audio_languages?: string[]} $options
    *
    * @return array{started: int[], errors: array<int, string>}
    */
-  public function launchBulk(array $nodes, string $job, int $stagger_seconds = 0): array {
+  public function launchBulk(array $nodes, string $job, int $stagger_seconds = 0, array $options = []): array {
     if (!isset(self::JOBS[$job])) {
       throw new \InvalidArgumentException('Unknown job: ' . $job);
     }
@@ -162,7 +238,7 @@ class WorkerLauncher {
       try {
         foreach ($nodes as $node) {
           if ($node instanceof NodeInterface && (int) $node->id() === $ids[0]) {
-            $this->launch($node, $job);
+            $this->launch($node, $job, $options);
             return ['started' => $ids, 'errors' => []];
           }
         }
@@ -226,16 +302,10 @@ class WorkerLauncher {
         continue;
       }
       try {
+        $last_job = $this->buildLastJobMeta($job, $log_path, $log_uri, $pid, $options, ' (parallel bulk)');
+        $last_job['bulk'] = json_decode($bulk_meta, TRUE);
         $meta = json_encode([
-          'last_job' => [
-            'action' => $job,
-            'label' => (string) self::jobLabels()[$job] . ' (parallel bulk)',
-            'started' => date('c'),
-            'log' => $log_path,
-            'log_uri' => $log_uri,
-            'pid' => $pid,
-            'bulk' => json_decode($bulk_meta, TRUE),
-          ],
+          'last_job' => $last_job,
         ], JSON_UNESCAPED_SLASHES);
         $node->set('field_status', ['value' => $status]);
         $node->set('field_story_meta', ['value' => $meta]);

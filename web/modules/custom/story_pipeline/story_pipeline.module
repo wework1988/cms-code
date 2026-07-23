@@ -260,15 +260,18 @@ function story_pipeline_configure_displays(): void {
     'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 3],
     'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 4],
     'field_characters_info' => ['type' => 'text_textarea', 'weight' => 5],
-    'field_full_story' => ['type' => 'text_textarea', 'weight' => 6],
-    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 7],
-    'field_status' => ['type' => 'options_select', 'weight' => 8],
-    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 9],
-    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 10],
-    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 11],
-    'field_scene_file' => ['type' => 'file_generic', 'weight' => 12],
-    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 13],
-    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 14],
+    'field_bilingual' => ['type' => 'boolean_checkbox', 'weight' => 6],
+    'field_full_story' => ['type' => 'text_textarea', 'weight' => 7],
+    'field_full_story_english' => ['type' => 'text_textarea', 'weight' => 8],
+    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 9],
+    'field_status' => ['type' => 'options_select', 'weight' => 10],
+    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 11],
+    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 12],
+    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 13],
+    'field_scene_file' => ['type' => 'file_generic', 'weight' => 14],
+    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 15],
+    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 16],
+    'field_eleven_labs_files_english' => ['type' => 'file_generic', 'weight' => 17],
   ];
   foreach ($components as $name => $options) {
     $story_display->setComponent($name, $options);
@@ -305,6 +308,7 @@ function story_pipeline_configure_displays(): void {
  */
 function story_pipeline_entity_insert(EntityInterface $entity): void {
   story_pipeline_sync_raw_story_file($entity);
+  story_pipeline_sync_english_story_file($entity);
 }
 
 /**
@@ -312,6 +316,7 @@ function story_pipeline_entity_insert(EntityInterface $entity): void {
  */
 function story_pipeline_entity_update(EntityInterface $entity): void {
   story_pipeline_sync_raw_story_file($entity);
+  story_pipeline_sync_english_story_file($entity);
 }
 
 /**
@@ -325,4 +330,21 @@ function story_pipeline_sync_raw_story_file(EntityInterface $entity): void {
     return;
   }
   \Drupal::service('story_pipeline.asset_storage')->syncRawStoryFile($entity);
+}
+
+/**
+ * Mirror English story text to story asset folder (script/FULL_STORY_ENGLISH.txt).
+ */
+function story_pipeline_sync_english_story_file(EntityInterface $entity): void {
+  if (!$entity instanceof NodeInterface || $entity->bundle() !== 'story') {
+    return;
+  }
+  if (!$entity->hasField('field_full_story_english')) {
+    return;
+  }
+  $english = trim(strip_tags((string) ($entity->get('field_full_story_english')->value ?? '')));
+  if ($english === '') {
+    return;
+  }
+  \Drupal::service('story_pipeline.asset_storage')->saveText($entity, 'script', 'FULL_STORY_ENGLISH.txt', $english);
 }

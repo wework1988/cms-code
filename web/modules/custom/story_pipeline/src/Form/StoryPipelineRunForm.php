@@ -236,7 +236,11 @@ class StoryPipelineRunForm extends FormBase {
       }
       foreach ($serialized['eleven_labs_file_urls'] ?? [] as $i => $url) {
         $n = $i + 1;
-        $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Audio @n', ['@n' => $n]) . '</a>';
+        $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Audio (Hindi) @n', ['@n' => $n]) . '</a>';
+      }
+      foreach ($serialized['eleven_labs_file_urls_english'] ?? [] as $i => $url) {
+        $n = $i + 1;
+        $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Audio (English) @n', ['@n' => $n]) . '</a>';
       }
       if (!empty($serialized['story_asset_folder'])) {
         $outputs[] = '<br><small>' . $this->t('Folder: @path', [
@@ -286,6 +290,23 @@ class StoryPipelineRunForm extends FormBase {
         ? ['elevenlabs']
         : ['full_pipeline', 'generate', 'storyboard', 'storyboard_elevenlabs', 'elevenlabs'];
       foreach ($row_jobs as $job) {
+        if ($this->manager->supportsBilingualAudio($node)
+          && in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)) {
+          foreach ([
+            'hindi' => $this->t('Hindi'),
+            'english' => $this->t('English'),
+            'both' => $this->t('Hindi + English'),
+          ] as $lang => $lang_label) {
+            $base_label = WorkerLauncher::jobLabels()[$job];
+            $job_links["{$job}_{$lang}"] = [
+              '#type' => 'link',
+              '#title' => $base_label . ' (' . $lang_label . ')',
+              '#url' => $this->actionUrl('story_pipeline.launch_job', ['node' => $nid, 'job' => $job], ['audio' => $lang]),
+              '#attributes' => ['class' => ['button', 'button--small']],
+            ];
+          }
+          continue;
+        }
         $job_links[$job] = [
           '#type' => 'link',
           '#title' => WorkerLauncher::jobLabels()[$job],
@@ -362,6 +383,17 @@ class StoryPipelineRunForm extends FormBase {
       '#options' => $pick_options,
       '#description' => $this->t('If table checkboxes misbehave, select stories here instead — both lists are combined.'),
     ];
+    $form['bulk']['audio_language'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Narration audio language'),
+      '#options' => [
+        'hindi' => $this->t('Hindi only'),
+        'english' => $this->t('English only'),
+        'both' => $this->t('Hindi + English'),
+      ],
+      '#default_value' => 'hindi',
+      '#description' => $this->t('Used for bulk jobs that include narration audio. Stories with an English script get Hindi / English / both options.'),
+    ];
     $form['bulk']['actions'] = [
       '#type' => 'actions',
     ];
@@ -400,6 +432,17 @@ class StoryPipelineRunForm extends FormBase {
       $form['bulk_audio']['hint'] = [
         '#markup' => '<p>' . $this->t('Tick the <strong>checkbox</strong> for one or more finished stories, then click the button below. Only the checked rows run, launched in parallel. Does <strong>not</strong> rebuild storyboard.') . '</p>',
       ];
+      $form['bulk_audio']['audio_language'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Narration audio language'),
+        '#options' => [
+          'hindi' => $this->t('Hindi only'),
+          'english' => $this->t('English only'),
+          'both' => $this->t('Hindi + English'),
+        ],
+        '#default_value' => 'hindi',
+        '#description' => $this->t('Choose Hindi, English, or both. Stories without an English script always use Hindi only.'),
+      ];
       $form['bulk_audio']['actions'] = [
         '#type' => 'actions',
       ];
@@ -436,11 +479,14 @@ class StoryPipelineRunForm extends FormBase {
   /**
    * URL with CSRF token for launch/stop links.
    */
-  private function actionUrl(string $route, array $params): Url {
+  private function actionUrl(string $route, array $params, array $extra_query = []): Url {
     $url = Url::fromRoute($route, $params);
     $query = [
       'token' => \Drupal::csrfToken()->get($url->getInternalPath()),
     ];
+    if ($extra_query !== []) {
+      $query = array_merge($query, $extra_query);
+    }
     if ($this->tab !== 'active') {
       $query['tab'] = $this->tab;
     }
@@ -560,12 +606,30 @@ class StoryPipelineRunForm extends FormBase {
       ]
     ));
 
+    $options = [];
+    if (in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)) {
+      $audio = 'hindi';
+      if ($this->tab === 'completed') {
+        $bulk_audio = $form_state->getValue('bulk_audio');
+        if (is_array($bulk_audio) && !empty($bulk_audio['audio_language'])) {
+          $audio = (string) $bulk_audio['audio_language'];
+        }
+      }
+      else {
+        $bulk = $form_state->getValue('bulk');
+        if (is_array($bulk) && !empty($bulk['audio_language'])) {
+          $audio = (string) $bulk['audio_language'];
+        }
+      }
+      $options['audio_languages'] = $this->launcher->normalizeAudioLanguages([$audio]);
+    }
+
     batch_set([
       'title' => $this->t('Starting selected story jobs…'),
       'operations' => [
         [
           [StoryPipelineBatch::class, 'launchSequentialQueue'],
-          [$nids, $job],
+          [$nids, $job, $options],
         ],
       ],
       'finished' => [StoryPipelineBatch::class, 'finished'],

@@ -53,7 +53,19 @@ class StoryPipelineRunController extends ControllerBase {
     }
 
     try {
-      $this->launcher->launch($node, $job);
+      $request = $this->requestStack->getCurrentRequest();
+      $audio = (string) ($request?->query->get('audio') ?? '');
+      if ($audio === '' && in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)) {
+        $audio = $this->launcher->defaultAudioLanguage($node);
+      }
+      if ($audio === '') {
+        $audio = 'hindi';
+      }
+      $options = [];
+      if (in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)) {
+        $options['audio_languages'] = $this->launcher->normalizeAudioLanguages([$audio]);
+      }
+      $this->launcher->launch($node, $job, $options);
       $label = WorkerLauncher::jobLabels()[$job] ?? $job;
       $this->messenger()->addStatus($this->t(
         'Started “@job” for “@title”. It runs in the background — refresh this page in 10–15 minutes.',

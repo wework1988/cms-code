@@ -260,6 +260,7 @@ class StoryPipelineAssetStorage {
 
     $map = [
       'script/FULL_STORY.txt' => 'full_story',
+      'script/FULL_STORY_ENGLISH.txt' => 'full_story_english',
       'script/story_meta.txt' => 'story_meta',
       'script/raw-story.txt' => 'raw_story',
       'prompts/prompt.txt' => 'prompt',
@@ -282,6 +283,17 @@ class StoryPipelineAssetStorage {
       }
       if ($audio !== []) {
         $index['files']['audio'] = $audio;
+      }
+
+      $audio_english_dir = $audio_dir . DIRECTORY_SEPARATOR . 'english';
+      if (is_dir($audio_english_dir)) {
+        $audio_english = [];
+        foreach (glob($audio_english_dir . DIRECTORY_SEPARATOR . '*.mp3') ?: [] as $mp3) {
+          $audio_english[] = 'audio/english/' . basename($mp3);
+        }
+        if ($audio_english !== []) {
+          $index['files']['audio_english'] = $audio_english;
+        }
       }
     }
 

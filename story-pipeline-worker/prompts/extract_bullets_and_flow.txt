@@ -1,0 +1,116 @@
+# MASTER PROMPT — EXTRACT 20–25 STORY POINTERS
+
+Analyse the transcript provided below and extract **20 to 25 detailed story pointers**.
+
+The pointers will later be used to write a complete cinematic documentary story.
+
+Do not write the final script.
+
+Do not provide titles, thumbnails, scenes, hooks, CTAs or any additional analysis.
+
+SOURCE_ID: {source_id}
+SOURCE_TITLE: {source_title}
+
+## TRANSCRIPT
+
+{transcript}
+
+## INSTRUCTIONS
+
+Create between **20 and 25 pointers**, depending on the amount of useful information available in the transcript.
+
+Each pointer must represent a different and meaningful part of the story.
+
+Follow the natural story flow:
+
+* Opening situation
+* Main person, event or problem
+* Historical background
+* Root cause
+* Initial developments
+* Challenges or obstacles
+* Important decisions
+* Planning or preparation
+* Methods used
+* Major discoveries
+* Turning points
+* Escalation
+* Final action or climax
+* Immediate aftermath
+* Wider consequences
+* Current situation
+* Unanswered question or conclusion
+
+Do not repeat the same information in multiple pointers.
+
+Merge similar or repeated details into a single pointer.
+
+Remove:
+
+* Advertisements
+* Sponsor sections
+* Channel promotions
+* Subscribe requests
+* Music markers
+* Greetings
+* Repeated explanations
+* Unrelated filler
+
+Keep important:
+
+* Names
+* Dates
+* Locations
+* Organisations
+* Operations
+* Numbers
+* Decisions
+* Methods
+* Causes
+* Consequences
+* Turning points
+* Important technical or political details
+
+## POINTER FORMAT
+
+Use this exact structure:
+
+### POINTER 01 — [SHORT POINTER TITLE]
+
+**Explains:**
+Briefly explain what this part of the story is about and why it is important.
+
+**How:**
+Explain what happened, how it happened, who was involved and what it caused. Include important names, dates, places and numbers from the transcript.
+
+Continue the same format for all pointers.
+
+## EXAMPLE
+
+### POINTER 01 — WHY THE TARGET LOOKED IMPOSSIBLE
+
+**Explains:**
+Shows why reaching the central target appeared almost impossible.
+
+**How:**
+The target had remained protected for several decades through underground locations, trusted guards and multiple security layers. These arrangements prevented direct access, but they also created movement and security patterns that could be studied over time.
+
+### POINTER 02 — WHY THE ORIGINAL STRATEGY FAILED
+
+**Explains:**
+Explains why earlier attempts failed to permanently solve the problem.
+
+**How:**
+Whenever one facility was damaged, the programme was shifted to another location. When important personnel were removed, replacements were appointed. This created a cycle in which the operation caused delays but did not remove the central decision-making system.
+
+## FINAL OUTPUT
+
+Provide only:
+
+**Story Topic:** [Identify from transcript]
+
+**Total Pointers:** [20–25]
+
+Then provide all pointers in the required format.
+
+Do not provide anything after the final pointer.

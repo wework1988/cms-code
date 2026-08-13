@@ -45,11 +45,41 @@ def _upsert_cli_arg(cmd: list[str], flag: str, value: str) -> list[str]:
     return out
 
 
-def automation_repo() -> Path:
-    p = Path(os.environ.get("AUTOMATION_REPO", "")).expanduser()
-    if not p.is_dir():
-        sys.exit(f"error: AUTOMATION_REPO not found: {p}")
-    return p.resolve()
+def _repo_has_pipeline(repo: Path) -> bool:
+    return (repo / "crime-section" / "helper" / "deepseek_pipeline.py").is_file()
+
+
+def automation_repo(bundle: dict | None = None) -> Path:
+    candidates: list[Path] = []
+    for raw in (
+        ((bundle or {}).get("automation_repo_path") or "").strip(),
+        (os.environ.get("AUTOMATION_REPO") or "").strip(),
+    ):
+        if raw:
+            candidates.append(Path(raw).expanduser())
+    mirror = (os.environ.get("STORY_ASSET_MIRROR") or "").strip()
+    if mirror:
+        candidates.append(Path(mirror).expanduser().parent)
+    candidates.append(Path("/Users/averma/project/research-story-17thmay-automation"))
+
+    seen: set[str] = set()
+    for p in candidates:
+        key = str(p)
+        if key in seen:
+            continue
+        seen.add(key)
+        if not p.is_dir():
+            continue
+        resolved = p.resolve()
+        if _repo_has_pipeline(resolved):
+            os.environ["AUTOMATION_REPO"] = str(resolved)
+            return resolved
+
+    tried = ", ".join(str(p) for p in candidates if str(p))
+    sys.exit(
+        "error: deepseek_pipeline.py not found. Set AUTOMATION_REPO to the "
+        f"research-story automation repo (tried: {tried})"
+    )
 
 
 def pipeline_script() -> Path:
@@ -152,7 +182,6 @@ def run_storyboard(
     resume: bool = False,
     fill_prompt_gaps: bool = False,
 ) -> None:
-    load_all_env(automation_repo())
     client = DrupalStoryClient()
 
     print(f"[drupal] GET story {story_id}")
@@ -165,11 +194,12 @@ def run_storyboard(
     bundle = client.get_bundle(story_id, pipeline="storyboard")
     apply_asset_root_from_bundle(bundle)
 
+    repo = automation_repo(bundle)
+    load_all_env(repo)
+
     keys = resolve_keys(bundle)
     if not (bundle.get("api_keys") or {}).get("deepseek_api_key"):
         print("[keys] using DEEPSEEK_API_KEY/DEEPSEEK_API_KEYS from .env (Drupal Crime key not set)")
-
-    repo = automation_repo()
     workspace_parent = Path(__file__).resolve().parent / ".workspace"
     workspace_parent.mkdir(exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix=f"story-{story_id}-", dir=workspace_parent))

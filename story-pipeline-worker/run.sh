@@ -17,15 +17,6 @@ elif [[ ! -f .env ]]; then
   exit 1
 fi
 
-# Prefer the editable bullet prompt from the automation mirror when present.
-if [[ -z "${STORY_BULLET_PROMPT_PATH:-}" ]]; then
-  _default_bullet_prompt="${STORY_ASSET_MIRROR:-}/bullet promt"
-  if [[ -f "${_default_bullet_prompt}" ]]; then
-    export STORY_BULLET_PROMPT_PATH="${_default_bullet_prompt}"
-  fi
-fi
-unset _default_bullet_prompt 2>/dev/null || true
-
 if [[ ! -d .venv ]]; then
   python3 -m venv .venv
 fi

@@ -28,37 +28,6 @@ def asset_root() -> Path | None:
     return root
 
 
-def asset_mirror_root() -> Path | None:
-    """Optional second root (automation repo) — mirror every story folder here too."""
-    raw = (os.environ.get("STORY_ASSET_MIRROR") or "").strip()
-    if not raw:
-        return None
-    root = Path(raw).expanduser().resolve()
-    root.mkdir(parents=True, exist_ok=True)
-    return root
-
-
-def mirror_story_folder(primary_folder: Path | None) -> Path | None:
-    """Copy the full story asset tree to STORY_ASSET_MIRROR when configured."""
-    if primary_folder is None or not primary_folder.is_dir():
-        return None
-    root = asset_root()
-    mirror = asset_mirror_root()
-    if root is None or mirror is None:
-        return None
-    if root.resolve() == mirror.resolve():
-        return None
-    try:
-        rel = primary_folder.resolve().relative_to(root.resolve())
-    except ValueError:
-        return None
-    target = mirror / rel
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(primary_folder, target, dirs_exist_ok=True)
-    print(f"[assets] mirrored → {target}")
-    return target
-
-
 def folder_name(story_id: int | str, title: str) -> str:
     """CMS folder name: {node-id}-{title-slug}."""
     story_id = str(story_id)
@@ -195,7 +164,6 @@ def sync_script(
         print(f"[assets] raw-story present → {raw}")
 
     print(f"[assets] script → {dest / 'script'}")
-    mirror_story_folder(dest)
     return dest
 
 
@@ -234,7 +202,6 @@ def sync_storyboard_outputs(
         print(f"[assets] raw-story → {raw_story}")
 
     print(f"[assets] storyboard ({copied} file(s)) → {dest}")
-    mirror_story_folder(dest)
     return dest
 
 
@@ -268,7 +235,6 @@ def sync_scene_breakdown_outputs(
 
     _ensure_story_folder(dest, story_id, title, story_type)
     print(f"[assets] scene breakdown ({copied} file(s)) → {dest}")
-    mirror_story_folder(dest)
     return dest
 
 
@@ -304,7 +270,6 @@ def sync_audio(
 
     _ensure_story_folder(dest, story_id, title, story_type)
     print(f"[assets] audio ({count} MP3(s)) → {audio_dest}")
-    mirror_story_folder(dest)
     return dest
 
 
@@ -340,7 +305,6 @@ def sync_audio_english(
 
     _ensure_story_folder(dest, story_id, title, story_type)
     print(f"[assets] english audio ({count} MP3(s)) → {audio_dest}")
-    mirror_story_folder(dest)
     return dest
 
 

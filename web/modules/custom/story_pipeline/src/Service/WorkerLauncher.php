@@ -20,6 +20,7 @@ class WorkerLauncher {
    */
   private const JOBS = [
     'generate' => ['cmd' => 'generate', 'args' => []],
+    'generate_pointers' => ['cmd' => 'generate', 'args' => ['--pointers-only']],
     'storyboard' => ['cmd' => 'storyboard', 'args' => []],
     'storyboard_elevenlabs' => ['cmd' => 'storyboard', 'args' => ['--elevenlabs']],
     'elevenlabs' => ['cmd' => 'elevenlabs', 'args' => []],
@@ -41,6 +42,7 @@ class WorkerLauncher {
   public static function jobLabels(): array {
     return [
       'generate' => t('Write story from YouTube'),
+      'generate_pointers' => t('Prepare bullets from transcript'),
       'storyboard' => t('Build storyboard'),
       'storyboard_elevenlabs' => t('Build storyboard + narration audio'),
       'elevenlabs' => t('Create narration audio only'),
@@ -63,8 +65,13 @@ class WorkerLauncher {
       throw new \InvalidArgumentException('Unknown job: ' . $job);
     }
 
+    $this->validateJobLaunch($node, $job);
+
     if ($this->assetStorage->isEnabled() && $job !== 'elevenlabs') {
       $this->assetStorage->syncRawStoryFile($node);
+      if ($job === 'generate_pointers') {
+        $this->assetStorage->syncUploadedTranscript($node);
+      }
     }
 
     $worker_path = $this->workerPath();
@@ -108,6 +115,7 @@ class WorkerLauncher {
 
     $status_map = [
       'generate' => 'storyboard_running',
+      'generate_pointers' => 'storyboard_running',
       'storyboard' => 'storyboard_running',
       'storyboard_elevenlabs' => 'storyboard_running',
       'elevenlabs' => 'storyboard_running',
@@ -458,6 +466,19 @@ class WorkerLauncher {
   }
 
   /**
+   * Validate that a story node has the inputs required for a job.
+   *
+   * @throws \InvalidArgumentException
+   */
+  private function validateJobLaunch(NodeInterface $node, string $job): void {
+    if ($job === 'generate_pointers') {
+      if (!$this->manager->hasUsableTranscript($node)) {
+        throw new \InvalidArgumentException('Story needs a pasted transcript (at least 100 characters).');
+      }
+    }
+  }
+
+  /**
    * Resolve worker folder from config.
    */
   public function workerPath(): string {
@@ -491,6 +512,7 @@ class WorkerLauncher {
     $status = $node->get('field_status')->value ?? 'draft';
     return match ($status) {
       'draft' => (string) t('Draft — add script or YouTube links'),
+      'research_done' => (string) t('Bullets ready — write script or run storyboard'),
       'story_generated' => (string) t('Script ready — run storyboard next'),
       'storyboard_running' => (string) t('Job running… refresh in a few minutes'),
       'storyboard_done' => (string) t('Complete'),

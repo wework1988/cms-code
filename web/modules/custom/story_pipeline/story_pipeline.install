@@ -51,6 +51,18 @@ function story_pipeline_install(): void {
   }
 
   // Story node fields.
+  story_pipeline_create_text_field('node', 'story', 'field_transcript', 'Transcript');
+  $transcript_field = FieldConfig::loadByName('node', 'story', 'field_transcript');
+  if ($transcript_field) {
+    $transcript_field->setDescription('Paste a transcript instead of YouTube URLs. Run “Prepare bullets from transcript” — skips download and does not write a full script.');
+    $transcript_field->save();
+  }
+  story_pipeline_create_text_field('node', 'story', 'field_bullet_ledger', 'Bullet ledger');
+  $ledger_field = FieldConfig::loadByName('node', 'story', 'field_bullet_ledger');
+  if ($ledger_field) {
+    $ledger_field->setDescription('Story pointers extracted from the transcript by the pipeline. Populated after “Prepare bullets from transcript”.');
+    $ledger_field->save();
+  }
   story_pipeline_create_text_field('node', 'story', 'field_characters_info', 'Characters info');
   story_pipeline_create_text_field('node', 'story', 'field_full_story', 'Full story');
   story_pipeline_create_text_field('node', 'story', 'field_story_meta', 'Story meta');
@@ -111,6 +123,7 @@ function story_pipeline_install(): void {
       'settings' => [
         'allowed_values' => [
           'draft' => 'Draft',
+          'research_done' => 'Research done (bullets only)',
           'story_generated' => 'Story generated',
           'storyboard_running' => 'Storyboard running',
           'storyboard_done' => 'Storyboard done',
@@ -944,6 +957,44 @@ function story_pipeline_update_9021(): void {
   if ($full_story) {
     $full_story->setLabel('Full story (Hindi)');
     $full_story->save();
+  }
+
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Show Story Type taxonomy field diffs on the Revisions compare page.
+ */
+function story_pipeline_update_9029(): void {
+  story_pipeline_configure_taxonomy_term_diffs();
+}
+
+/**
+ * Pasted transcript + bullet ledger fields; research_done status for bullets-only runs.
+ */
+function story_pipeline_update_9030(): void {
+  story_pipeline_create_text_field('node', 'story', 'field_transcript', 'Transcript');
+  $transcript_field = FieldConfig::loadByName('node', 'story', 'field_transcript');
+  if ($transcript_field) {
+    $transcript_field->setDescription('Paste a transcript instead of YouTube URLs. Run “Prepare bullets from transcript” — skips download and does not write a full script.');
+    $transcript_field->save();
+  }
+
+  story_pipeline_create_text_field('node', 'story', 'field_bullet_ledger', 'Bullet ledger');
+  $ledger_field = FieldConfig::loadByName('node', 'story', 'field_bullet_ledger');
+  if ($ledger_field) {
+    $ledger_field->setDescription('Story pointers extracted from the transcript by the pipeline. Populated after “Prepare bullets from transcript”.');
+    $ledger_field->save();
+  }
+
+  $storage = FieldStorageConfig::loadByName('node', 'field_status');
+  if ($storage) {
+    $allowed = $storage->getSetting('allowed_values') ?? [];
+    if (!isset($allowed['research_done'])) {
+      $allowed['research_done'] = 'Research done (bullets only)';
+      $storage->setSetting('allowed_values', $allowed);
+      $storage->save();
+    }
   }
 
   story_pipeline_configure_displays();

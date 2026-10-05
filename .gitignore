@@ -17,3 +17,10 @@
 Thumbs.db
 /.idea/
 /.vscode/
+
+# Story Studio (Next.js app)
+/story-studio/node_modules/
+/story-studio/.next/
+/story-studio/prisma/dev.db
+/story-studio/prisma/dev.db-journal
+/story-studio/.env

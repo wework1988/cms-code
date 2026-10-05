@@ -21,6 +21,7 @@ class StoryPipelineRunController extends ControllerBase {
   private const ALLOWED_JOBS = [
     'full_pipeline',
     'generate',
+    'generate_pointers',
     'storyboard',
     'storyboard_elevenlabs',
     'elevenlabs',

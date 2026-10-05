@@ -118,6 +118,16 @@ class JobProgressParser {
       ];
     }
 
+    if ($status === 'research_done' && ($last['action'] ?? '') === 'generate_pointers') {
+      return [
+        'state' => 'done',
+        'percent' => 100,
+        'label' => (string) t('Bullets ready'),
+        'detail' => (string) t('Bullet ledger saved — write script or run storyboard'),
+        'log_url' => $log_url,
+      ];
+    }
+
     return $idle;
   }
 
@@ -352,6 +362,13 @@ class JobProgressParser {
         ['[llm]', 55, 'Writing script with AI'],
         ['[drupal] POST', 85, 'Saving script to Drupal'],
         ['done.', 100, 'Complete'],
+      ],
+      'generate_pointers' => [
+        ['[drupal] GET', 10, 'Loading story from Drupal'],
+        ['stage=transcripts mode=uploaded', 25, 'Reading pasted transcript'],
+        ['stage=pointer_extract', 50, 'Extracting bullet pointers with AI'],
+        ['stage=research_done', 85, 'Saving bullet ledger'],
+        ['done (research only', 100, 'Complete'],
       ],
       'elevenlabs' => [
         ['[drupal] GET', 10, 'Loading story'],

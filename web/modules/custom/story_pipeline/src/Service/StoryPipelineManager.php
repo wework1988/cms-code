@@ -104,7 +104,7 @@ class StoryPipelineManager {
     if (!$node->hasField('field_full_story_english')) {
       return FALSE;
     }
-    return trim(strip_tags((string) ($node->get('field_full_story_english')->value ?? ''))) !== '';
+    return !$node->get('field_full_story_english')->isEmpty();
   }
 
   /**
@@ -122,21 +122,20 @@ class StoryPipelineManager {
   }
 
   /**
-   * Build API response array for a story node.
+   * Output file URLs for admin lists (no heavy text field bodies).
+   *
+   * @return array{
+   *   prompt_file_url: string|null,
+   *   scene_file_url: string|null,
+   *   image_prompts_file_url: string|null,
+   *   eleven_labs_file_urls: string[],
+   *   eleven_labs_file_urls_english: string[],
+   *   story_asset_folder: string|null,
+   * }
    */
-  public function serializeStory(NodeInterface $node): array {
+  public function storyOutputLinks(NodeInterface $node): array {
     if ($node->bundle() !== 'story') {
       throw new \InvalidArgumentException('Not a story node.');
-    }
-
-    $term = $node->get('field_story_type')->entity;
-    $type = $term instanceof TermInterface ? $this->getTypeMachine($term) : NULL;
-
-    $urls = [];
-    foreach ($node->get('field_youtube_urls') as $item) {
-      if ($item->value) {
-        $urls[] = $item->value;
-      }
     }
 
     $prompt_url = NULL;
@@ -203,11 +202,49 @@ class StoryPipelineManager {
     }
 
     return [
+      'prompt_file_url' => $prompt_url,
+      'scene_file_url' => $scene_url,
+      'image_prompts_file_url' => $image_prompts_url,
+      'eleven_labs_file_urls' => $eleven_labs_urls,
+      'eleven_labs_file_urls_english' => $eleven_labs_english_urls,
+      'story_asset_folder' => $story_asset_folder,
+    ];
+  }
+
+  /**
+   * Build API response array for a story node.
+   */
+  public function serializeStory(NodeInterface $node): array {
+    if ($node->bundle() !== 'story') {
+      throw new \InvalidArgumentException('Not a story node.');
+    }
+
+    $term = $node->get('field_story_type')->entity;
+    $type = $term instanceof TermInterface ? $this->getTypeMachine($term) : NULL;
+
+    $urls = [];
+    foreach ($node->get('field_youtube_urls') as $item) {
+      if ($item->value) {
+        $urls[] = $item->value;
+      }
+    }
+
+    $links = $this->storyOutputLinks($node);
+
+    $transcript = $node->hasField('field_transcript')
+      ? trim((string) ($node->get('field_transcript')->value ?? ''))
+      : '';
+
+    return [
       'id' => (string) $node->id(),
       'title' => $node->getTitle(),
       'story_type' => $type,
       'status' => $node->get('field_status')->value ?? 'draft',
       'youtube_urls' => $urls,
+      'transcript' => $transcript,
+      'has_uploaded_transcript' => $this->hasUsableTranscript($node),
+      'bullet_ledger' => $node->hasField('field_bullet_ledger')
+        ? ($node->get('field_bullet_ledger')->value ?? '') : '',
       'characters_info' => $node->get('field_characters_info')->value ?? '',
       'full_story' => $node->get('field_full_story')->value ?? '',
       'full_story_english' => $node->hasField('field_full_story_english')
@@ -216,12 +253,12 @@ class StoryPipelineManager {
       'story_meta' => $node->get('field_story_meta')->value ?? '',
       'stage_a_output' => $node->get('field_stage_a_output')->value ?? '',
       'stage_b_output' => $node->get('field_stage_b_output')->value ?? '',
-      'prompt_file_url' => $prompt_url,
-      'scene_file_url' => $scene_url,
-      'image_prompts_file_url' => $image_prompts_url,
-      'eleven_labs_file_urls' => $eleven_labs_urls,
-      'eleven_labs_file_urls_english' => $eleven_labs_english_urls,
-      'story_asset_folder' => $story_asset_folder,
+      'prompt_file_url' => $links['prompt_file_url'],
+      'scene_file_url' => $links['scene_file_url'],
+      'image_prompts_file_url' => $links['image_prompts_file_url'],
+      'eleven_labs_file_urls' => $links['eleven_labs_file_urls'],
+      'eleven_labs_file_urls_english' => $links['eleven_labs_file_urls_english'],
+      'story_asset_folder' => $links['story_asset_folder'],
     ];
   }
 
@@ -265,6 +302,10 @@ class StoryPipelineManager {
       }
     }
 
+    $transcript = $node->hasField('field_transcript')
+      ? trim((string) ($node->get('field_transcript')->value ?? ''))
+      : '';
+
     return [
       'story' => [
         'id' => (string) $node->id(),
@@ -276,6 +317,9 @@ class StoryPipelineManager {
         'characters_info' => $characters,
         'story_type' => $type,
         'youtube_urls' => array_column($node->get('field_youtube_urls')->getValue(), 'value'),
+        'transcript' => $transcript,
+        'has_uploaded_transcript' => $this->hasUsableTranscript($node),
+        'research_only' => FALSE,
         'story_meta' => $node->get('field_story_meta')->value ?? '',
       ],
       'prompts' => [
@@ -354,6 +398,12 @@ class StoryPipelineManager {
       }
     }
 
+    if (array_key_exists('story_plan_raw', $data)
+      && ($data['status'] ?? '') === 'research_done'
+      && $node->hasField('field_bullet_ledger')) {
+      $node->set('field_bullet_ledger', ['value' => (string) $data['story_plan_raw']]);
+    }
+
     if ($this->assetStorage->isEnabled()) {
       $slug = $this->assetStorage->slugify($node->getTitle(), 'story-' . $node->id());
       if (array_key_exists('full_story', $data) && (string) $data['full_story'] !== '') {
@@ -367,7 +417,13 @@ class StoryPipelineManager {
       if (array_key_exists('story_meta', $data) && (string) $data['story_meta'] !== '') {
         $this->assetStorage->saveText($node, 'script', 'story_meta.txt', (string) $data['story_meta']);
       }
+      if (array_key_exists('story_plan_raw', $data)
+        && ($data['status'] ?? '') === 'research_done'
+        && (string) $data['story_plan_raw'] !== '') {
+        $this->assetStorage->saveText($node, 'script', 'BULLET_LEDGER.txt', (string) $data['story_plan_raw']);
+      }
       $this->assetStorage->syncRawStoryFile($node);
+      $this->assetStorage->syncUploadedTranscript($node);
       if (!empty($data['stage_a_output'])) {
         $this->assetStorage->saveText($node, 'prompts', 'output_config_' . $slug . '.md', (string) $data['stage_a_output']);
       }
@@ -550,12 +606,22 @@ class StoryPipelineManager {
    * Mark story as queued for pipeline (worker picks up via status).
    */
   public function queueGenerateStory(NodeInterface $node): NodeInterface {
-    if ($node->get('field_youtube_urls')->isEmpty()) {
-      throw new \InvalidArgumentException('Story needs at least one YouTube URL.');
+    if ($node->get('field_youtube_urls')->isEmpty() && !$this->hasUsableTranscript($node)) {
+      throw new \InvalidArgumentException('Story needs at least one YouTube URL or a pasted transcript.');
     }
     $node->set('field_story_meta', ['value' => 'QUEUE:generate-story']);
     $node->save();
     return $node;
+  }
+
+  /**
+   * Whether the story has a pasted transcript long enough for the worker.
+   */
+  public function hasUsableTranscript(NodeInterface $node): bool {
+    if (!$node->hasField('field_transcript') || $node->get('field_transcript')->isEmpty()) {
+      return FALSE;
+    }
+    return strlen(trim(strip_tags((string) ($node->get('field_transcript')->value ?? '')))) >= 100;
   }
 
   /**

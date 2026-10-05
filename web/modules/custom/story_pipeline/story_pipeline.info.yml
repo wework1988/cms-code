@@ -12,3 +12,4 @@ dependencies:
   - drupal:file
   - drupal:user
   - drupal:serialization
+  - diff:diff

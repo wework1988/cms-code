@@ -134,6 +134,7 @@ class StoryPipelineRunForm extends FormBase {
       '#theme' => 'item_list',
       '#items' => [
         $this->t('<strong>Write story from YouTube</strong> — when the story only has YouTube URLs, no script yet.'),
+        $this->t('<strong>Prepare bullets from transcript</strong> — when you pasted a transcript on the story; skips YouTube download and only extracts bullet pointers.'),
         $this->t('<strong>Build storyboard</strong> — when the full script is saved; creates scene + image prompt files.'),
         $this->t('<strong>Build storyboard + narration audio</strong> — storyboard and ElevenLabs MP3s in one job.'),
         $this->t('<strong>Full pipeline (all steps + audio)</strong> — YouTube → script → storyboard → MP3s (best for bulk).'),
@@ -141,57 +142,47 @@ class StoryPipelineRunForm extends FormBase {
       ],
     ];
 
-    $ids = $this->entityTypeManager->getStorage('node')->getQuery()
-      ->accessCheck(TRUE)
-      ->condition('type', 'story')
-      ->sort('changed', 'DESC')
-      ->execute();
-
-    if (!$ids) {
-      $form['empty'] = [
-        '#markup' => '<p><em>' . $this->t('No stories yet. @link', [
-          '@link' => (string) $this->t('<a href=":url">Create a story</a>', [
-            ':url' => Url::fromRoute('node.add', ['node_type' => 'story'])->toString(),
-          ]),
-        ]) . '</em></p>',
-      ];
-      return $form;
-    }
-
-    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($ids);
     $target_bucket = match ($this->tab) {
       'completed' => 'completed',
       'live' => 'live',
       default => 'active',
     };
-    $nodes = array_values(array_filter(
-      $nodes,
-      fn($node) => $node instanceof NodeInterface
-        && $this->runListBucket($node) === $target_bucket,
-    ));
 
-    if (!$is_archive_tab) {
-      usort($nodes, function (NodeInterface $a, NodeInterface $b): int {
-        $a_running = $this->launcher->hasActiveJob($a)
-          || ($a->get('field_status')->value ?? '') === 'storyboard_running';
-        $b_running = $this->launcher->hasActiveJob($b)
-          || ($b->get('field_status')->value ?? '') === 'storyboard_running';
-        if ($a_running !== $b_running) {
-          return $b_running <=> $a_running;
-        }
-        return $b->getChangedTime() <=> $a->getChangedTime();
-      });
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('type', 'story')
+      ->sort('changed', 'DESC');
+    if ($target_bucket === 'live') {
+      $query->condition('field_status', 'live');
     }
+    elseif ($target_bucket === 'completed') {
+      $query->condition('field_status', 'storyboard_done');
+    }
+    else {
+      $query->condition('field_status', ['live', 'storyboard_done'], 'NOT IN');
+    }
+    $ids = $query->execute();
 
-    if ($nodes === []) {
-      $empty_message = match ($this->tab) {
-        'completed' => $this->t('No completed jobs yet — finished stories will appear here.'),
-        'live' => $this->t('No live stories yet — move finished stories here from Completed.'),
-        default => $this->t('No stories ready or in progress.'),
-      };
-      $form['empty'] = [
-        '#markup' => '<p><em>' . $empty_message . '</em></p>',
-      ];
+    if (!$ids) {
+      if ($target_bucket === 'active') {
+        $form['empty'] = [
+          '#markup' => '<p><em>' . $this->t('No stories yet. @link', [
+            '@link' => (string) $this->t('<a href=":url">Create a story</a>', [
+              ':url' => Url::fromRoute('node.add', ['node_type' => 'story'])->toString(),
+            ]),
+          ]) . '</em></p>',
+        ];
+      }
+      else {
+        $empty_message = match ($this->tab) {
+          'completed' => $this->t('No completed jobs yet — finished stories will appear here.'),
+          'live' => $this->t('No live stories yet — move finished stories here from Completed.'),
+          default => $this->t('No stories ready or in progress.'),
+        };
+        $form['empty'] = [
+          '#markup' => '<p><em>' . $empty_message . '</em></p>',
+        ];
+      }
       return $form;
     }
 
@@ -211,16 +202,21 @@ class StoryPipelineRunForm extends FormBase {
       $header['start'] = $this->t('Start job');
     }
 
+    // Load one story at a time — full story nodes carry large stage/script fields.
+    $storage = $this->entityTypeManager->getStorage('node');
     $options = [];
     $pick_options = [];
-    foreach ($nodes as $node) {
-      if (!$node instanceof NodeInterface) {
+    $sort_meta = [];
+    foreach ($ids as $nid) {
+      $node = $storage->load($nid);
+      if (!$node instanceof NodeInterface || $this->runListBucket($node) !== $target_bucket) {
+        $storage->resetCache([$nid]);
+        unset($node);
         continue;
       }
       $nid = (int) $node->id();
       $pick_options[$nid] = $node->getTitle() . ' (#' . $nid . ')';
-      $this->manager->syncAssetFilesToNodeFields($node);
-      $serialized = $this->manager->serializeStory($node);
+      $serialized = $this->manager->storyOutputLinks($node);
       $term = $node->get('field_story_type')->entity;
       $type_label = $term ? $term->label() : '—';
 
@@ -288,7 +284,7 @@ class StoryPipelineRunForm extends FormBase {
       // Completed tab: narration audio only — storyboard is already done.
       $row_jobs = $is_completed_tab
         ? ['elevenlabs']
-        : ['full_pipeline', 'generate', 'storyboard', 'storyboard_elevenlabs', 'elevenlabs'];
+        : ['full_pipeline', 'generate', 'generate_pointers', 'storyboard', 'storyboard_elevenlabs', 'elevenlabs'];
       foreach ($row_jobs as $job) {
         if ($this->manager->supportsBilingualAudio($node)
           && in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)) {
@@ -353,6 +349,38 @@ class StoryPipelineRunForm extends FormBase {
         $row['start'] = ['data' => $job_links];
       }
       $options[$nid] = $row;
+      if (!$is_archive_tab) {
+        $sort_meta[$nid] = [
+          'running' => $this->launcher->hasActiveJob($node)
+            || ($node->get('field_status')->value ?? '') === 'storyboard_running',
+          'changed' => $node->getChangedTime(),
+        ];
+      }
+      $storage->resetCache([$nid]);
+      unset($node);
+    }
+
+    if ($options === []) {
+      $empty_message = match ($this->tab) {
+        'completed' => $this->t('No completed jobs yet — finished stories will appear here.'),
+        'live' => $this->t('No live stories yet — move finished stories here from Completed.'),
+        default => $this->t('No stories ready or in progress.'),
+      };
+      $form['empty'] = [
+        '#markup' => '<p><em>' . $empty_message . '</em></p>',
+      ];
+      return $form;
+    }
+
+    if (!$is_archive_tab) {
+      uksort($options, static function (int|string $a, int|string $b) use ($sort_meta): int {
+        $a_meta = $sort_meta[$a] ?? ['running' => FALSE, 'changed' => 0];
+        $b_meta = $sort_meta[$b] ?? ['running' => FALSE, 'changed' => 0];
+        if ($a_meta['running'] !== $b_meta['running']) {
+          return $b_meta['running'] <=> $a_meta['running'];
+        }
+        return $b_meta['changed'] <=> $a_meta['changed'];
+      });
     }
 
     $form['stories'] = [

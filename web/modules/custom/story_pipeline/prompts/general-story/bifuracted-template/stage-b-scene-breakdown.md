@@ -74,17 +74,53 @@ PART 1 — GLOBAL STYLE LOCK
 
 Use this visual language implicitly when describing scene metadata:
 
-2D digital animated illustration; cinematic hand-drawn 2D matte painting;
-clean hand-drawn line art; flat cel shading; documentary realism; restrained
-stylisation; historically grounded environments; region-accurate faces;
-muted documentary color palette; readable composition; no empty stage-like
-backgrounds.
+Semi-realistic hand-drawn 2D graphic novel illustration; clean readable contours;
+controlled cel shading; natural skin tones; expressive grounded faces; historically
+grounded environments with concrete detail; setting-specific palettes and motivated
+lighting; readable composition; no empty stage-like backgrounds; no uniform dark
+or repetitive desk-monitor-silhouette templates unless narration supports them.
 
 Avoid:
-photorealism; ultra realism; 3D render; CGI; ray tracing; global illumination;
-lens flare; bokeh; depth of field blur; glossy CGI; hyper-detailed pores;
-HDR realism; neon unless story era supports it; watermark; logo; readable
-text overlay; poster layout; split-screen collage.
+photorealism; ultra realism; 3D render; CGI; ray tracing;
+lens flare; bokeh; glossy CGI; hyper-detailed pores;
+HDR realism; uniformly dark grading on ordinary scenes; neon unless story era
+supports it; watermark; logo; readable text overlay; poster layout; split-screen collage.
+================================================================================
+PART 1A — SCENE-SPECIFIC VISUAL PLANNING
+================================================================================
+
+For each scene, derive ONE meaningful visual beat directly from the Hindi line:
+- Choose the visible subject, action, and focal information the narration
+  actually supports — not a default investigation template.
+- Vary framing when the story changes location, era, mood, or scale; preserve
+  continuity when it does not.
+- Include motivated time of day and lighting inside Surrounding environment
+  (e.g. "late-morning hazy daylight", "monsoon overcast", "night market under
+  sodium lamps with readable faces").
+- Avoid repeating desks, monitors, silhouettes, evidence boards, dim corridors,
+  or aerial establishing tropes unless the narration explicitly supports them.
+- Do NOT rotate camera scales mechanically scene-to-scene; pick the scale that
+  best serves this beat per PART 19.
+- Do NOT invent events, evidence, locations, characters, or props absent from
+  the FULL_STORY.
+- Preserve segmented-run overlap and scene-offset handling per automation rails.
+
+
+
+================================================================================
+PART 1B — DEFINITE STAGING COMMITMENT
+================================================================================
+
+For each scene, commit to ONE supported realization in metadata:
+- one location state (not "parked or moving");
+- one pose and object placement;
+- one visible side of a document or photo (not front and reverse simultaneously);
+- one people count when totals are stated;
+- one camera scale from PART 19.
+
+Do not leave alternative locations, poses, vehicle states, or object configurations in
+Main subject, Supporting visual elements, or Surrounding environment when the narration
+requires a single 5-second frame.
 
 
 ================================================================================
@@ -124,26 +160,24 @@ metadata. Do not use library IDs anywhere else.
 
 
 ================================================================================
-PART 3 — HOSTILE ACTOR VISUAL MENACE
+PART 3 — HOSTILE / SUSPECT SUBJECT CODING (CONDITIONAL)
 ================================================================================
 
-A hostile actor means:
-terrorist, extremist, radical handler, hostile recruiter, radical propagandist,
-violent conspirator, terror commander, criminal operative, handler, suspect
-linked to hostile activity, hostile network member.
+Apply only when STORY CONFIG BLOCK records hostile actors present AND this scene's
+subject is a confirmed hostile actor, suspect, or criminal operative named in the story.
 
-When hostile actors appear:
-- context label must carry threat language;
-- main subject must identify them as hostile actor / militant / criminal
-  operative / radical handler as appropriate;
-- surrounding environment must support threat reading;
-- do not describe them as gentle, innocent, harmless, ordinary, soft,
-  warm, saintly, charming, or neutral.
+When §2 applies:
+- identify role from narration (courier, handler, operative) in Main subject;
+- describe the visible beat, action, and spatial relationship — not automatic sinister
+  appearance or compulsory half-shadow;
+- surrounding environment supports the story location and time of day with readable light.
+
+A suspect may look ordinary. Do NOT require threat language in context labels beyond what
+the narration supports.
 
 Civilian separation rule:
-Do NOT apply hostile coding only because of religion, ethnicity, country,
-beard, skullcap, shalwar kameez, hijab, mosque background, or regional dress.
-Only apply hostile coding when the story identifies the person/group as hostile.
+Do NOT apply hostile coding because of religion, ethnicity, beard, skullcap, shalwar
+kameez, hijab, mosque background, or regional dress alone.
 
 
 ================================================================================
@@ -708,6 +742,13 @@ one primary subject?
 If no, split.
 
 But split only at valid sentence-level markers:
+SINGLE-FRAME SELECTION:
+When narration mentions multiple details, choose the most informative visible instant for
+this scene. Remaining information may stay in narration only — do not force every detail
+into one frame. Do not create collage, split-screen, or duplicate objects to satisfy length
+or detail pressure.
+
+
 ।  ?  !  close quote  or a strong full-clause dash.
 
 Prefer not to split on an internal comma. However, when all options above
@@ -1070,6 +1111,20 @@ Echo/translation/gloss must merge with the line it explains.
 ================================================================================
 PART 15 — ABSTRACT AND METAPHOR HANDLING
 ================================================================================
+PART 14A — PACING WITHOUT OVER-SEGMENTATION
+================================================================================
+
+Do not force exactly N scenes for every story.
+Do not give every short sentence its own five-second shot.
+
+Merge neighboring Hindi lines when they belong to one coherent visual beat, fit spoken
+duration, and merging does not hide an important reveal. Keep a standalone shot when a
+pause, reaction, or reveal genuinely matters.
+
+If average words per scene fall below 11, recheck for over-segmentation before output.
+Preserve narration verbatim and in order. Preserve segmented-run overlap rules.
+
+================================================================================
 
 Abstract lines must be grounded in a physical visual anchor.
 
@@ -1175,7 +1230,7 @@ Examples:
 - archive documents without readable text
 - television screens with unreadable graphics
 - police barricades
-- dim corridor lighting
+- motivated corridor lighting matching time of day (not default dim)
 
 Avoid:
 - readable text;
@@ -1242,10 +1297,33 @@ Elevated street view
 Close reaction frame
 Evidence-table view
 
+Choose scale from the narration and visual beat — do NOT rotate scales
+mechanically (wide → medium → close → repeat) without story motivation.
 Do not use the same scale repeatedly without need.
 Do not choose close reaction frame for scenes that require spatial context.
 Do not choose wide establishing for scenes that are about a file, phone, map,
-face, or hand.
+face, or hand unless the Hindi line calls for spatial overview.
+
+
+Camera purpose (plan silently; record in Breakdown note):
+Choose why this viewpoint serves the beat — geography, interaction, emotion, action,
+evidence, or consequence. Decide whether a locked-off hold or a small camera move would
+help; Stage C executes that choice. Do not plan subject walking or vehicle travel unless
+the frozen image already shows it.
+
+Evidence-table view = physical evidence on a table, shelf, or work surface.
+For CCTV, phone footage, or monitor content use Over-shoulder analysis or Tight object
+detail with the screen as the subject — not Evidence-table view.
+
+Insert / side / low / overhead viewpoints are valid when the beat requires them.
+
+Visual-beat camera decision (plan silently; record purpose in Breakdown note):
+- What must the viewer notice in this beat?
+- Is the purpose geography, interaction, emotion, action, evidence, or consequence?
+- Does a small camera move help communicate that — slowly, within ~5 seconds and the starting frame?
+- Choose locked-off when stillness serves; choose one slow move when it improves attention,
+  depth, or spatial read. Do not default every scene to locked-off or push-in.
+- Review adjacent scenes: repeated choices are fine when purposeful, not as unexamined fallback.
 
 
 ================================================================================
@@ -1485,6 +1563,12 @@ Continue only from the authoritative new body.
 Do not insert extra headings, excerpt titles, separators, “END OF” ribbons, or
 commentary between scene blocks. The pipeline may merge multiple output slices.
 
+
+23. Compact consistency check (silent — do not print):
+definite visual choices; stable recurring identities and objects; plausible single-frame
+geometry; accurate figure count; one camera purpose in scale suggestion; no unsupported
+facts; no decorative clutter; required structure and Hindi terminators intact.
+
 22. On-screen text overlay check:
 Every scene must include both On-screen location and On-screen name fields.
 On-screen location must be a real named place (not an archetype phrase) or NONE.
@@ -1533,6 +1617,36 @@ metadata field, not an image prompt field. Stage C must still follow SHARED §4
 and never use these names in IMAGE PROMPT bodies.
 
 
+
+
+================================================================================
+PART 22B — SILENT STAGING AND CONTINUITY CHECK (before locking each scene)
+================================================================================
+
+Using existing fields only — verify silently, then reflect fixes in Main subject,
+Supporting visual elements, Surrounding environment, or Breakdown note:
+
+A. Definite choices — no unresolved "A or B" appearance, location, vehicle state, or pose.
+B. People count — if you state a total, it must match every person described.
+C. Recurring identity — stable hair, grooming, clothing family, footwear, bag, and props
+   unless narration supports a change; name recurring subjects consistently with roster.
+D. Object geometry — one plausible side of a photo/document; hands and grips possible;
+   objects not simultaneously held and resting elsewhere.
+E. Critical text — use On-screen name/location when editor overlay is needed; do not
+   substitute nonsense stroke loops for essential times, dates, or names in the image.
+F. Lighting plausibility — dominant source and plausible fill; indicator lights do not
+   main-light faces in daylight.
+G. Narrative fidelity — no invented clue links or plot-bearing props absent from source.
+H. Footage and screens — CCTV/phone/photo beats match representation type (monochrome vs
+   color, grain, monitor bezel) to Camera scale; do not label monitor content as evidence-table.
+I. Sealed containers stay sealed until narration opens them; vehicle operators appear in
+   plausible operating positions when starting/driving is narrated.
+J. Camera purpose in Breakdown note matches Camera scale and Visual beat type.
+K. Role continuity — if an established suspect or witness becomes the driver or operator,
+   keep that same person's identity and clothing; do not invent a new unnamed figure.
+
+
+
 ================================================================================
 PART 23 — OUTPUT FORMAT
 ================================================================================
@@ -1556,7 +1670,7 @@ Visual continuity anchor:
 {one concise phrase linking this scene to the continuing location, character state, political phase, investigation thread, campaign arc, legal arc, media arc, metaphor, or emotional arc}
 
 Surrounding environment:
-{concrete visible setting around the subject, including era/geography/mood/props/background figures where useful}
+{concrete visible setting around the subject, including era/geography/mood/time of day/motivated lighting/props/background figures where useful}
 
 Visual beat type:
 {one option from PART 18}
@@ -1565,7 +1679,7 @@ Main location:
 {specific location with era/mood/context, not generic}
 
 Main subject:
-{main visible subject or group with role/archetype and action/state, no public figure names outside Hindi line}
+{one definite main subject or group with role/archetype and action/state — no unresolved alternatives, no public figure names outside Hindi line}
 
 Supporting visual elements:
 {2–5 concrete visual elements; no readable text/logos/symbols/nameplates}
@@ -1586,7 +1700,7 @@ On-screen name:
 {real person name, operation name, or event name to show as a video text overlay — e.g. "Ajit Doval" or "Operation Safal" or "IC-814 Hijack" or NONE}
 
 Breakdown note:
-{one short line explaining split/merge logic and why this is one visual beat}
+{one short line: split/merge logic; camera purpose (geography/interaction/emotion/action/evidence/consequence); staging checks passed}
 
 
 ================================================================================

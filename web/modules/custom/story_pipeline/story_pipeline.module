@@ -8,6 +8,7 @@
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
@@ -257,21 +258,23 @@ function story_pipeline_configure_displays(): void {
     'title' => ['type' => 'string_textfield', 'weight' => 0],
     'field_story_type' => ['type' => 'options_select', 'weight' => 1],
     'field_youtube_urls' => ['type' => 'string_textfield', 'weight' => 2],
-    'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 3],
-    'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 4],
-    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 5],
-    'field_bilingual' => ['type' => 'boolean_checkbox', 'weight' => 6],
-    'field_full_story' => ['type' => 'text_textarea', 'weight' => 7],
-    'field_full_story_english' => ['type' => 'text_textarea', 'weight' => 8],
-    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 9],
-    'field_status' => ['type' => 'options_select', 'weight' => 10],
-    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 11],
-    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 12],
-    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 13],
-    'field_scene_file' => ['type' => 'file_generic', 'weight' => 14],
-    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 15],
-    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 16],
-    'field_eleven_labs_files_english' => ['type' => 'file_generic', 'weight' => 17],
+    'field_transcript' => ['type' => 'text_textarea', 'weight' => 3],
+    'field_bullet_ledger' => ['type' => 'text_textarea', 'weight' => 4],
+    'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 6],
+    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 7],
+    'field_bilingual' => ['type' => 'boolean_checkbox', 'weight' => 8],
+    'field_full_story' => ['type' => 'text_textarea', 'weight' => 9],
+    'field_full_story_english' => ['type' => 'text_textarea', 'weight' => 10],
+    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 11],
+    'field_status' => ['type' => 'options_select', 'weight' => 12],
+    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 13],
+    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 14],
+    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 15],
+    'field_scene_file' => ['type' => 'file_generic', 'weight' => 16],
+    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 17],
+    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 18],
+    'field_eleven_labs_files_english' => ['type' => 'file_generic', 'weight' => 19],
   ];
   foreach ($components as $name => $options) {
     $story_display->setComponent($name, $options);
@@ -301,6 +304,68 @@ function story_pipeline_configure_displays(): void {
     $term_display->setComponent($name, $options);
   }
   $term_display->save();
+
+  story_pipeline_configure_taxonomy_term_diffs();
+}
+
+/**
+ * Enable Diff comparison for Story Type taxonomy prompt fields.
+ *
+ * Diff only auto-compares fields that appear on a view display. Story Type
+ * prompts are form-only, so revision compare otherwise shows only the name
+ * and looks empty. This also prefers the split-fields layout, which can
+ * actually show those long text changes.
+ */
+function story_pipeline_configure_taxonomy_term_diffs(): void {
+  if (!\Drupal::moduleHandler()->moduleExists('diff')) {
+    return;
+  }
+
+  $diff_builder_manager = \Drupal::service('plugin.manager.diff.builder');
+  $field_definitions = \Drupal::service('entity_field.manager')
+    ->getFieldDefinitions('taxonomy_term', 'story_type');
+
+  $config = \Drupal::configFactory()->getEditable('diff.plugins');
+  $base_fields = ['name', 'description'];
+
+  foreach ($field_definitions as $field_name => $definition) {
+    $storage_definition = $definition->getFieldStorageDefinition();
+    $is_configurable = $storage_definition instanceof FieldStorageConfig;
+    if (!$is_configurable && !in_array($field_name, $base_fields, TRUE)) {
+      continue;
+    }
+    if (!$diff_builder_manager->showDiff($storage_definition)) {
+      continue;
+    }
+    $plugin_options = $diff_builder_manager->getApplicablePluginOptions($storage_definition);
+    if ($plugin_options === []) {
+      continue;
+    }
+
+    $plugin_id = (string) array_key_first($plugin_options);
+    $settings = [
+      'show_header' => 1,
+      'markdown' => 'filter_xss_all',
+    ];
+    if ($plugin_id === 'text_field_diff_builder') {
+      $settings['compare_format'] = 0;
+    }
+    // Diff stores these as nested keys: fields.taxonomy_term.{field_name}.
+    $config->set('fields.taxonomy_term.' . $field_name, [
+      'type' => $plugin_id,
+      'settings' => $settings,
+    ]);
+  }
+  $config->save();
+
+  $settings = \Drupal::configFactory()->getEditable('diff.settings');
+  $settings->set('general_settings.layout_plugins.split_fields.enabled', TRUE);
+  $settings->set('general_settings.layout_plugins.split_fields.weight', 0);
+  $settings->set('general_settings.layout_plugins.unified_fields.enabled', TRUE);
+  $settings->set('general_settings.layout_plugins.unified_fields.weight', 1);
+  $settings->set('general_settings.layout_plugins.visual_inline.enabled', TRUE);
+  $settings->set('general_settings.layout_plugins.visual_inline.weight', 2);
+  $settings->save();
 }
 
 /**
@@ -308,6 +373,7 @@ function story_pipeline_configure_displays(): void {
  */
 function story_pipeline_entity_insert(EntityInterface $entity): void {
   story_pipeline_sync_raw_story_file($entity);
+  story_pipeline_sync_uploaded_transcript($entity);
   story_pipeline_sync_english_story_file($entity);
 }
 
@@ -316,6 +382,7 @@ function story_pipeline_entity_insert(EntityInterface $entity): void {
  */
 function story_pipeline_entity_update(EntityInterface $entity): void {
   story_pipeline_sync_raw_story_file($entity);
+  story_pipeline_sync_uploaded_transcript($entity);
   story_pipeline_sync_english_story_file($entity);
 }
 
@@ -330,6 +397,19 @@ function story_pipeline_sync_raw_story_file(EntityInterface $entity): void {
     return;
   }
   \Drupal::service('story_pipeline.asset_storage')->syncRawStoryFile($entity);
+}
+
+/**
+ * Mirror pasted transcript to story asset folder (script/uploaded_transcript.txt).
+ */
+function story_pipeline_sync_uploaded_transcript(EntityInterface $entity): void {
+  if (!$entity instanceof NodeInterface || $entity->bundle() !== 'story') {
+    return;
+  }
+  if (!$entity->hasField('field_transcript')) {
+    return;
+  }
+  \Drupal::service('story_pipeline.asset_storage')->syncUploadedTranscript($entity);
 }
 
 /**

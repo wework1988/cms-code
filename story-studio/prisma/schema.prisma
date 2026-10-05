@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id                  String   @id @default(cuid())
+  ownerId             String   @default("local-user")
+  title               String
+  topic               String?
+  outputLanguage      String   @default("hi")
+  targetDurationMin   Int?
+  targetCharCount     Int?
+  audience            String?
+  genre               String?
+  tone                String?
+  mustCoverPoints     String?
+  openingHook         String?
+  openingHookCustom   String?
+  ctaPreference       String?
+  ctaChannelName      String?
+  ctaClosingWording   String?
+  narrativeGoal       String   @default("recommend")
+  narrativeApproachCustom String?
+  status              String   @default("draft")
+  channelStyleId      String?
+  promptProfileId     String?
+  selectedPlanId      String?
+  isDemo              Boolean  @default(false)
+  exportOverride      Boolean  @default(false)
+  errorMessage        String?
+  lengthStatus        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  channelStyle   ChannelStyleProfile? @relation(fields: [channelStyleId], references: [id])
+  promptProfile  PromptProfile?       @relation(fields: [promptProfileId], references: [id])
+  sources        Source[]
+  claims         Claim[]
+  factPackItems  FactPackItem[]
+  fingerprints   NarrativeFingerprint[]
+  narrativePlans NarrativePlan[]
+  scriptVersions ScriptVersion[]
+  originalityReports OriginalityReport[]
+  pipelineRuns   PipelineRun[]
+}
+
+model Source {
+  id                String   @id @default(cuid())
+  projectId         String
+  kind              String   // youtube | pasted
+  title             String
+  url               String?
+  videoId           String?
+  sourceLabel       String?
+  language          String?
+  transcriptStatus  String   @default("waiting")
+  transcriptOrigin  String?  // manual | official_oauth
+  rawTranscript     String?
+  normalizedHash    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project   Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  segments  TranscriptSegment[]
+  claims    Claim[]
+  fingerprint NarrativeFingerprint?
+}
+
+model TranscriptSegment {
+  id         String @id @default(cuid())
+  sourceId   String
+  startSec   Float?
+  endSec     Float?
+  text       String
+  orderIndex Int
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+model Claim {
+  id                     String  @id @default(cuid())
+  projectId              String
+  sourceId               String
+  neutralClaim           String
+  claimType              String
+  peoplePlacesDatesNumbers String?
+  timestampStart         Float?
+  timestampEnd           Float?
+  supportExcerpt         String
+  sourceCertainty        String
+  storyRelevance         String
+  requiredByUser         Boolean @default(false)
+  disabled               Boolean @default(false)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source  Source  @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+model FactPackItem {
+  id                       String  @id @default(cuid())
+  projectId                String
+  factId                   String
+  neutralStatement         String
+  sourceClaimIds           String
+  sourceCount              Int
+  peoplePlacesDatesNumbers String?
+  storyImportance          String
+  userPinned               Boolean @default(false)
+  userEdited               Boolean @default(false)
+  disabled                 Boolean @default(false)
+  editorNotes              String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model NarrativeFingerprint {
+  id                         String @id @default(cuid())
+  projectId                  String
+  sourceId                   String @unique
+  openingType                String
+  openingFunction            String
+  presentationOrder          String
+  presentationOrderFactIds   String?
+  dominantNarrativeLens      String
+  turningPointType           String
+  recurringDevices           String
+  distinctiveMetaphorsOrPhrases String
+  endingFunction             String
+  titleAndThumbnailPattern   String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  source  Source  @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+model NarrativePlan {
+  id              String @id @default(cuid())
+  projectId       String
+  treatmentIndex  Int
+  centralQuestion String
+  openingApproach String
+  narrativeLens   String
+  diffExplanation String
+  isSelected      Boolean @default(false)
+  isRecommended   Boolean @default(false)
+  isEdited        Boolean @default(false)
+
+  project Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  beats   NarrativeBeat[]
+}
+
+model NarrativeBeat {
+  id                      String @id @default(cuid())
+  planId                  String
+  beatNumber              Int
+  purpose                 String
+  shortDescription        String
+  claimIds                String
+  narrativeRole           String
+  proposedVisualIdea      String?
+  expectedDurationSeconds Int?
+
+  plan NarrativePlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+model ScriptVersion {
+  id            String   @id @default(cuid())
+  projectId     String
+  versionNumber Int
+  content       String
+  charCount     Int
+  estDurationSec Int?
+  isCurrent     Boolean  @default(true)
+  changeNote    String?
+  createdAt     DateTime @default(now())
+
+  project    Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  paragraphs ScriptParagraphTrace[]
+}
+
+model ScriptParagraphTrace {
+  id              String @id @default(cuid())
+  scriptVersionId String
+  paragraphIndex  Int
+  paragraphText   String
+  factIds         String
+  paragraphRole   String?
+
+  scriptVersion ScriptVersion @relation(fields: [scriptVersionId], references: [id], onDelete: Cascade)
+}
+
+model OriginalityReport {
+  id              String   @id @default(cuid())
+  projectId       String
+  overallStatus   String
+  phraseOverlap   String
+  hookSimilarity  String
+  orderSimilarity String
+  metaphorWarnings String?
+  unsupportedClaims String?
+  recommendedAction String
+  exportBlocked     Boolean  @default(false)
+  exportOverride    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  project  Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  findings OriginalityFinding[]
+}
+
+model OriginalityFinding {
+  id              String @id @default(cuid())
+  reportId        String
+  category        String
+  severity        String
+  explanation     String
+  affectedSection String
+  remedy          String?
+
+  report OriginalityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+model PipelineRun {
+  id          String   @id @default(cuid())
+  projectId   String
+  stage       String
+  status      String
+  errorMessage String?
+  startedAt   DateTime @default(now())
+  finishedAt  DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model YouTubeOAuthConnection {
+  id           String   @id @default(cuid())
+  ownerId      String   @unique @default("local-user")
+  channelId    String?
+  channelTitle String?
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ChannelStyleProfile {
+  id                  String   @id @default(cuid())
+  ownerId             String   @default("local-user")
+  name                String
+  defaultLanguage     String   @default("hi")
+  audience            String?
+  vocabularyNotes     String?
+  charsPerMinute      Int      @default(900)
+  tonePreset          String   @default("explanatory")
+  bannedPhrases       String?
+  preferredPhrases    String?
+  channelCta          String?
+  signOff             String?
+  styleExamples       String?
+  isDefault           Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  projects Project[]
+}
+
+model PromptProfile {
+  id                String   @id @default(cuid())
+  ownerId           String   @default("local-user")
+  name              String
+  genre             String?
+  styleInstructions String
+  targetLanguage    String   @default("hi")
+  audience          String?
+  pacingNotes       String?
+  ctaNotes          String?
+  titleNotes        String?
+  thumbnailNotes    String?
+  visualNotes       String?
+  preferredVocab    String?
+  bannedPhrases     String?
+  version           Int      @default(1)
+  isDefault         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  projects Project[]
+}

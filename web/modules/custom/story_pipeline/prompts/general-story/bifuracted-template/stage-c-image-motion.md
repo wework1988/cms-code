@@ -18,7 +18,7 @@
     (e.g. 1–10, 11–20, 21–30 ...). Each batch is a separate ChatGPT call.
 
   WHY BATCH BY SCENE_RANGE
-  Every IMAGE PROMPT must normally exceed 3000 characters. ChatGPT cannot
+  Every IMAGE PROMPT must exceed 3000 characters (see HARD LENGTH RULE). ChatGPT cannot
   produce 80–110 such prompts in a single response. Stage C is designed to be
   called multiple times in small batches (5–10 scenes per call is safe).
 
@@ -79,246 +79,144 @@
 
   Use this visual language implicitly in every IMAGE PROMPT:
 
-  2D digital animated illustration; cinematic hand-drawn 2D matte painting; clean
-  hand-drawn line art; flat cel shading; minimal texture; simplified forms with
-  strong readability; documentary realism; restrained stylisation; region-accurate
-  facial features; historically grounded environments; muted documentary color
-  palette unless the scene clearly requires warmer or brighter tonal treatment;
-  no photorealism; no 3D rendering; no ray tracing; no global illumination;
-  no depth of field blur; no cinematic lens artifacts; no glossy CGI finish;
-  no hyper-detailed skin texture; no HDR realism.
+  Semi-realistic hand-drawn 2D graphic novel illustration; clean readable contours;
+  controlled cel shading with one or two value steps; natural skin tones; expressive
+  but grounded faces; simplified forms with strong subject hierarchy; historically
+  grounded environments with concrete local detail; documentary realism with
+  restrained stylisation; region-accurate facial features; setting-specific colour
+  palettes and motivated lighting derived from this story's time of day, geography,
+  and mood — not a uniform dark or crime-template look.
+
+  Daylight and interior day scenes: natural readable illumination, visible facial
+  features, believable local colours. Night scenes: readable faces and key subjects
+  with motivated practical light (street lamps, windows, screens, bulbs) — not crushed
+  black silhouettes unless the narration explicitly calls for near-darkness.
 
   Always implicitly avoid: photorealistic; ultra realistic; 3D render; CGI;
-  ray tracing; global illumination; lens flare; bokeh; depth of field blur;
+  ray tracing; lens flare; bokeh;
   bloom; volumetric fantasy light; hyper-detailed pores; photo textures;
-  futuristic design unless era supports it; neon colors unless era and setting
-  clearly support them; watermark; logo; text overlay; poster layout;
+  uniformly dark or sinister grading on ordinary non-threat scenes; repetitive
+  desk-monitor-silhouette-evidence-board templates when narration supports a
+  different anchor; futuristic design unless era supports it; neon colors unless era
+  and setting clearly support them; watermark; logo; text overlay; poster layout;
   empty stage-like backgrounds.
 
   --------------------------------------------------------------------------------
-  SHARED §2 — HOSTILE ACTOR VISUAL MENACE (MANDATORY)
+  SHARED §1A — FACTUAL CONTINUITY LOCKS vs ADAPTABLE VISUAL DEFAULTS
   --------------------------------------------------------------------------------
 
-  A "hostile actor" means: terrorist, extremist, radical handler, hostile
-  recruiter, radical propagandist, violent conspirator, terror commander,
-  operative, handler, suspect linked to hostile activity, criminal operative,
-  or hostile-network member — as identified by the source story or the
-  STORY CONFIG BLOCK.
+  FACTUAL LOCKS (must stay consistent across all stages):
+  - era, geography, architecture, infrastructure, vehicles, technology;
+  - recurring character identity, library locks, origin, role category;
+  - hostile-actor presence and severity ONLY when identified in the source story;
+  - public-figure handling; sensitive-content exclusions; story-specific negatives.
 
-  §2.1 ABSOLUTE MANDATE
-  When a hostile actor appears in main subject or supporting subject, the
-  image MUST visually communicate menace clearly enough that any viewer reads
-  the figure as a hardened militant / extremist / threatening operative within
-  1–2 seconds of glancing at the frame. A hostile actor that looks like an
-  ordinary passer-by, a regular working-class man, a neutral civilian, a
-  gentle uncle, a humble teacher, or a calm stranger is a FAILED prompt.
+  ADAPTABLE VISUAL DEFAULTS (choose per scene from narration + config, not a global dark style):
+  - time of day and weather; lighting source and direction; palette warmth or coolness;
+  - camera scale and framing; dominant anchor (face, crowd, landscape, object, building);
+  - atmosphere family for that beat.
 
-  The hostile figure must be visually DIFFERENT from ordinary civilians of
-  the same region — not because of religion or ethnicity, but because of
-  hardened expression, weathered face, rough grooming, dark/sunken eyes,
-  heavy beard discipline, posture, lighting, and costume choices that mark
-  them as operationally dangerous.
-
-  §2.2 MANDATORY VISUAL MARKERS (must include — not optional)
-
-  When describing a hostile actor in any IMAGE PROMPT, the description MUST
-  include AT LEAST one item from EACH of the four groups below. Combinations
-  are required; isolated single cues are insufficient.
-
-  GROUP A — FACE & GROOMING (must include at least 2)
-  - heavy long beard, dark or greying with age, untrimmed or rough-edged
-  - weathered sun-worn skin with deep lines or hollow cheeks
-  - hardened face with tense jaw and tight mouth
-  - dark sunken or shadowed eyes; sharp narrowed gaze
-  - rough stubble where a full beard is not contextually appropriate
-  - thick brow shadow over deep-set eyes
-  - a face that has seen violence, hardship, or operational stress
-
-  GROUP B — EXPRESSION & GAZE (must include at least 1)
-  - cold predatory stare directed at a phone, file, person, or off-frame point
-  - narrowed eyes with controlled menace
-  - guarded sideways glance toward a doorway or exit
-  - expressionless mask hiding internal calculation (NOT blank-neutral; must
-    read as deliberate stillness, not absence of feeling)
-  - low-lidded watchful gaze with weight behind it
-  - jaw locked in suppressed aggression
-
-  GROUP C — BODY LANGUAGE & POSTURE (must include at least 1)
-  - shoulders hunched forward in secretive concentration
-  - body angled away from the dominant light source so half the face stays
-    in shadow
-  - one hand gripping a phone, weapon stock, file, or device too tightly
-  - the other hand near a pocket, bag, doorway, or hidden compartment
-  - controlled stillness with weight forward — coiled, not relaxed
-  - watchful posture near corners, walls, exits, or shutter edges
-  - subtle protective stance shielding a device, screen, or paper
-
-  GROUP D — COSTUME & SETTING-LINKED CUES (must include at least 1)
-  - conservative dark or muted shalwar kameez (Pakistan/Pashtun context)
-  - loose kurta with rough waistcoat or shawl over it
-  - skullcap, prayer cap, pakol, turban, or wrapped head covering where the
-    story geography supports it
-  - worn dusty sandals or scuffed practical footwear
-  - earth-tone or dust-toned fabric showing real wear and travel
-  - militant-context accessories: cloth bag, rolled paper, hidden phone,
-    cheap smartphone clutched low
-  - harsh side or back lighting that throws half the face into deep shadow
-    while edge-lighting the beard and brow
-
-  If any of A/B/C/D is missing, the prompt has not satisfied §2 and must be
-  strengthened before output.
-
-  §2.3 NEVER DESCRIBE HOSTILE ACTORS AS
-  gentle • calm in a peaceful way • soft-faced • innocent • kind-looking •
-  warm • graceful • saintly • pure • humble • harmless • charming • heroic •
-  stylish • attractive in a beauty sense • charismatic • emotionally
-  sympathetic • noble • ordinary • regular • neutral civilian • clean-shaven
-  modern man (unless story explicitly says disguise) • a normal passer-by •
-  a working-class everyman • an unremarkable face in the crowd •
-  documentary-flat • blank • generic.
-
-  §2.4 RADICALISATION / PROPAGANDA / RECRUITMENT / CYBER-MANIPULATION
-  Show manipulation through: posture, screen framing, closed rooms, hidden
-  phones, coded communication, aggressive hand gestures, secretive group
-  attention, suspicious device use, tense silence, low-bulb lighting.
-  Do NOT make propagandists look like calm teachers, gentle spiritual guides,
-  innocent speakers, harmless content creators, or warm community elders.
-  A radical propagandist must look hardened, manipulative, controlling, or
-  predatory — not warm or paternal.
-  Avoid readable religious text; readable extremist slogans; explicit
-  propaganda symbols; extremist logos; graphic gore; glorified violence.
-  Communicate danger through behaviour, setting, lighting, and atmosphere —
-  not through gore.
-
-  §2.5 CONTINUITY
-  Hostile actors must remain visually tense, secretive, hardened, and morally
-  threatening across all scenes UNLESS the story explicitly shows disguise or
-  deception. Same hardened face structure, same beard discipline, same
-  clothing family, same posture language, same lack of warmth in every scene.
-
-  §2.6 CIVILIAN SEPARATION RULE (UNCHANGED — STILL MANDATORY)
-  Ordinary civilians from the same religion / region / ethnicity / clothing
-  family as hostile actors must REMAIN ordinary civilians — never inherit
-  hostile coding because of beard, skullcap, prayer cap, shalwar kameez,
-  hijab, mosque background, or religious clothing alone. Apply hostile coding
-  ONLY when the story or STORY CONFIG BLOCK clearly identifies the person as
-  a hostile actor.
-
-  The §2 mandate intensifies coding for IDENTIFIED hostile actors. It does
-  NOT spread that coding to ordinary civilians who happen to share a region,
-  religion, or clothing style. The two rules work together, not against each
-  other.
-
-  §2.7 LIGHTING RULE FOR HOSTILE ACTORS
-  Use directional menace lighting:
-  - harder side light or back-rim light cutting one side of the face dark;
-  - weak phone glow under the chin or across one eye, leaving the rest in
-    dirty shadow;
-  - single low overhead bulb creating harsh downward shadow under brows and
-    cheekbones;
-  - sodium streetlight or weak tube light flattening the skin to dusty cool;
-  - doorway silhouette where the figure reads as outline first, face second.
-  Avoid soft beauty lighting, devotional glow, warm halo light, dreamy
-  backlight, heroic rim lighting, saintly illumination, balanced studio
-  three-point lighting, or even overcast daylight that flattens the face into
-  neutrality.
-
-  §2.8 FIRST-GLANCE READABILITY MANDATE
-  A hostile-actor frame passes only if a viewer scrolling past at normal
-  speed can read the figure as a hardened militant / terrorist / extremist /
-  operative within 1–2 seconds — based on silhouette, beard, expression,
-  posture, lighting, and costume alone, BEFORE reading any context detail in
-  the background.
-
-  If the figure could plausibly be mistaken for a routine working-class man,
-  a calm religious teacher, a neighborhood shopkeeper, a generic uncle, or a
-  friendly passer-by, the prompt has FAILED §2.8 and must be strengthened
-  before output.
-
-  Concrete test: cover the background in your mind. Look only at the figure.
-  Does the silhouette + face + grooming + posture + lighting still read as
-  "this person is operationally dangerous"? If not, strengthen.
-
-  §2.9 CINEMATIC INTENSITY PERMISSION (within grounded realism)
-  Hostile actors may — and should — be rendered with heightened cinematic
-  expressiveness:
-  - strong directional chiaroscuro lighting on the face;
-  - exaggerated silhouette readability (heavy beard, distinctive headwear,
-    layered fabric outline);
-  - compressed depth pulling the figure forward against a darker background;
-  - micro-expression intensity (visible jaw tension, breath held, controlled
-    rage, quiet menace) instead of neutral inert face;
-  - grounded but emotionally charged staging.
-
-  This is NOT a permit for cartoon villainy, fantasy stylisation, surrealism,
-  or visual exaggeration that breaks documentary realism. It IS a permit for
-  the cinematic intensity of films like Sardar Udham, Article 15, The Family
-  Man, Mumbai Diaries, Tehran, Munich, or Zero Dark Thirty — grounded but
-  visually striking and emotionally readable.
-
-  When in doubt: more menace, not less. The story-safety risk is softness,
-  not severity.
-
-  §2.10 HOSTILE STAGING TEMPLATE BLOCK (mandatory verbatim insertion)
-  When a hostile actor is the main subject or co-subject of a scene, Stage C
-  MUST open the Foreground section with a description block built on this
-  template. The block must appear as the FIRST descriptive content inside
-  Foreground (before any environmental detail, before any object detail,
-  before any other character). Image models weight earlier tokens more
-  heavily — burying the hostile description mid-prompt is the primary cause
-  of softening.
-
-  TEMPLATE (fill the bracketed slots from the scene; never omit any slot):
-
-    "{role-archetype} figure, {age range} years old, {ethno-regional descriptor},
-    {build} build, {face descriptor including weathered/hardened cues},
-    {beard descriptor — heavy/long/dark/greying as appropriate to age},
-    {headwear if context supports — skullcap / pakol / turban / wrapped scarf
-    / none-with-rough-hair}, {costume — shalwar kameez / kurta + waistcoat /
-    muted regional clothing, with wear and dust}, {expression — hardened /
-    narrowed / cold / predatory / guarded — never neutral, never gentle},
-    {gaze direction and intensity}, {posture — hunched / coiled / angled
-    away from light / shoulders forward}, {hand placement — gripping device /
-    near pocket / shielding object / resting on file}, {lighting effect on
-    face — half-shadow / phone-glow / harsh side / single bulb under-light}"
-
-  EXAMPLE FILLED:
-  "A hardened Pakistan-based Islamist militant figure, late thirties to early
-  forties, Pakistani Pashtun with weathered sun-worn skin and sharp cheekbones,
-  medium build, hollow-cheeked face with deep brow shadow and tense jaw, heavy
-  dark untrimmed beard reaching mid-chest, brown wool pakol pulled low over
-  the forehead, loose dust-toned shalwar kameez with a rough grey-brown
-  waistcoat over it, narrowed cold eyes fixed on a cheap smartphone in his
-  left hand, fingers gripping the device too tightly, right hand resting near
-  a cloth shoulder bag at his hip, shoulders hunched forward in secretive
-  concentration, body angled so the harsh tube light from upper-left throws
-  the right side of his face into deep dirty shadow while edge-lighting the
-  beard and brow"
-
-  This block must NEVER be skipped, NEVER softened, NEVER replaced with a
-  shorter neutral description, and NEVER pushed to Midground or Background.
-
-  §2.11 SOFTENING DETECTION & REJECTION
-  Before finalising any IMAGE PROMPT containing a hostile actor, scan the
-  generated text for softening markers. Strike and rewrite if any of these
-  appear in the hostile-actor description:
-  - "ordinary", "regular", "normal", "everyday" applied to the hostile figure
-  - "calm", "peaceful", "gentle", "soft", "warm", "kind", "humble"
-  - "neutral expression", "blank face", "relaxed posture", "pleasant"
-  - "well-groomed", "clean-cut", "modern", "fashionable", "stylish"
-    (unless story explicitly states disguise)
-  - "smiling", "friendly", "approachable", "open posture"
-  - "spiritual", "saintly", "devotional", "reverent" (for hostile figures)
-  - "documentary-flat", "balanced lighting", "even illumination"
-  - any descriptor that, removed from context, could equally describe a
-    shopkeeper, schoolteacher, or family man.
-
-  If any of the above are detected in the hostile-actor description block,
-  the description has failed and must be regenerated using §2.2 mandatory
-  markers and §2.10 staging template.
+  Stage A must ground abstract visual guidance in THIS story's actual locations,
+  period, and cast — not generic investigation or crime defaults. When hostile actors
+  are absent, mark HOSTILE ACTOR VISUAL PROFILE fields N/A and do NOT propagate
+  threat lighting to ordinary civilians or neutral scenes.
 
   --------------------------------------------------------------------------------
-  SHARED §3 — REGION / ORIGIN / IDEOLOGY VISUAL MAPPING
+  SHARED §1B — DEFINITE VISUAL REALIZATION
+  --------------------------------------------------------------------------------
+
+  Final IMAGE PROMPT text must describe ONE definite realization per visual attribute.
+  Do NOT leave mutually exclusive appearance, setting, camera, or action choices
+  unresolved in generated output.
+
+  Examples of FORBIDDEN unresolved alternatives:
+  - "shirt or kurta"
+  - "clean-shaven or trimmed beard"
+  - "dark-brown/black hair"
+  - "parked or slowly moving"
+  - wide age spans such as "30s to 50s" when a single casting band is required
+
+  This rule targets unresolved visual alternatives — not ordinary grammatical "or"
+  inside quoted narration or abstract prose.
+
+  FACTUAL vs CASTING:
+  - Do NOT invent a historical age, identity, or location and present it as established fact.
+  - When the source is silent, choose one plausible casting value; approximate age is acceptable.
+  - Library-locked traits are exact — copy verbatim; offer no alternatives.
+
+  Stage A: for recurring characters without library lock, record one definite visual identity
+  in roster fields (single hair colour, grooming choice, clothing baseline, build cues).
+  Stage B: commit to one supported staging choice per scene; do not output alternative
+  locations, poses, vehicle states, or object sides when one frame requires a decision.
+  Stage C: render the selected choice consistently; if plot-critical uncertainty cannot be
+  resolved from source, use a broader supported depiction rather than inventing a fact.  --------------------------------------------------------------------------------
+  SHARED §1C — VIEWPOINT, CAMERA MOVEMENT, AND SUBJECT MOVEMENT (THREE DECISIONS)
+  --------------------------------------------------------------------------------
+
+  These are separate decisions — do not collapse them:
+
+  A. VIEWPOINT / FRAMING (Stage B → Camera scale suggestion; Stage C → IMAGE PROMPT):
+     wide, medium, close-up, insert, side/profile, over-shoulder, low angle, elevated,
+     overhead, aerial — chosen for what the viewer must notice.
+
+  B. CAMERA MOVEMENT (Stage C → DIGEN MOTION PROMPT only):
+     locked-off hold OR one slow restrained move (push-in, pull-back, small pan/tilt,
+     short lateral slide, gentle tracking, limited arc, slow aerial drift when the image
+     is already aerial). A close-up is not movement.
+
+  C. SUBJECT MOVEMENT (frozen in current pipeline):
+     stillness or a small story-supported frozen action in the IMAGE PROMPT only.
+     Do not add walking, driving, or lip-sync in the motion prompt.
+
+  Stage B records camera purpose silently in Breakdown note (geography, interaction,
+  emotion, action, evidence, consequence). Stage C matches motion to that purpose.
+
+  --------------------------------------------------------------------------------
+  SHARED §2 — HOSTILE / SUSPECT / CRIMINAL SUBJECT CODING (CONDITIONAL)
+  --------------------------------------------------------------------------------
+
+  SCOPE: Apply ONLY when the STORY CONFIG BLOCK records "Hostile actors present: yes"
+  AND this scene's main or supporting subject is a confirmed hostile actor, suspect,
+  criminal operative, or threat-network member named in the story. Otherwise skip §2
+  entirely for this scene.
+
+  PRINCIPLE — behaviour over appearance coding:
+  Show story-supported threat through depicted ACTION, concealment, spatial
+  relationship, attention direction, expression, or tense gesture — not through
+  automatic sinister faces, dirty half-shadow, rough-grooming mandates, or bans on
+  ordinary appearance, clean-shaven faces, trimmed beards, soft daylight, or balanced
+  readable lighting.
+
+  A suspect or criminal courier MAY look ordinary — like any working-class person in
+  that region. Do NOT make role or morality determine facial anatomy, grooming,
+  clothing cleanliness, class markers, skin tone, or lighting quality.
+
+  WHEN §2 APPLIES, describe:
+  - the story-supported frozen beat (handoff, surveillance, flight, concealment, interception);
+  - gaze direction and body orientation toward exits, contacts, or story objects;
+  - tension appropriate to narration (guarded, evasive, startled) without caricature;
+  - clothing and props supported by the story with stable continuity across scenes;
+  - motivated lighting for time and place that keeps faces READABLE.
+
+  DO NOT:
+  - require heavy beard, skullcap, pakol, turban, or religious dress unless the story
+    explicitly identifies that person and that appearance;
+  - ban clean-shaven faces, neatly trimmed beards, or "ordinary man / neutral civilian /
+    working-class everyman / harmless appearance" in positives or negatives;
+  - apply §2 posture or lighting to bystanders, officers, or civilians;
+  - paste hostile-only NEGATIVE exclusions into scenes without hostile subjects.
+
+  §2.1 CONTINUITY
+  Story-established clothing, footwear, hair, bag material, and props remain stable
+  unless narration supports a change. Named recurring characters (including officers)
+  keep the same identifying details scene to scene.
+
+  §2.2 WHEN HOSTILE ACTORS ABSENT
+  When "Hostile actors present: no", all HOSTILE ACTOR VISUAL PROFILE fields in Stage A
+  are N/A. Stages B and C do not apply §2.
+
+--------------------------------------------------------------------------------
+SHARED §3 — REGION / ORIGIN / IDEOLOGY VISUAL MAPPING
   --------------------------------------------------------------------------------
 
   For every recurring character or group, detect and assign:
@@ -353,64 +251,20 @@
   radical handler, hostile recruiter, propagandist, violent conspirator, terror
   commander, operative, handler, or suspect linked to hostile activity.
 
-  §3.6 PAKISTAN-BASED ISLAMIST MILITANT VISUAL PROFILE (MANDATORY MINIMUMS)
-  Apply only when the story explicitly identifies the actor as a Pakistan-based
-  Islamist militant, terror commander, extremist recruiter, LeT-linked figure,
-  JeM-linked figure, Taliban-style militant, jihadist handler, radical preacher,
-  or militant network operative.
-  Do NOT describe them merely as "Muslim civilians."
-  Do NOT make ordinary Muslim civilians look threatening (SHARED §2.6).
+    §3.6 PAKISTAN-BASED ISLAMIST MILITANT CONTEXT (CONDITIONAL)
+  Apply only when the story explicitly names the actor as a Pakistan-based Islamist
+  militant, terror commander, extremist recruiter, LeT/JeM-linked figure, Taliban-style
+  militant, or jihadist handler — not from religion or dress alone.
 
-  When this profile applies, the IMAGE PROMPT description MUST include ALL of
-  the following — these are not optional cues, they are mandatory minimums:
+  When this profile applies, use story-supported behaviour and period-accurate regional
+  clothing. Faces remain readable. Do NOT require heavy beard, skullcap, pakol, or turban
+  unless the story establishes that appearance. Do NOT ban clean-shaven or trimmed grooming
+  unless disguise is narratively excluded.
 
-  REQUIRED (must be present):
-  1. Heavy long beard, dark or greying with age, untrimmed and rough-edged
-    (a clean-shaven or trimmed-modern look is FORBIDDEN unless the story
-    explicitly states disguise).
-  2. Conservative regional clothing — shalwar kameez, loose kurta, with rough
-    waistcoat or shawl where regionally appropriate, in muted earth tones
-    with visible dust and wear.
-  3. Hardened weathered face — sun-worn skin, deep brow shadow, hollow or
-    sharp cheek lines, tense jaw, narrowed or sunken eyes.
-  4. Visible posture menace — guarded, hunched, watchful, or angled-away-
-    from-light stance. Never an open, relaxed, friendly, or balanced stance.
-  5. Directional menace lighting — half-shadow on the face, harsh side or
-    under-light, weak phone glow, or single low bulb (SHARED §2.7). Never
-    soft balanced light.
+  Avoid: readable religious text; extremist logos; propaganda glorification; graphic gore;
+  making ordinary Muslim civilians look threatening (SHARED §2.6).
 
-  REQUIRED WHERE GEOGRAPHY SUPPORTS:
-  - skullcap, prayer cap, pakol, turban, or wrapped head covering
-  - worn dusty sandals or scuffed practical footwear
-
-  ABSOLUTELY FORBIDDEN:
-  - modern stylish influencer look
-  - clean-shaven soft modern face (unless story says disguise)
-  - fashionable hero jacket, polished urban styling
-  - glamorous villain styling
-  - warm devotional glow, saintly religious-teacher look
-  - innocent civilian framing
-  - balanced studio lighting on the face
-  - friendly smile, open posture, gentle expression
-  - readable religious text, readable extremist slogans, extremist logos
-  - glorified weapons display, graphic gore
-
-  KPK / tribal belt / Waziristan / Peshawar outskirts / Afghan-border context:
-  Pashtun/north-western Pakistan cues — long beard; pakol or turban where
-  appropriate; loose shalwar kameez; rough waistcoat; dusty sandals; weathered
-  skin; sharp cheekbones; sun-worn face; guarded body language.
-
-  Punjab / urban Pakistan extremist networks: shalwar kameez; waistcoat; long
-  beard; skullcap where appropriate; conservative grooming; muted colours;
-  controlled suspicious posture.
-
-  Avoid for any of the above: modern stylish influencer look; clean-shaven soft
-  face unless story states disguise; fashionable hero jacket; glamorous villain
-  styling; warm devotional glow; saintly religious-teacher look; innocent
-  civilian framing; readable religious text; readable extremist slogans;
-  extremist logos; glorified weapons display; graphic gore.
-
-  §3.7 ARCHETYPE QUICK REFERENCE
+§3.7 ARCHETYPE QUICK REFERENCE
   A. Pakistan-based Islamist militant / LeT / JeM / terror commander — see §3.6.
   B. KPK / tribal-belt / Afghan-border hostile militant — Pashtun cues, long
     beard, pakol/turban/skullcap, loose shalwar kameez, rough waistcoat, dusty
@@ -500,11 +354,22 @@
   stable design from: era + geography + profession + class + role + context.
   Lock the inferred identity and reuse it consistently.
 
-  §5.4 HOSTILE RECURRING CHARACTERS
-  Maintain the same threatening visual identity across scenes: same hardened
-  face structure; same guarded eye behaviour; same rough grooming family;
-  same clothing logic; same suspicious posture language; same lack of warmth
-  or heroism.
+  §5.4 SUSPECT / HOSTILE RECURRING CHARACTERS (when §2 applies)
+  Maintain stable identity across scenes: same face structure, grooming, clothing,
+  footwear, bag, and props unless narration supports a change. Show tension through
+  story-supported action and expression — not automatic sinister appearance or
+  compulsory half-shadow.
+
+  §5.5 POSITIVE IDENTITY IN OUTPUT
+  Recurring characters and objects need positive identity descriptions in IMAGE PROMPT text —
+  not generic negatives alone. Before any "no identity drift" negative, state the stable traits:
+  apparent age band, face structure, hairstyle and colour, facial hair, glasses, build,
+  clothing family, footwear, and identifying accessories for people; colour, material,
+  shape, size, and distinctive features for recurring objects. Allow changes only when
+  narration, elapsed time, or an explicitly established costume change supports them.
+
+  On repeat appearances, restate only the traits needed for recognition — do not paste full
+  roster paragraphs every scene unless identity or costume changed.
 
   --------------------------------------------------------------------------------
   SHARED §6 — SOURCE TEXT (HINDI LINE) PRESERVATION
@@ -538,11 +403,10 @@
   or split-screen composites.
 
   §7.4 ABSTRACT LINES INVOLVING DANGER / RADICALISATION / TERRORISM
-  Ground them through: tense faces, suspicious devices, dim rooms, hidden
-  phones, marked maps, closed shutters, coded notes without readable text,
-  officers reviewing evidence, hostile actors watching screens with guarded
-  body language. Do NOT create peaceful spiritual symbolism or soft emotional
-  portraits of hostile actors.
+  Ground them through story-supported action and setting: tense faces, suspicious devices,
+  marked maps, closed shutters, coded notes without readable text, officers reviewing
+  evidence, guarded body language. Do NOT default to dim rooms or sinister faces when the
+  narration supports daylight or ordinary surroundings.
 
   --------------------------------------------------------------------------------
   SHARED §8 — SCENE CONTEXT LABEL RULES
@@ -558,17 +422,15 @@
   - Avoid all real personal names where possible; describe role/archetype
     instead.
 
-  §8.3 HOSTILE-SCENE STRENGTHENING
-  If a scene includes a hostile actor, do NOT use soft labels. Strengthen the
-  label with grounded threat language. Examples:
+  §8.3 SCENE LABEL CLARITY
+  Use concrete role + action + setting from the narration. Do not soften into vague labels,
+  but do not inject menace words (shadow, hardened, hostile) unless the story supports them.
 
-    Soft (forbidden)              →   Stronger (preferred)
-    Young Man Watches Video       →   Hostile Recruiter Watches Screen
-    Religious Speaker Talks       →   Radical Handler Controls Room
-    Group Listening Quietly       →   Suspicious Group Receives Message
-    Man Uses Phone                →   Threat Network Studies Phone
-    Calm Speaker Addresses Room   →   Hostile Propagandist Shapes Narrative
-    Gentle Man In Room            →   Criminal Handler Waits In Shadow
+    Weak (forbidden)              →   Clear (preferred)
+    Young Man Watches Video       →   Courier Checks Phone Message
+    Man Uses Phone                →   Suspect Reads Platform Alert
+    Important Scene               →   Railway Locker Key Exchange
+    Gentle Man In Room            →   Contact Waits At Tea Stall
 
   §8.4 GOOD EXAMPLES
   Opening Cyber Room Silence • Screens Replay Suspicious Video • Officer
@@ -618,54 +480,48 @@
   Abstract commentary visualized physically.
 
   --------------------------------------------------------------------------------
-  SHARED §11 — UNIVERSAL NEGATIVES (sensitive content)
+    SHARED §11 — NEGATIVE PROMPT SELECTION (Stage C)
   --------------------------------------------------------------------------------
 
-  Always exclude in IMAGE PROMPT NEGATIVE section. Stage A may add story-specific
-  negatives on top of these — read the STORY_CONFIG_BLOCK for that list.
+  Stage C builds a compact NEGATIVE section per scene — approximately 6–12 items,
+  semicolon-separated. Do NOT copy the entire shared library, character-library
+  metadata blocks, or all story-level exclusions into every scene.
 
-  Universal:
-  photorealism; ultra realism; 3D render; CGI; ray tracing; global
-  illumination; glossy surfaces; HDR realism; lens flare; blur; depth of field;
-  bloom; neon colors; fantasy smoke; exaggerated caricature; text overlay;
-  watermark; logo; readable labels; readable document text; readable insignia;
-  modern futuristic infrastructure not supported by era.
+  BASE CORE (include 5–7 of these on most scenes when relevant):
+  photorealistic; 3D render; CGI; text overlay; watermark; logo; readable labels;
+  readable document text; split-screen; collage; empty stage-like background.
 
-  When hostile actors are present, ALWAYS include these strong anti-soft
-  exclusions (these are the highest-priority negatives for hostile scenes):
-  gentle face; innocent expression; warm smile; friendly smile; saintly glow;
-  heroic pose; glamorous styling; cute look; sympathetic victim framing;
-  soft devotional lighting; polished influencer appearance; fashionable
-  villain glamour; harmless appearance; noble martyr framing; romanticised
-  extremist look; ordinary man; regular passer-by; neutral civilian look;
-  working-class everyman; unremarkable face in the crowd; documentary-flat
-  hostile actor; blank neutral face; relaxed posture; open friendly stance;
-  balanced studio lighting on the face; even soft daylight on the face;
-  clean-shaven soft modern face (unless story states disguise); trimmed
-  fashionable beard; humble teacher look; calm spiritual guide look; gentle
-  uncle look; pleasant approachable expression; warm community elder framing;
-  modern stylish jacket; polished urban styling on militant.
+  ADD ONLY when this scene could plausibly err:
+  - weapons / gore / blood — only if narration touches violence or weapons;
+  - propaganda / extremist logos / readable religious text — only on propaganda or
+    confirmed extremist-beat scenes;
+  - mobile UI / readable messages — only when phones or screens are focal;
+  - identity firewall — only when Library lock is present: merged identity; wrong
+    locked character; identity drift; borrowed facial features;
+  - story-specific negatives from STAGE CONFIG — only items relevant to THIS scene.
 
-  When Islamist militant context is present, additionally exclude:
-  readable religious text; readable propaganda slogans; extremist logos;
-  extremist flags; ordinary Muslim civilians portrayed as threatening;
-  religion-only threat coding; ethnic stereotyping; clean-shaven soft
-  militant if config requires heavy long beard; gentle religious-teacher look
-  for confirmed hostile extremist; saintly preacher framing for hostile
-  recruiter; warm devotional glow on hostile figure; soft balanced light on
-  militant face; modern fashionable dress on confirmed militant.
+  NEVER bulk-paste anti-soft hostile lists (ordinary man; neutral civilian;
+  harmless appearance; balanced studio lighting; even soft daylight; clean-shaven;
+  skullcap; pakol; turban; long religious beard) into scenes without hostile subjects
+  or without a story-supported identity reason.
 
-  Common scene-specific exclusions (add when relevant):
-  visible weapon if it should not appear; beard / clean-shaven if continuity
-  requires; suit / tie if inappropriate; hero pose if inappropriate; crowd if
-  scene should feel empty; smiling expression if mood is serious; readable app
-  names; readable chat text; readable website names; readable phone numbers;
-  readable maps; readable official seals; real political party symbols;
-  explicit public figure labels; graphic gore; explicit brutality; blood
-  splatter unless specifically required.
+  Before output, scan positive description against negatives and remove contradictions:
+  - glossy photographic paper or metal reflection is allowed; ban photorealistic and CGI,
+    not all gloss;
+  - if background simplification is desired, ban illegible focal faces — do not ban all
+    blur or depth of field while keeping the main subject sharp;
+  - ban photorealism and CGI rather than blanket-banning global illumination when natural
+    daylight is the positive goal.
 
-  --------------------------------------------------------------------------------
-  SHARED §12 — LOCKED CHARACTER LIBRARY
+  Stage A may list story-specific negatives; Stage C adds only those relevant to THIS scene.
+  NEGATIVE vs camera viewpoint:
+  Exclusions such as futuristic spy gadgets or police gear refer to in-story devices — not
+  aerial, elevated, or overhead cinematography. Do not add negatives that would forbid
+  requested camera viewpoints, natural daylight, or selective focus when the scene needs them.
+
+
+--------------------------------------------------------------------------------
+SHARED §12 — LOCKED CHARACTER LIBRARY
   --------------------------------------------------------------------------------
 
   §12.1 PURPOSE
@@ -1038,17 +894,12 @@
   to an archetype before copying. The anchor must remain §4-compliant
   after copy.
 
-  §12.8 INTERACTION WITH SHARED §2 (HOSTILE ACTOR)
-  If a character is BOTH library-locked AND identified as a hostile
-  actor by the STORY CONFIG BLOCK or LOCKED SCENE BREAKDOWN, SHARED §2
-  takes precedence over the library lock for any conflicting attribute.
-  In practice this should not occur — library bodies are expected to be
-  self-consistent with each character's role. If a conflict is
-  detected, satisfy SHARED §2 (especially §2.10 staging template, §2.11
-  softening detection) and override the conflicting library content for
-  that character in that scene only. Note the override at the end of
-  the IMAGE PROMPT NEGATIVE section as
-    "[LIBRARY OVERRIDE FOR §2: hostile mandate took precedence over locked body for one conflicting attribute]".
+    §12.8 INTERACTION WITH SHARED §2 (LIBRARY vs SUSPECT CODING)
+If a library-locked anchor conflicts with SHARED §2 behaviour-based suspect coding or
+readable-lighting rules, the LOCKED CHARACTER ANCHOR is copied VERBATIM — prompts cannot
+override verbatim library bodies. Apply scene action, lighting, and staging around the
+anchor. Note irreconcilable library menace wording in Breakdown note (Stage B) or
+Lighting clause (Stage C) for human review — do not silently drop the anchor.
 
   §12.9 ABSENCE OF LIBRARY
   If CHARACTER_LIBRARY is empty / NONE, no scene has a "Library lock:"
@@ -1062,7 +913,7 @@
 
   ROLE
   You are a storyboard-grade Cinematic Storyboard Image Prompt Engine
-  specialized in historically grounded 2D matte painting scene generation.
+  specialized in historically grounded semi-realistic 2D graphic novel scene generation.
   Convert the LOCKED SCENE BREAKDOWN into IMAGE PROMPT + DIGEN MOTION PROMPT
   per scene.
 
@@ -1099,40 +950,34 @@
     copy that anchor into the IMAGE PROMPT without changing the breakdown;
   - generate a richly detailed, historically grounded image prompt;
   - maintain stable character identity (SHARED §5);
-  - render in cinematic hand-drawn 2D matte painting (SHARED §1);
+  - render in semi-realistic hand-drawn 2D graphic novel style (SHARED §1);
   - keep all prompts META AI safe and text-to-image friendly;
-  - IMAGE PROMPT must normally exceed 3000 characters (see HARD LENGTH);
+  - IMAGE PROMPT must exceed 3000 characters (see HARD LENGTH RULE);
   - every scene must feel art-directed, production-designed, geographically
     grounded, materially specific, and visually practical for image-to-video.
 
-  HOSTILE ACTOR — FRONT-LOAD MANDATE
-  If main subject or co-subject is a hostile actor (terrorist, extremist,
-  radical handler, hostile recruiter, propagandist, criminal operative,
-  suspect linked to hostile activity, or hostile-network member):
-
-  1. Apply SHARED §2 in full — including §2.1 (absolute mandate), §2.2
-    (mandatory visual markers from all four groups A/B/C/D), §2.7
-    (directional menace lighting), §2.8 (first-glance readability),
-    §2.9 (cinematic intensity permission), and §2.11 (softening detection).
-  2. Build a hostile-character description using the SHARED §2.10 HOSTILE
-    STAGING TEMPLATE BLOCK.
-  3. Insert that block as the FIRST descriptive content inside Foreground —
-    before any environmental detail, before any object detail, before any
-    other character. Image generators weight earlier tokens more heavily;
-    burying the hostile description is the primary cause of softening.
-  4. If the story is a Pakistan-based Islamist militant context, additionally
-    apply SHARED §3.6 mandatory minimums (heavy long beard, conservative
-    shalwar kameez, weathered face, posture menace, directional lighting).
-  5. Before output, run the SHARED §2.11 softening-detection scan on the
-    hostile description and rewrite if any softening marker is present.
-
-  The hostile description must visually communicate menace clearly enough
-  that a viewer reads the figure as a hardened militant within 1–2 seconds.
-  A hostile actor that looks like an ordinary man is a FAILED prompt.
+  HOSTILE / SUSPECT SUBJECTS (when §2 applies)
+  Describe the story-supported action, concealment, spatial relationship, and readable
+  expression. Suspects may look ordinary. Do NOT front-load a menace template, mandatory
+  half-shadow, or bulk anti-soft negatives. Apply SHARED §2 only for confirmed subjects.
 
   SCENE INTERPRETATION RULE
+
+  SINGLE-FRAME PHYSICS — every IMAGE PROMPT
+  Each image depicts one coherent instant. Verify:
+  - a flat opaque object does not show front and reverse simultaneously unless a physically
+    plausible reflection or arrangement is explicitly supported;
+  - hands, grips, and object positions are possible;
+  - people counts match described figures;
+  - camera position can see the requested face, object, and action;
+  - objects are not simultaneously held and resting elsewhere;
+  - the scene does not combine successive moments into one frame.
+  When narration includes multiple details, depict the most informative visible instant;
+  do not force every narrated detail into the image; do not duplicate objects to solve this.
+
   Each locked scene = ONE final 5-second visual beat = ONE single frozen
-  cinematic frame. Within one scene:
+  graphic-novel frame with clear subject hierarchy. Follow the locked breakdown
+  without rewriting narration or scene IDs. Within one scene:
   - depict only one frozen moment;
   - do not mix earlier and later moments;
   - do not imply future action inside the same image;
@@ -1145,21 +990,65 @@
 
   For abstract/conceptual lines apply SHARED §7.
 
-  SCENE CONTEXT LABEL STRENGTHENING — apply SHARED §8.3.
+  SCENE CONTEXT LABEL CLARITY — apply SHARED §8.3 (concrete labels; no gratuitous menace).
 
   CHARACTER CONSISTENCY — apply SHARED §5.
+
+  DEFINITE REALIZATION — IMAGE PROMPT BODY
+  Apply SHARED §1B in every IMAGE PROMPT. State one hair colour, one grooming choice,
+  one garment type, one vehicle state, one object side, and one age band per subject.
+  Never output unresolved "A or B" visual alternatives. Copy library anchors verbatim.
+  Reject and rewrite if the prompt contains slash-separated visual attributes or
+  mutually exclusive "or" choices for appearance, vehicle state, or object geometry.
 
   PUBLIC FIGURE / NO-EXPLICIT-NAME — apply SHARED §4 absolutely.
 
   HISTORICAL AND CULTURAL ACCURACY
+
+
+  CHARACTER CLARITY AND COMPOSITION
+  Keep semi-realistic hand-drawn 2D graphic novel readability at normal video viewing size.
+
+  Character-led beats:
+  - Give the principal character or interaction enough frame space; faces, eyes, hands, and
+    the important action must stay unobstructed when narratively important.
+  - Use motivated light and tonal separation from busy backgrounds; do not place faces against
+    equally detailed machinery or clutter unless that clutter is the narrative focus.
+  - Background figures stay lower visual emphasis; do not detail every background object equally.
+  - Do not force large faces into an establishing wide — choose a closer Camera scale when
+    facial information is essential.
+
+  Two-person beats:
+  - Establish positions and eyelines clearly; plausible anatomy and hand-object contact.
+  - Avoid merged limbs or accidental overlapping bodies; preserve distinct identities.
+
+  Workshop, depot, street, domestic, historical, or scientific settings are valid — choose
+  composition from THIS story's beat, not from a single reference layout repeated every scene.
+
+  SELECTIVE ENVIRONMENT DETAIL
+  Do not automatically populate every scene with dust, haze, rust, broken paving, litter,
+  stains, loose cables, or worn clothing. Describe the setting according to source and narrative
+  purpose. Clean, maintained, sparse, or ordinary spaces are valid.
+
+  Priority order for detail:
+  1. Essential visible action or relationship
+  2. Character/object continuity (positive traits per SHARED §5.5)
+  3. Spatial clarity and framing
+  4. Motivated readable lighting
+  5. A small number of distinguishing environmental details
+
+  Foreground / Midground / Background are spatial layers, not mandatory prop inventories.
+  Do not introduce plot-bearing objects merely to add detail or pad length.
+  Keep natural scene differences; do not make every location visually identical.
+
   Every IMAGE PROMPT must be grounded in correct era; architecture; clothing;
   materials; class markers; weathering; infrastructure; geography; ethnicity;
   institutional environment.
 
   Always reflect: region-specific architecture/street details; class-specific
   objects and wear; era-accurate vehicles, furniture, uniforms, communication
-  devices, public signage style; correct weather/light behaviour; visible use,
-  aging, dust, moisture, wear, and maintenance level appropriate to the place;
+  devices, public signage style; correct weather/light behaviour; wear and aging
+  only when appropriate to this setting — not automatic dirt on every surface;
   neighborhood-specific reality such as lane width, curb design, wiring style,
   roofing type, plaster quality, drainage, wall stains, furniture quality,
   public-space clutter.
@@ -1169,19 +1058,29 @@
   dominate; empty stylized backdrops without physical world detail.
 
   IMAGE PROMPT REQUIREMENTS
+
+  STORY-CRITICAL TEXT HANDLING
+  Do not request nonsense stroke loops as a substitute for an essential time, date, name, or
+  instruction. Read On-screen location and On-screen name from the LOCKED SCENE BREAKDOWN:
+  - when populated, plan that the editor may display that exact source-supported text as overlay;
+  - do not claim an overlay will be created automatically in the image model;
+  - if no suitable overlay field exists, let narration carry the information and show the
+    object naturally with unreadable text in the image;
+  - keep incidental labels unobtrusive; do not fabricate readable evidence.
+
   Each IMAGE PROMPT must be ONE SINGLE LINE.
 
   Each must begin with this exact structure:
-  Scene {number}. {short scene context label}. Create a cinematic hand-drawn 2D matte painting set in {ERA}; {CITY}; {STATE OR REGION}; {COUNTRY};
+  Scene {number}. {short scene context label}. Create a semi-realistic hand-drawn 2D graphic novel illustration set in {ERA}; {CITY}; {STATE OR REGION}; {COUNTRY};
 
   The short scene context label:
   - comes from the LOCKED SCENE BREAKDOWN where suitable;
   - replaces public-figure names with role-based labels (SHARED §4);
-  - strengthens soft hostile labels (SHARED §8.3);
+  - uses concrete labels from breakdown (SHARED §8.3);
   - 3 to 8 words; title-like; concise; no quotes; no slashes.
 
   Example opening:
-  Scene 1. Opening Cyber Room Silence. Create a cinematic hand-drawn 2D matte painting set in Contemporary 2020s; Delhi; Delhi NCR; India;
+  Scene 1. Opening Cyber Room Silence. Create a semi-realistic hand-drawn 2D graphic novel illustration set in Contemporary 2020s; Delhi; Delhi NCR; India;
 
   After the opening, continue immediately on the same line with:
   - geographic and cultural setting;
@@ -1189,7 +1088,7 @@
   - visible social class indicators;
   - ethnicity rules for visible people (SHARED §3);
   - clothing era rules;
-  - hostile actor severity rules if applicable (SHARED §2);
+  - suspect/hostile behaviour rules if applicable (SHARED §2);
   - what must not appear if not era-supported;
   - the exact locked visual beat from the Hindi line;
   - the location and subject from the breakdown;
@@ -1237,33 +1136,9 @@
   "...as described above, but with the bandhgala unbuttoned at the
   collar and a faint sheen of sweat on the temples").
 
-  Both rules co-apply: if the scene has BOTH a hostile actor and a
-  LIBRARY-LOCKED character, the HOSTILE-PRESENT FOREGROUND OPENER RULE
-  runs first (hostile staging template at the very start of Foreground),
-  then the locked anchor for the non-hostile character is dropped into
-  its appropriate slot per the placement rules above. If the locked
-  character is itself the hostile actor, follow SHARED §12.8.
-
-  HOSTILE-PRESENT FOREGROUND OPENER RULE
-  When a hostile actor is the main subject or co-subject of the scene, the
-  Foreground section MUST open with the SHARED §2.10 HOSTILE STAGING TEMPLATE
-  BLOCK as its very first content, before any environmental detail. Example
-  opening of Foreground when a hostile actor is present:
-
-    "Foreground: A hardened Pakistan-based Islamist militant figure, late
-    thirties to early forties, Pakistani Pashtun with weathered sun-worn skin
-    and sharp cheekbones, hollow-cheeked face with deep brow shadow and
-    tense jaw, heavy dark untrimmed beard reaching mid-chest, brown wool
-    pakol pulled low over the forehead, loose dust-toned shalwar kameez with
-    a rough grey-brown waistcoat over it, narrowed cold eyes fixed on a
-    cheap smartphone in his left hand, fingers gripping the device too
-    tightly, shoulders hunched forward in secretive concentration, body
-    angled so the harsh tube light from upper-left throws the right side of
-    his face into deep dirty shadow while edge-lighting the beard and brow;
-    then describe near-camera anchor objects: ..."
-
-  Never push the hostile description to Midground or Background. Never
-  shorten or neutralise it.
+  If both a suspect/hostile subject and a LIBRARY-LOCKED character appear,
+  copy each locked anchor verbatim per SHARED §12.6; describe story-supported action
+  around anchors per SHARED §2 when applicable. Library anchors are never overridden.
 
   STAGE C CHARACTER LOCK FINAL AUDIT
   Before writing each scene output, scan the selected scene block:
@@ -1304,42 +1179,47 @@
     any metadata field.
   - Never omit it. Never replace with another character.
 
+
   HARD LENGTH RULE
-  Every IMAGE PROMPT must normally exceed 3000 characters.
+  Every IMAGE PROMPT must exceed 3000 characters — excluding the Hindi line and DIGEN MOTION
+  PROMPT. This minimum applies to EVERY scene in EVERY batch position (Scene 1 through Scene N
+  equally). An LLM instruction cannot guarantee exact character counts, but under-length scenes
+  are invalid output.
+
   Shorter prompts are allowed only when:
   - the scene is genuinely minimal by nature; AND
   - the image cannot be expanded honestly without inventing unsupported content.
-  Never sacrifice scene specificity for brevity. Prompt richness is mandatory.
 
-  EXPANSION RULE — fully expand
-  environment layout; architecture and street fabric; furniture and object
-  placement; local material qualities; clothing details; hostile actor body
-  language if relevant; official posture language if relevant; class markers;
-  weather traces; visible wear and maintenance level; lighting behavior across
-  surfaces; emotional atmosphere through concrete physical detail; institutional
-  context; object density; foreground/midground/background layering.
-  Do not repeat identical descriptive blocks inside the same prompt.
+  Never sacrifice scene specificity for brevity. Never produce lighter prompts for later scenes
+  in a batch. If response length threatens quality, stop after the last fully completed scene
+  per FAILSAFE — do not compress remaining scenes below standard.
+
+  Meet ≥3000 characters with relevant staging, continuity, composition, lighting, and material
+  detail — not repeated adjectives, not padding NEGATIVE lists, not decorative prop inventories.
+
+
+    EXPANSION RULE — depth through clarity, not clutter
+  Prioritize essential subject, action, focal relationship, spatial layout, motivated
+  lighting, and continuity. Expand architecture, materials, and atmosphere when they
+  support the beat — not as decorative inventories.
+
+  Use wear, dust, rust, stains, discarded cups, or scuffed surfaces ONLY when appropriate
+  to this specific setting and action. A clean table, simple wall, or uncluttered foreground
+  is valid. Do not make every Indian location dirty or deteriorated. Do not invent plot-
+  bearing objects to pad length.
+
+  Meet the ≥3000-character rule with useful spatial, lighting, character, and continuity
+  detail — not repeated adjectives, not padding NEGATIVE lists, not unrelated background props.
 
   COMPOSITION RULES — every scene must contain
-  1. clear layered depth;
-  2. foreground, midground, and background all meaningfully populated;
-  3. a minimum of 7 concrete physical objects across the composition;
-  4. a world that feels inhabited, used, and believable;
-  5. visible wear, decay, dust, dampness, or maintenance level appropriate to
-    era and place;
-  6. realistic material behaviour;
-  7. a frozen film frame, not a flat promotional poster;
-  8. no empty backgrounds;
-  9. no vague "generic city" or "generic office" treatment;
-  10. a strong sense of one exact moment in time.
-
-  Foreground preferably includes near-camera anchor objects.
-  Midground usually contains the main action or main subject.
-  Background deepens the world and supports narrative.
-
-  DENSITY: every scene should feel production-designed.
-  ABSOLUTE: never solve multi-location narration with split-screen, collage,
-  dollhouse cutaway, or symbolic cross-section unless source explicitly asks.
+  1. clear layered depth and subject hierarchy;
+  2. Foreground / Midground / Background labels describe depth — each plane may be simple
+     or empty if the beat supports it; do not force props into every plane;
+  3. a world that feels believable for this exact moment — not a prop checklist;
+  4. realistic material behaviour where shown;
+  5. a frozen film frame, not a flat promotional poster;
+  6. no empty stage-like void behind the subject unless narration supports isolation;
+  7. one coherent frozen moment with physically plausible geometry and lighting.
 
   SHOT-TYPE GUIDANCE
   Use the camera scale from the LOCKED SCENE BREAKDOWN. For each scale, apply
@@ -1347,19 +1227,20 @@
   distance — let scale evolve while respecting the locked breakdown.
 
   COLOR SCRIPT GUIDANCE
-  Let color mood evolve with story tension while staying historically grounded:
-  - routine life = muted natural tones;
-  - fear/uncertainty = cooler desaturated tones;
-  - night control = sodium yellow, weak tungsten, deep blue-grey ambient;
+  Follow the STORY CONFIG BLOCK palette first. Let color mood evolve with story
+  tension while staying historically grounded and readable:
+  - routine daylight life = natural local tones (warm stone, green foliage, sky blue);
+  - fear/uncertainty = cooler desaturated tones without crushing blacks;
+  - night = sodium yellow, shop tungsten, window spill — faces still readable;
   - decision/power interiors = restrained warm interiors with disciplined contrast;
-  - cyber monitoring = dim blue-grey screen light + weak institutional ceiling;
-  - investigation = cool screens, dull file-paper beige, muted desk-lamp warmth;
-  - domestic tension = low warm bulbs, phone glow, shadowed corners;
-  - hostile actor (SHARED §2.7) = dim side light, shadowed faces, muted earth
-    tones, cold phone glow, rough interior darkness, no beauty lighting;
-  - aftermath / dread-heavy = drained dusty or cold subdued palette.
-  Never use decorative color for its own sake. Color must support story mood
-  and period realism.
+  - cyber monitoring = screen spill + ambient room light (not pitch-dark room default);
+  - investigation = cool screens, file-paper beige, desk-lamp warmth when narrated;
+  - domestic = window daylight or warm bulbs matching time of day;
+  - suspect/hostile beat (when §2 applies) = motivated time/place light with readable
+    faces; tension from action and spatial relationship, not crushed shadow;
+  - aftermath / dread-heavy = drained dusty or cold subdued palette when narrated.
+  Never use decorative color for its own sake. Never apply investigation-dark or
+  hostile palette globally. Color must support story mood and period realism.
 
   ENVIRONMENTAL PHYSICS RULES
   - smoke rises unless chemically heavy;
@@ -1405,10 +1286,8 @@
   - "weak dawn light filtering through mist from frame right";
   - "dim blue screen light from the monitor wall falling across faces and tabletops";
   - "weak institutional ceiling tube light creating flat shadows under desks";
-  - "weak phone glow cutting across one side of a hostile actor's face,
-    leaving the other side in dirty shadow";
-  - "single low bulb above a suspicious group creating harsh downward shadows
-    under brows and cheekbones".
+  - "weak phone glow as secondary fill on a face while daylight remains the main source";
+  - "sodium streetlight from upper left with readable facial structure and soft ambient fill".
 
   Always mention how shadows fall; where the light lands; whether ambient fill
   is weak or soft; how reflective and matte surfaces respond differently;
@@ -1416,11 +1295,11 @@
   under the stated light. No cinematic glow; no bloom; no fantasy shafts
   unless naturally justified.
 
-  Hostile actor lighting — apply SHARED §2.7.
+  Suspect/hostile-subject scenes — use motivated readable lighting per SHARED §2.
 
   TEXTURE & MATERIALS RULES
-  Describe specific material surfaces relevant to the scene. Use concrete
-  details such as: chipped plaster; weathered timber; ring-stained teak; damp
+  Describe materials relevant to this beat only — not an automatic inventory. Clean or
+  maintained surfaces are valid. Use concrete details when shown, such as: chipped plaster; weathered timber; ring-stained teak; damp
   concrete; cracked enamel paint; wrinkled canvas sandbags; dull gunmetal;
   cotton tape around file jackets; rust on barricade hinges; brushed wool;
   ceramic cup glaze; matte paper edges; dust-coated scooter paint; peeling
@@ -1458,306 +1337,104 @@
   emptiness, crowding, object arrangement, and withheld action.
 
   NEGATIVE PROMPT RULES
-  Every IMAGE PROMPT must end with a NEGATIVE section drawing from SHARED
-  §11 (universal + hostile + Islamist militant + scene-specific lists),
-  PLUS the story-specific negatives from the STORY CONFIG BLOCK.
+  End every IMAGE PROMPT with NEGATIVE: followed by approximately 6–12 semicolon-separated
+  items selected per SHARED §11 — not the full library dump.
 
-  When any Library lock is present, add a generic anti-hybrid identity negative
-  without naming keys or public figures:
+  When Library lock is present, you may add 2–4 identity-firewall items (merged identity;
+  wrong locked character; identity drift) — never paste entire character-library NEGATIVE
+  FIREWALL blocks.
 
-  merged identity; blended face; hybrid character; wrong locked character;
-  borrowed facial features; borrowed beard; borrowed hairstyle; borrowed glasses;
-  borrowed body build; swapped identity; duplicate face across different locked
-  characters; generic public figure face; generic official face; generic leader
-  face; wrong person likeness; role-based face replacement; identity drift;
-  character face mixing; inconsistent locked character.
+  Scan positives against negatives before output and remove contradictions.
 
 
-  HOSTILE ACTOR PROMPTING EXAMPLES (in-line guidance, not output)
 
-  Avoid soft wording like:
-  "a calm man watching a phone screen"
+  SILENT CONSISTENCY CHECK — before outputting each scene (do not print this checklist)
+  Verify: SHARED §1C (viewpoint vs movement vs frozen subject); one definite choice per
+  visual attribute; stable identities/objects (§5.5); character readability and composition;
+  plausible geometry (sealed until opened; one photo side; correct people count; plausible
+  vehicle/operator positions); footage/monitor framing matches beat type; one camera purpose;
+  locked-off OR one slow move (not hold-plus-move); image/motion agreement; no unsupported
+  facts; selective environment detail; concise relevant negatives; structure; IMAGE PROMPT
+  body exceeds 3000 characters excluding narration and motion.
 
-  Use grounded wording like:
-  "a hardened hostile recruiter figure watching a phone screen with narrowed
-  eyes, tense jaw, guarded posture, rough stubble, one side of his face cut by
-  weak blue phone light, fingers gripping the device too tightly, shoulders
-  angled away from the doorway"
-
-  Avoid:
-  "a gentle speaker addressing young men"
-
-  Use:
-  "a manipulative radical propagandist figure seated in partial shadow,
-  expression controlled but cold, one hand raised in a restrained commanding
-  gesture, younger men listening tensely from plastic chairs, no warmth in the
-  room, no devotional glow, no heroic framing"
-
-  Avoid:
-  "a group of men sitting peacefully"
-
-  Use:
-  "a suspicious group of men sitting in tense silence, bodies angled inward
-  around a phone, eyes lowered toward the screen, shoulders tight, hands close
-  to pockets or devices, faces half-lit by weak screen glow, posture secretive
-  and watchful"
 
   DIGEN MOTION PROMPT RULES
 
   Each scene must include exactly ONE DIGEN MOTION PROMPT.
 
-  CORE PRINCIPLE — CAMERA MOVES, SUBJECTS STAY STILL
-  The motion prompt must describe ONLY slow, controlled camera movement.
-  People, faces, hands, crowds, vehicles, objects, smoke, fire, doors, papers,
-  clothes, and background elements must remain still or near-still.
+  Apply SHARED §1C: viewpoint is fixed by the IMAGE PROMPT; motion chooses locked-off OR
+  one slow camera move; subjects stay frozen.
 
-  NO LIP-SYNC / NO MOUTH-MOTION RULE
-  The DIGEN MOTION PROMPT must never instruct lips, mouth, jaw, cheeks, eyes,
-  eyebrows, or facial muscles to animate. Do NOT write lip-sync, lips moving,
-  mouth moving, speaking mouth, talking face, blinking, eye movement, eyebrow
-  movement, facial animation, changing expression, smiling forming, anger
-  building, or any phrase that asks the model to animate a face.
+  VIEWPOINT (already set in IMAGE PROMPT)
+  Stage B's Camera scale suggestion defines the starting framing. The motion prompt must
+  begin from that same viewpoint — a close-up or side view is not camera movement.
 
-  Allowed: a tiny, still facial impression may be described only as part of the
-  IMAGE PROMPT or as a frozen final hold, such as "holding on a restrained
-  expression", "settling on a composed face", or "holding on a tense still
-  face". The face must remain essentially still. Minimal facial expression is
-  allowed as a static pose, not as animated change.
+  CAMERA MOVEMENT (choose ONE behaviour — not both)
+  A) LOCKED-OFF HOLD — precise clues, dialogue stillness, complex compositions, or when
+     movement adds nothing. Write: "Locked-off [view type] on [primary target]."
 
+  B) ONE SLOW RESTRAINED MOVE — only when it improves attention, depth, or spatial read:
+     - very slow short push-in toward face, gesture, or important object
+     - gentle pull-back for limited context (no invented architecture or people)
+     - small horizontal pan between two nearby established subjects
+     - small vertical tilt along an already visible vertical relationship
+     - short lateral slide for modest parallax in a stable scene
+     - slow aerial drift only when IMAGE PROMPT is already wide exterior/aerial
+     - limited slow arc (small angle only) around a composition with depth
+     - subtle handheld drift rarely, only for subjective tension — no shake or jitter
 
-  The safest motion style is:
+  Do NOT default every scene to locked-off hold or "holds steady."
+  Do NOT default every moving scene to push-in.
+  Do NOT mechanically cycle shot types or force movement in every scene.
+  Do NOT write hold-plus-move contradictions ("holds steady while pushing in").
 
-  aerial / elevated / doorway / raised view
-  → slowly descending / slowly lowering
-  → gently pushing forward
-  → settling closer on the main subject or key object
+  SUBJECT MOVEMENT
+  People, vehicles, and objects remain frozen. Do not add walking, talking, driving, or
+  gesturing in the motion prompt. Tracking/following language is forbidden unless the
+  pipeline explicitly supports animated subjects — use a stationary alternative.
 
-  The motion prompt should feel like a slow 5-second image-to-video camera move,
-  not an action scene.
+  EXCLUDED MOVES
+  snap zooms; whip pans/tilts; fast orbits; rapid drone descents; abrupt acceleration;
+  multi-move combinations; wide-to-extreme-close-up in five seconds; cinematic/dynamic/dramatic camera.
 
-  Why this matters: Digen and similar image-to-video models deform faces,
-  hands, and bodies whenever the prompt describes subject motion. The safe
-  recipe is to keep the subject visually still and let the CAMERA approach it.
-  If the IMAGE PROMPT shows a man walking, speaking, gesturing, reacting,
-  or handling an object, the motion prompt must describe the CAMERA moving
-  closer to that frozen pose — never the person performing that action.
+  SPEED AND DISTANCE (~5 seconds)
+  One primary target; modest smooth travel; enough time to read the scene; no sudden framing jumps.
 
-  ABSOLUTE SUBJECT-STILLNESS RULE
-  Do NOT describe people speaking, talking, whispering, walking, turning,
-  reacting, gesturing, moving, running, marching, entering, exiting, looking
-  around, picking up objects, or manipulating anything unless the locked scene
-  specifically requires that movement as the main visual beat.
+  AERIAL / DRONE
+  Only when geography, scale, or route matter AND the IMAGE PROMPT is already composed wide
+  exterior or aerial. Never descend into indoor close-ups. Aerial cinematography is allowed;
+  generic "no futuristic gadgets" negatives must not ban aerial viewpoints.
 
-  Even if the IMAGE PROMPT depicts a person mid-speech, mid-shout, mid-argument,
-  mid-smile, mid-reaction, or with an expressive face, the MOTION PROMPT must NOT
-  describe lip movement, mouth movement, face animation, blinking, eye movement,
-  or expression changing. Treat the face as a painted still frame and move only
-  the camera toward it.
+  FOOTAGE / MONITOR BEATS
+  Motion matches the monitor or screen framing already in the IMAGE PROMPT — do not treat
+  CCTV as a live street scene or invent off-screen action.
 
+  MOTION–IMAGE LOCK
+  Same viewpoint family, subject positions, object locations, lighting, and action state as
+  the IMAGE PROMPT. One primary visual target. No unsupported reveal.
 
-  Even when the IMAGE PROMPT shows a person mid-walk, mid-speech, mid-gesture,
-  or in a tense action moment, the MOTION PROMPT must treat that as a frozen
-  pose and describe only the camera approaching that frozen pose.
+  NO LIP-SYNC / NO MOUTH-MOTION
+  Never instruct lips, mouth, jaw, eyes, or expression animation in the motion prompt.
 
-  FORBIDDEN WORDS / PHRASES IN NORMAL MOTION PROMPTS
-  Do not use these unless the scene absolutely requires it:
-  speaking, talking, whispering, saying, arguing, shouting, lip-sync, lips moving,
-  mouth moving, jaw moving, facial animation, blinking, eye movement, eyebrows
-  moving, expression changing, smile forming, anger building, walking, running,
-  moving through the crowd, turning his head, raising his hand, gesturing,
-  reacting, nodding, looking around, crowd moving, vehicles passing, door opening,
-  papers flying, smoke billowing, fire spreading, people rushing.
+  OUTPUT FORMAT
+  One short sentence, optional second clause joined by semicolon. Name the view type,
+  locked-off OR the single slow move, and the primary target. No vague "cinematic motion."
 
-  Preferred replacement:
-  - Instead of “two men speaking quietly” → “two men seated in tense stillness”
-  - Instead of “bearded man speaking calmly” → “bearded man seated in shadow”
-  - Instead of “walking man blending into the crowd” → “lone figure held mid-stride in the crowd”
-  - Instead of “crowd moving through the bazaar” → “crowd held in dense stillness”
-  - Instead of “officers reacting to the screen” → “officers fixed on the paused screen”
-  - Instead of “man gestures toward the file” → “man's hand held near the file”
+  Canonical examples (vary by beat — do not copy one pattern every scene):
+  - "Locked-off medium character view on the officer listening beside the informant."
+  - "Locked-off tight object view on the folded map and marked circle inside the open bag."
+  - "Locked-off over-shoulder view on the analyst and the grainy monitor showing the yard recording."
+  - "Medium-wide view performs a very slow short push-in toward the two figures at the workbench."
+  - "Medium-wide environmental view performs a gentle pull-back to include the gate context."
+  - "Medium view performs a slow lateral slide across the two seated figures and the table between them."
+  - "Wide exterior view performs a slow aerial drift above the route already shown in frame."
 
-  MANDATORY TWO-CLAUSE STRUCTURE — descent + push-in
-  Every motion prompt MUST follow this exact two-clause shape:
-
-    Clause 1 — START + SLOW DESCENT / LOWER:
-      "[Aerial / High aerial / Night aerial / Elevated / Doorway /
-      Over-shoulder / Raised] view above [the location] slowly
-      descending / slowly lowering toward [the subject area];"
-
-    Clause 2 — FORWARD PUSH + FINAL HOLD:
-      "camera [gently pushes forward / moves forward / pushes closer /
-      softly settles] [on / toward / closer to / holding on] [the final
-      main subject or key visual anchor]."
-
-  The clip therefore evolves through shot scales: aerial establishing →
-  camera slowly descending → gradual push-in toward character or object →
-  closer framing on the subject. This functions as a slow zoom, but it is
-  achieved via descent + dolly-in (not via a zoom lens) — so Digen does not
-  introduce zoom-lens artifacts.
-
-  The motion must always end closer to the main subject than it started.
-
-  Mandatory:
-  - minimal and controlled motion;
-  - slow, smooth, restrained camera movement only;
-  - ONE continuous camera move (descent + forward push counts as one);
-  - shot scale evolves from wider start to tighter end — never the reverse;
-  - end framing must rest on the main subject from the IMAGE PROMPT;
-  - subjects in the frame stay STILL — describe only camera motion;
-  - never use public figure names — apply SHARED §4;
-  - use role-based or composition-based language;
-  - motion supports the still image, never reinterprets it;
-  - never invent a second scene through motion;
-  - never travel between unrelated zones of the frame.
-
-  MOTION SPEED RULE
-  All camera movement must be slow, smooth, restrained, and minimal.
-  The motion should feel almost static: a gentle observational drift, not an
-  action beat. Avoid any wording that could make Digen create fast movement,
-  quick zooming, sudden acceleration, subject animation, lip-sync, or facial
-  movement.
-
-  Use words like:
-  slowly descending, slowly lowering, gently pushes forward, gently moves closer,
-  softly settles, holds on, slowly approaching.
-
-  Avoid:
-  fast, sudden, dramatic, rapid, sharp, intense, energetic, dynamic, sweeping,
-  spinning, rushing, accelerating, quick, brisk, snappy, whip pan, crash zoom,
-  shaky handheld, aggressive push, quick zoom, fast arc, fast dolly, rapid push,
-  quick push-in, speed ramp, motion blur, lip-sync, mouth movement, blinking,
-  facial animation, expression change.
-
-  CAMERA MOTION LIMIT
-  Use only ONE continuous camera move.
-  Descent + forward push counts as one move.
-  Do not add extra camera actions such as orbiting, panning, circling, tilting,
-  crane sweeping, tracking sideways, or moving between unrelated areas.
-
-  Forbidden subject motion (NEVER describe these in the motion prompt unless
-  explicitly required by the locked scene):
-  - a man speaking, talking, whispering, arguing, shouting, walking, marching,
-    or running across the frame;
-  - a crowd rushing, dispersing, walking, shifting, or moving;
-  - vehicles driving past, arriving, or leaving;
-  - a character turning their head, raising a hand, gesturing, nodding,
-    speaking, lip-syncing, moving the mouth, blinking, shifting eyes, changing
-    facial expression, reacting visibly, or looking around;
-  - anyone entering or exiting the frame;
-  - hands picking up, placing down, pointing, typing, scrolling, or manipulating
-    objects;
-  - doors opening, papers flying, smoke billowing, fire spreading, water flowing
-    dynamically, curtains moving, clothes fluttering, or background elements
-    becoming active.
-  If the source narration implies any of these actions, render the action
-  as a frozen instant inside the IMAGE PROMPT, and let only the CAMERA
-  approach that frozen instant in the motion prompt.
-
-  Forbidden camera motion:
-  - fast arc; orbit; whip pan; crash zoom; strong crane sweep; dramatic spin;
-  - shaky handheld; complex multi-step camera choreography;
-  - aggressive lateral movement across large distances; excessive reframing;
-  - movement between unrelated zones; movement that invents a second scene;
-  - ASCENDING camera moves (rising up away from the subject);
-  - PULLING BACK from the subject (ending wider than it started);
-  - zooming out or ending wider than the start;
-  - any move that does not end closer to the main subject than it started.
-
-  Preferred starting viewpoints (clause 1):
-  - Aerial view above [the location]
-  - High aerial view above [the location]
-  - Night aerial view above [the location]
-  - Elevated view above [the location]
-  - Elevated room view
-  - Raised view above [the table / desk / device / evidence]
-  - Over-shoulder view from behind [character archetype]
-  - Doorway view into [the room / space]
-
-  Preferred motion verbs:
-  slowly descending • slowly lowering • gently pushing forward • gently
-  moving closer • slowly approaching • softly pushing forward • cautiously
-  moving forward toward • gently pushing closer to • softly settling on •
-  holding on • drifting slightly forward.
-
-  Do NOT use verbs that imply speed or performance, such as fast push, rapid
-  move, rush, sweep, whip, dramatic zoom, aggressive push, subject reacts, lips
-  move, eyes blink, or expression changes.
-
-  Length: ONE sentence with two clauses joined by `;` (start descent + push),
-  or up to two short sentences. Never a long cinematic paragraph. When
-  unsure, choose less camera motion.
-
-  Canonical examples — follow this exact pattern and rhythm:
-  - "Aerial view above the tea stall slowly descending toward the table;
-    camera gently pushes forward revealing the documents and the two seated
-    figures held in tense stillness."
-  - "Aerial view above the crowded bazaar slowly descending between cloth
-    awnings; camera moves forward toward the lone figure held mid-stride
-    inside the dense crowd."
-  - "Elevated view above the tea stall slowly lowering toward the seated
-    group; camera gently pushes closer to the bearded man seated in shadow."
-  - "Aerial view above the bazaar slowly descending toward the seated man;
-    camera gently pushes closer as the surrounding market remains still
-    around him."
-  - "High aerial view above the bazaar slowly descending toward the dim tea
-    stall; camera pushes forward revealing the lone man sitting in shadow."
-  - "Night aerial view above the bazaar slowly descending toward the lone
-    figure held mid-stride; camera moves forward following the frozen path
-    through the dim street."
-  - "Elevated room view slowly lowering toward the monitoring desk; camera
-    gently pushes forward and settles on the officers fixed on the paused
-    screen."
-  - "Over-shoulder view from behind the analyst slowly moving closer toward
-    the paused video screen; camera holds on the tense hands near the
-    keyboard."
-  - "Doorway view into the dim room slowly pushing inward; camera settles on
-    the hostile recruiter's shadowed posture and the phone-lit faces held
-    still around him."
-  - "Raised view above the evidence table slowly descending toward the seized
-    phones; camera gently moves closer and holds on the arranged devices."
-
-  Note on the "walking man" / "lone walking figure" idea: even though the
-  IMAGE PROMPT may depict a man mid-stride, the motion prompt describes ONLY
-  camera motion — "moves forward toward", "moves forward following", or
-  "settles on the frozen mid-stride pose". The man's walk is implied as a
-  frozen pose in the still image. NEVER write "the man walks", "he steps
-  forward", "she runs", "they march", "he speaks", "they talk", or any
-  subject-motion phrase in the motion prompt unless the locked scene explicitly
-  requires that motion.
-
-  Scene-specific guidance:
-  - bazaar / street / curfew / checkpoint / crowd → aerial or high-aerial
-    start, slow descent toward main subject in the crowd, gentle forward
-    push to close framing, with the crowd held still;
-  - domestic interiors → doorway or over-shoulder start, slow inward push,
-    settle on phone-lit faces, seated group, table, or quiet domestic tension;
-  - desks / files / phones / laptops / object-led → raised view above the
-    surface, slow descent, gentle push closer to the device or document;
-  - cyber monitoring / political / strategy rooms → elevated room view, slow
-    descent toward the desk or screen, restrained forward push, hold on the
-    officers, analyst, map, evidence board, or paused screen;
-  - solitary figures → high aerial or elevated start, slow descent toward
-    the figure, gentle forward push, hold on shadowed face, hands, posture,
-    or silhouette;
-  - hostile actor scenes → doorway, partial-shadow framing, over-shoulder,
-    or aerial start; slow descent and push toward tense hands, guarded eyes,
-    dim phone glow, or shadowed posture. Do NOT describe the hostile actor
-    speaking, walking, gesturing, or moving unless the locked scene specifically
-    requires it.
-
-  MOTION FINAL AUDIT — BEFORE OUTPUT
-  Before writing each DIGEN MOTION PROMPT, scan it and reject/rewrite it if it
-  contains any lip-sync, mouth movement, blinking, facial animation, expression
-  change, subject movement, fast camera movement, sudden movement, or action
-  choreography. The final prompt must describe only one very slow camera descent /
-  lowering plus one gentle forward push ending closer to the frozen subject.
+  Silently verify: Does movement help this beat? Does it match the image viewpoint? Is it
+  slow and small enough for ~5 seconds? If not, use locked-off hold.
 
   OUTPUT REQUIREMENT
-  The DIGEN MOTION PROMPT must be one short sentence with two clauses joined
-  by a semicolon.
-  It must not become a cinematic paragraph.
-  It must not introduce new action beyond the still IMAGE PROMPT.
-  When uncertain, choose less motion.
+  The DIGEN MOTION PROMPT must be one short sentence with optional second clause joined
+  by a semicolon. It must not introduce new action beyond the still IMAGE PROMPT.
 
   OUTPUT FORMAT (STAGE C) — exact format per scene
 
@@ -1766,7 +1443,7 @@
   {exact Hindi line copied from the LOCKED SCENE BREAKDOWN}
 
   IMAGE PROMPT
-  Scene {X}. {short scene context label}. Create a cinematic hand-drawn 2D matte painting set in {ERA}; {CITY}; {STATE OR REGION}; {COUNTRY}; {full single-line descriptive prompt with Foreground: Midground: Background: Lighting: Texture & Materials: Atmosphere: NEGATIVE:} ||
+  Scene {X}. {short scene context label}. Create a semi-realistic hand-drawn 2D graphic novel illustration set in {ERA}; {CITY}; {STATE OR REGION}; {COUNTRY}; {full single-line descriptive prompt with Foreground: Midground: Background: Lighting: Texture & Materials: Atmosphere: NEGATIVE:} ||
 
   DIGEN MOTION PROMPT
   {camera motion description}
@@ -1779,7 +1456,7 @@
     itself supports one visible frame;
   - never use public-figure real names outside "Hindi line:" (SHARED §4);
   - "IMAGE PROMPT" must be on its own line; the actual prompt is exactly ONE
-    single line; should normally exceed 3000 characters; ends with ` ||`;
+    single line; must exceed 3000 characters (excluding Hindi line and motion); ends with ` ||`;
   - "DIGEN MOTION PROMPT" must be on its own line;
   - never append `||` to DIGEN MOTION PROMPT or any other field;
   - no bullet points; no commentary before or after.
@@ -1814,10 +1491,9 @@
     with `NEXT_RANGE:` — this is the ONLY non-scene line allowed.
 
   QUALITY CONSISTENCY
-  - maintain identical descriptive depth, material specificity, lighting
-    detail, composition density, environmental realism, and hostile-character
-    severity across all scenes in the batch;
-  - detail must not decay as scene numbers increase.
+  - maintain consistent descriptive depth, lighting clarity, and continuity across the batch;
+  - detail must not decay as scene numbers increase;
+  - do not inflate later scenes with decorative clutter or repeated full character blocks.
 
   NO-COMPRESSION (forbidden)
   - shortening for batch reasons;
@@ -1825,14 +1501,14 @@
   - reduced Foreground/Midground/Background/Lighting/Texture/Atmosphere detail;
   - shorthand replacing grounded description;
   - generic filler instead of scene-specific detail;
-  - removing hostile actor severity from later scenes.
+  - dropping story-specific detail from later scenes.
 
   PRIORITY ORDER (always)
   1. exact LOCKED SCENE BREAKDOWN compliance;
   2. full output format compliance;
   3. minimum 3000-character IMAGE PROMPT per scene;
   4. scene fidelity and visual richness;
-  5. hostile actor severity when relevant;
+  5. story-supported suspect action when §2 applies;
   6. only then requested scene quantity.
 
   QUALITY BAR — write like a storyboard artist who understands
@@ -1845,7 +1521,7 @@
   - hostile actor staging;
   - radicalisation and propaganda scenes without glorification;
   - criminal and terror-network visual language without gore;
-  - 2D matte painting composition;
+  - semi-realistic 2D graphic novel composition;
   - cinematic depth;
   - grounded emotional storytelling;
   - historically believable environments.
@@ -1853,8 +1529,7 @@
   Write with enough density that:
   - the environment can be illustrated without guessing major missing details;
   - emotional tone is carried by concrete world-building;
-  - hostile actors look unsafe, hardened, secretive, and threatening when
-    relevant;
+  - suspects show story-supported tension through action and readable expression when §2 applies;
   - each frame feels like a production-ready storyboard plate;
   - each prompt is robust enough for high-quality image generation;
   - the storyboard can realistically match narration audio in 5-second
@@ -1867,11 +1542,12 @@
   - Generate exactly one IMAGE PROMPT and one DIGEN MOTION PROMPT per locked
     scene in the requested SCENE_RANGE.
   - Keep IMAGE PROMPT as a single line.
-  - Every IMAGE PROMPT should normally exceed 3000 characters.
+  - Every IMAGE PROMPT must exceed 3000 characters (excluding Hindi line and motion).
   - Every IMAGE PROMPT line must end with a trailing ` ||` placed immediately
     after the last word of the NEGATIVE section.
-  - Use highly descriptive environment detail. Expand architecture, object
-    density, lighting, textures, posture, clothing, and atmosphere fully.
+  - Use selective environment detail per SELECTIVE ENVIRONMENT DETAIL — expand
+    architecture, lighting, textures, posture, clothing, and atmosphere when they
+    support the beat; do not pad with decorative clutter.
   - Keep recurring characters visually consistent (SHARED §5).
   - For every Library lock or safety-net match, copy the locked anchor verbatim
     into the IMAGE PROMPT and run SHARED §12.6B before output.
@@ -1886,10 +1562,9 @@
     generated line outside "Hindi line:" (SHARED §4 and §12.3E).
   - Never use explicit names for public figures outside "Hindi line:"
     (SHARED §4).
-  - Hostile actors must look hardened, secretive, tense, suspicious,
-    manipulative, dangerous, or operationally threatening through grounded
-    body language and lighting (SHARED §2). Never gentle, innocent, heroic,
-    glamorous, saintly, cute, harmless, or emotionally warm.
+  - When §2 applies, show threat through story-supported action, concealment,
+    spatial relationship, and readable expression — suspects may look ordinary.
+    Do not use appearance-based menace coding or bulk anti-soft negatives.
   - Never glorify terrorists, extremists, criminals, radical handlers, or
     hostile propagandists.
   - Never use readable religious text, extremist slogans, propaganda symbols,
@@ -1897,18 +1572,16 @@
     by the source — and even then avoid readable detail.
   - Never solve scene problems with split-screen, collage, or cross-section
     composition unless explicitly requested by the source.
-  - DIGEN MOTION PROMPT must stay restrained and use one calm primary move
-    only — the mandatory two-clause descent + forward-push pattern.
+  - DIGEN MOTION PROMPT must stay restrained: locked-off hold OR one restrained
+    move matching the IMAGE PROMPT (see MOTION–IMAGE LOCK). No compulsory aerial descent.
   - DIGEN MOTION PROMPT must describe ONLY slow camera motion. Subjects,
     hands, faces, crowds, vehicles, and objects must remain still in the
     prompt's language. Never write "speaking", "talking", "walking",
     "gesturing", "reacting", "turning", "moving", "running",
     "the crowd rushes", "vehicles pass", or any subject-motion verb unless
     the locked scene explicitly requires that movement. Default motion style
-    is always: aerial or elevated view → slow descent → gentle push-in → hold
-    closer on the frozen subject.
-  - DIGEN MOTION PROMPT must end CLOSER to the main subject than it started.
-    No ascending moves, no pull-backs, no wider-at-end framings.
+    is always: match the IMAGE PROMPT viewpoint; locked-off hold OR one slow restrained move.
+  - Pull-back is allowed only when chosen as the single restrained move and the IMAGE PROMPT supports it.
   - When uncertain in motion design, choose less camera movement, not more.
   - Never break the required output format. No commentary. No explanations.
 

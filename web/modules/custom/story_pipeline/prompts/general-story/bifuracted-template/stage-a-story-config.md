@@ -57,245 +57,148 @@ the stage spec.
 SHARED §1 — GLOBAL STYLE LOCK
 --------------------------------------------------------------------------------
 
-Use this visual language implicitly when describing visual defaults:
+Use this visual language implicitly when describing visual defaults and in every
+IMAGE PROMPT:
 
-2D digital animated illustration; cinematic hand-drawn 2D matte painting; clean
-hand-drawn line art; flat cel shading; minimal texture; simplified forms with
-strong readability; documentary realism; restrained stylisation; region-accurate
-facial features; historically grounded environments; muted documentary color
-palette unless the scene clearly requires warmer or brighter tonal treatment;
-no photorealism; no 3D rendering; no ray tracing; no global illumination;
-no depth of field blur; no cinematic lens artifacts; no glossy CGI finish;
-no hyper-detailed skin texture; no HDR realism.
+Semi-realistic hand-drawn 2D graphic novel illustration; clean readable contours;
+controlled cel shading with one or two value steps; natural skin tones; expressive
+but grounded faces; simplified forms with strong subject hierarchy; historically
+grounded environments with concrete local detail; documentary realism with
+restrained stylisation; region-accurate facial features; setting-specific colour
+palettes and motivated lighting derived from this story's time of day, geography,
+and mood — not a uniform dark or crime-template look.
+
+Daylight and interior day scenes: natural readable illumination, visible facial
+features, believable local colours. Night scenes: readable faces and key subjects
+with motivated practical light (street lamps, windows, screens, bulbs) — not crushed
+black silhouettes unless the narration explicitly calls for near-darkness.
 
 Always implicitly avoid: photorealistic; ultra realistic; 3D render; CGI;
-ray tracing; global illumination; lens flare; bokeh; depth of field blur;
+ray tracing; lens flare; bokeh;
 bloom; volumetric fantasy light; hyper-detailed pores; photo textures;
-futuristic design unless era supports it; neon colors unless era and setting
-clearly support them; watermark; logo; text overlay; poster layout;
+uniformly dark or sinister grading on ordinary non-threat scenes; repetitive
+desk-monitor-silhouette-evidence-board templates when narration supports a
+different anchor; futuristic design unless era supports it; neon colors unless era
+and setting clearly support them; watermark; logo; text overlay; poster layout;
 empty stage-like backgrounds.
 
 --------------------------------------------------------------------------------
-SHARED §2 — HOSTILE ACTOR VISUAL MENACE (MANDATORY)
+SHARED §1A — FACTUAL CONTINUITY LOCKS vs ADAPTABLE VISUAL DEFAULTS
 --------------------------------------------------------------------------------
 
-A "hostile actor" means: terrorist, extremist, radical handler, hostile
-recruiter, radical propagandist, violent conspirator, terror commander,
-operative, handler, suspect linked to hostile activity, criminal operative,
-or hostile-network member — as identified by the source story or the
-STORY CONFIG BLOCK.
+FACTUAL LOCKS (must stay consistent across all stages):
+- era, geography, architecture, infrastructure, vehicles, technology;
+- recurring character identity, library locks, origin, role category;
+- hostile-actor presence and severity ONLY when identified in the source story;
+- public-figure handling; sensitive-content exclusions; story-specific negatives.
 
-§2.1 ABSOLUTE MANDATE
-When a hostile actor appears in main subject or supporting subject, the
-image MUST visually communicate menace clearly enough that any viewer reads
-the figure as a hardened militant / extremist / threatening operative within
-1–2 seconds of glancing at the frame. A hostile actor that looks like an
-ordinary passer-by, a regular working-class man, a neutral civilian, a
-gentle uncle, a humble teacher, or a calm stranger is a FAILED prompt.
+ADAPTABLE VISUAL DEFAULTS (choose per scene from narration + config, not a global dark style):
+- time of day and weather; lighting source and direction; palette warmth or coolness;
+- camera scale and framing; dominant anchor (face, crowd, landscape, object, building);
+- atmosphere family for that beat.
 
-The hostile figure must be visually DIFFERENT from ordinary civilians of
-the same region — not because of religion or ethnicity, but because of
-hardened expression, weathered face, rough grooming, dark/sunken eyes,
-heavy beard discipline, posture, lighting, and costume choices that mark
-them as operationally dangerous.
+Stage A must ground abstract visual guidance in THIS story's actual locations,
+period, and cast — not generic investigation or crime defaults. When hostile actors
+are absent, mark HOSTILE ACTOR VISUAL PROFILE fields N/A and do NOT propagate
+threat lighting to ordinary civilians or neutral scenes.
 
-§2.2 MANDATORY VISUAL MARKERS (must include — not optional)
+--------------------------------------------------------------------------------
+SHARED §1B — DEFINITE VISUAL REALIZATION
+--------------------------------------------------------------------------------
 
-When describing a hostile actor in any IMAGE PROMPT, the description MUST
-include AT LEAST one item from EACH of the four groups below. Combinations
-are required; isolated single cues are insufficient.
+Final IMAGE PROMPT text must describe ONE definite realization per visual attribute.
+Do NOT leave mutually exclusive appearance, setting, camera, or action choices
+unresolved in generated output.
 
-GROUP A — FACE & GROOMING (must include at least 2)
-- heavy long beard, dark or greying with age, untrimmed or rough-edged
-- weathered sun-worn skin with deep lines or hollow cheeks
-- hardened face with tense jaw and tight mouth
-- dark sunken or shadowed eyes; sharp narrowed gaze
-- rough stubble where a full beard is not contextually appropriate
-- thick brow shadow over deep-set eyes
-- a face that has seen violence, hardship, or operational stress
+Examples of FORBIDDEN unresolved alternatives:
+- "shirt or kurta"
+- "clean-shaven or trimmed beard"
+- "dark-brown/black hair"
+- "parked or slowly moving"
+- wide age spans such as "30s to 50s" when a single casting band is required
 
-GROUP B — EXPRESSION & GAZE (must include at least 1)
-- cold predatory stare directed at a phone, file, person, or off-frame point
-- narrowed eyes with controlled menace
-- guarded sideways glance toward a doorway or exit
-- expressionless mask hiding internal calculation (NOT blank-neutral; must
-  read as deliberate stillness, not absence of feeling)
-- low-lidded watchful gaze with weight behind it
-- jaw locked in suppressed aggression
+This rule targets unresolved visual alternatives — not ordinary grammatical "or"
+inside quoted narration or abstract prose.
 
-GROUP C — BODY LANGUAGE & POSTURE (must include at least 1)
-- shoulders hunched forward in secretive concentration
-- body angled away from the dominant light source so half the face stays
-  in shadow
-- one hand gripping a phone, weapon stock, file, or device too tightly
-- the other hand near a pocket, bag, doorway, or hidden compartment
-- controlled stillness with weight forward — coiled, not relaxed
-- watchful posture near corners, walls, exits, or shutter edges
-- subtle protective stance shielding a device, screen, or paper
+FACTUAL vs CASTING:
+- Do NOT invent a historical age, identity, or location and present it as established fact.
+- When the source is silent, choose one plausible casting value; approximate age is acceptable.
+- Library-locked traits are exact — copy verbatim; offer no alternatives.
 
-GROUP D — COSTUME & SETTING-LINKED CUES (must include at least 1)
-- conservative dark or muted shalwar kameez (Pakistan/Pashtun context)
-- loose kurta with rough waistcoat or shawl over it
-- skullcap, prayer cap, pakol, turban, or wrapped head covering where the
-  story geography supports it
-- worn dusty sandals or scuffed practical footwear
-- earth-tone or dust-toned fabric showing real wear and travel
-- militant-context accessories: cloth bag, rolled paper, hidden phone,
-  cheap smartphone clutched low
-- harsh side or back lighting that throws half the face into deep shadow
-  while edge-lighting the beard and brow
+Stage A: for recurring characters without library lock, record one definite visual identity
+in roster fields (single hair colour, grooming choice, clothing baseline, build cues).
+Stage B: commit to one supported staging choice per scene; do not output alternative
+locations, poses, vehicle states, or object sides when one frame requires a decision.
+Stage C: render the selected choice consistently; if plot-critical uncertainty cannot be
+resolved from source, use a broader supported depiction rather than inventing a fact.
+--------------------------------------------------------------------------------
+SHARED §1C — VIEWPOINT, CAMERA MOVEMENT, AND SUBJECT MOVEMENT (THREE DECISIONS)
+--------------------------------------------------------------------------------
 
-If any of A/B/C/D is missing, the prompt has not satisfied §2 and must be
-strengthened before output.
+These are separate decisions — do not collapse them:
 
-§2.3 NEVER DESCRIBE HOSTILE ACTORS AS
-gentle • calm in a peaceful way • soft-faced • innocent • kind-looking •
-warm • graceful • saintly • pure • humble • harmless • charming • heroic •
-stylish • attractive in a beauty sense • charismatic • emotionally
-sympathetic • noble • ordinary • regular • neutral civilian • clean-shaven
-modern man (unless story explicitly says disguise) • a normal passer-by •
-a working-class everyman • an unremarkable face in the crowd •
-documentary-flat • blank • generic.
+A. VIEWPOINT / FRAMING (Stage B → Camera scale suggestion; Stage C → IMAGE PROMPT):
+   wide, medium, close-up, insert, side/profile, over-shoulder, low angle, elevated,
+   overhead, aerial — chosen for what the viewer must notice.
 
-§2.4 RADICALISATION / PROPAGANDA / RECRUITMENT / CYBER-MANIPULATION
-Show manipulation through: posture, screen framing, closed rooms, hidden
-phones, coded communication, aggressive hand gestures, secretive group
-attention, suspicious device use, tense silence, low-bulb lighting.
-Do NOT make propagandists look like calm teachers, gentle spiritual guides,
-innocent speakers, harmless content creators, or warm community elders.
-A radical propagandist must look hardened, manipulative, controlling, or
-predatory — not warm or paternal.
-Avoid readable religious text; readable extremist slogans; explicit
-propaganda symbols; extremist logos; graphic gore; glorified violence.
-Communicate danger through behaviour, setting, lighting, and atmosphere —
-not through gore.
+B. CAMERA MOVEMENT (Stage C → DIGEN MOTION PROMPT only):
+   locked-off hold OR one slow restrained move (push-in, pull-back, small pan/tilt,
+   short lateral slide, gentle tracking, limited arc, slow aerial drift when the image
+   is already aerial). A close-up is not movement.
 
-§2.5 CONTINUITY
-Hostile actors must remain visually tense, secretive, hardened, and morally
-threatening across all scenes UNLESS the story explicitly shows disguise or
-deception. Same hardened face structure, same beard discipline, same
-clothing family, same posture language, same lack of warmth in every scene.
+C. SUBJECT MOVEMENT (frozen in current pipeline):
+   stillness or a small story-supported frozen action in the IMAGE PROMPT only.
+   Do not add walking, driving, or lip-sync in the motion prompt.
 
-§2.6 CIVILIAN SEPARATION RULE (UNCHANGED — STILL MANDATORY)
-Ordinary civilians from the same religion / region / ethnicity / clothing
-family as hostile actors must REMAIN ordinary civilians — never inherit
-hostile coding because of beard, skullcap, prayer cap, shalwar kameez,
-hijab, mosque background, or religious clothing alone. Apply hostile coding
-ONLY when the story or STORY CONFIG BLOCK clearly identifies the person as
-a hostile actor.
+Stage B records camera purpose silently in Breakdown note (geography, interaction,
+emotion, action, evidence, consequence). Stage C matches motion to that purpose.
 
-The §2 mandate intensifies coding for IDENTIFIED hostile actors. It does
-NOT spread that coding to ordinary civilians who happen to share a region,
-religion, or clothing style. The two rules work together, not against each
-other.
+Reject before output: slash-separated visual attributes, "A or B" grooming/garment/vehicle
+alternatives, or wide age spans when a single casting band is required.
 
-§2.7 LIGHTING RULE FOR HOSTILE ACTORS
-Use directional menace lighting:
-- harder side light or back-rim light cutting one side of the face dark;
-- weak phone glow under the chin or across one eye, leaving the rest in
-  dirty shadow;
-- single low overhead bulb creating harsh downward shadow under brows and
-  cheekbones;
-- sodium streetlight or weak tube light flattening the skin to dusty cool;
-- doorway silhouette where the figure reads as outline first, face second.
-Avoid soft beauty lighting, devotional glow, warm halo light, dreamy
-backlight, heroic rim lighting, saintly illumination, balanced studio
-three-point lighting, or even overcast daylight that flattens the face into
-neutrality.
+--------------------------------------------------------------------------------
+SHARED §2 — HOSTILE / SUSPECT / CRIMINAL SUBJECT CODING (CONDITIONAL)
+--------------------------------------------------------------------------------
 
-§2.8 FIRST-GLANCE READABILITY MANDATE
-A hostile-actor frame passes only if a viewer scrolling past at normal
-speed can read the figure as a hardened militant / terrorist / extremist /
-operative within 1–2 seconds — based on silhouette, beard, expression,
-posture, lighting, and costume alone, BEFORE reading any context detail in
-the background.
+SCOPE: Apply ONLY when the STORY CONFIG BLOCK records "Hostile actors present: yes"
+AND this scene's main or supporting subject is a confirmed hostile actor, suspect,
+criminal operative, or threat-network member named in the story. Otherwise skip §2
+entirely for this scene.
 
-If the figure could plausibly be mistaken for a routine working-class man,
-a calm religious teacher, a neighborhood shopkeeper, a generic uncle, or a
-friendly passer-by, the prompt has FAILED §2.8 and must be strengthened
-before output.
+PRINCIPLE — behaviour over appearance coding:
+Show story-supported threat through depicted ACTION, concealment, spatial
+relationship, attention direction, expression, or tense gesture — not through
+automatic sinister faces, dirty half-shadow, rough-grooming mandates, or bans on
+ordinary appearance, clean-shaven faces, trimmed beards, soft daylight, or balanced
+readable lighting.
 
-Concrete test: cover the background in your mind. Look only at the figure.
-Does the silhouette + face + grooming + posture + lighting still read as
-"this person is operationally dangerous"? If not, strengthen.
+A suspect or criminal courier MAY look ordinary — like any working-class person in
+that region. Do NOT make role or morality determine facial anatomy, grooming,
+clothing cleanliness, class markers, skin tone, or lighting quality.
 
-§2.9 CINEMATIC INTENSITY PERMISSION (within grounded realism)
-Hostile actors may — and should — be rendered with heightened cinematic
-expressiveness:
-- strong directional chiaroscuro lighting on the face;
-- exaggerated silhouette readability (heavy beard, distinctive headwear,
-  layered fabric outline);
-- compressed depth pulling the figure forward against a darker background;
-- micro-expression intensity (visible jaw tension, breath held, controlled
-  rage, quiet menace) instead of neutral inert face;
-- grounded but emotionally charged staging.
+WHEN §2 APPLIES, describe:
+- the story-supported frozen beat (handoff, surveillance, flight, concealment, interception);
+- gaze direction and body orientation toward exits, contacts, or story objects;
+- tension appropriate to narration (guarded, evasive, startled) without caricature;
+- clothing and props supported by the story with stable continuity across scenes;
+- motivated lighting for time and place that keeps faces READABLE.
 
-This is NOT a permit for cartoon villainy, fantasy stylisation, surrealism,
-or visual exaggeration that breaks documentary realism. It IS a permit for
-the cinematic intensity of films like Sardar Udham, Article 15, The Family
-Man, Mumbai Diaries, Tehran, Munich, or Zero Dark Thirty — grounded but
-visually striking and emotionally readable.
+DO NOT:
+- require heavy beard, skullcap, pakol, turban, or religious dress unless the story
+  explicitly identifies that person and that appearance;
+- ban clean-shaven faces, neatly trimmed beards, or "ordinary man / neutral civilian /
+  working-class everyman / harmless appearance" in positives or negatives;
+- apply §2 posture or lighting to bystanders, officers, or civilians;
+- paste hostile-only NEGATIVE exclusions into scenes without hostile subjects.
 
-When in doubt: more menace, not less. The story-safety risk is softness,
-not severity.
+§2.1 CONTINUITY
+Story-established clothing, footwear, hair, bag material, and props remain stable
+unless narration supports a change. Named recurring characters (including officers)
+keep the same identifying details scene to scene.
 
-§2.10 HOSTILE STAGING TEMPLATE BLOCK (mandatory verbatim insertion)
-When a hostile actor is the main subject or co-subject of a scene, Stage C
-MUST open the Foreground section with a description block built on this
-template. The block must appear as the FIRST descriptive content inside
-Foreground (before any environmental detail, before any object detail,
-before any other character). Image models weight earlier tokens more
-heavily — burying the hostile description mid-prompt is the primary cause
-of softening.
-
-TEMPLATE (fill the bracketed slots from the scene; never omit any slot):
-
-  "{role-archetype} figure, {age range} years old, {ethno-regional descriptor},
-   {build} build, {face descriptor including weathered/hardened cues},
-   {beard descriptor — heavy/long/dark/greying as appropriate to age},
-   {headwear if context supports — skullcap / pakol / turban / wrapped scarf
-   / none-with-rough-hair}, {costume — shalwar kameez / kurta + waistcoat /
-   muted regional clothing, with wear and dust}, {expression — hardened /
-   narrowed / cold / predatory / guarded — never neutral, never gentle},
-   {gaze direction and intensity}, {posture — hunched / coiled / angled
-   away from light / shoulders forward}, {hand placement — gripping device /
-   near pocket / shielding object / resting on file}, {lighting effect on
-   face — half-shadow / phone-glow / harsh side / single bulb under-light}"
-
-EXAMPLE FILLED:
-"A hardened Pakistan-based Islamist militant figure, late thirties to early
-forties, Pakistani Pashtun with weathered sun-worn skin and sharp cheekbones,
-medium build, hollow-cheeked face with deep brow shadow and tense jaw, heavy
-dark untrimmed beard reaching mid-chest, brown wool pakol pulled low over
-the forehead, loose dust-toned shalwar kameez with a rough grey-brown
-waistcoat over it, narrowed cold eyes fixed on a cheap smartphone in his
-left hand, fingers gripping the device too tightly, right hand resting near
-a cloth shoulder bag at his hip, shoulders hunched forward in secretive
-concentration, body angled so the harsh tube light from upper-left throws
-the right side of his face into deep dirty shadow while edge-lighting the
-beard and brow"
-
-This block must NEVER be skipped, NEVER softened, NEVER replaced with a
-shorter neutral description, and NEVER pushed to Midground or Background.
-
-§2.11 SOFTENING DETECTION & REJECTION
-Before finalising any IMAGE PROMPT containing a hostile actor, scan the
-generated text for softening markers. Strike and rewrite if any of these
-appear in the hostile-actor description:
-- "ordinary", "regular", "normal", "everyday" applied to the hostile figure
-- "calm", "peaceful", "gentle", "soft", "warm", "kind", "humble"
-- "neutral expression", "blank face", "relaxed posture", "pleasant"
-- "well-groomed", "clean-cut", "modern", "fashionable", "stylish"
-  (unless story explicitly states disguise)
-- "smiling", "friendly", "approachable", "open posture"
-- "spiritual", "saintly", "devotional", "reverent" (for hostile figures)
-- "documentary-flat", "balanced lighting", "even illumination"
-- any descriptor that, removed from context, could equally describe a
-  shopkeeper, schoolteacher, or family man.
-
-If any of the above are detected in the hostile-actor description block,
-the description has failed and must be regenerated using §2.2 mandatory
-markers and §2.10 staging template.
+§2.2 WHEN HOSTILE ACTORS ABSENT
+When "Hostile actors present: no", all HOSTILE ACTOR VISUAL PROFILE fields in Stage A
+are N/A. Stages B and C do not apply §2.
 
 --------------------------------------------------------------------------------
 SHARED §3 — REGION / ORIGIN / IDEOLOGY VISUAL MAPPING
@@ -333,62 +236,18 @@ when the story identifies the person/group as terrorist, extremist, militant,
 radical handler, hostile recruiter, propagandist, violent conspirator, terror
 commander, operative, handler, or suspect linked to hostile activity.
 
-§3.6 PAKISTAN-BASED ISLAMIST MILITANT VISUAL PROFILE (MANDATORY MINIMUMS)
-Apply only when the story explicitly identifies the actor as a Pakistan-based
-Islamist militant, terror commander, extremist recruiter, LeT-linked figure,
-JeM-linked figure, Taliban-style militant, jihadist handler, radical preacher,
-or militant network operative.
-Do NOT describe them merely as "Muslim civilians."
-Do NOT make ordinary Muslim civilians look threatening (SHARED §2.6).
+§3.6 PAKISTAN-BASED ISLAMIST MILITANT CONTEXT (CONDITIONAL)
+Apply only when the story explicitly names the actor as a Pakistan-based Islamist
+militant, terror commander, extremist recruiter, LeT/JeM-linked figure, Taliban-style
+militant, or jihadist handler — not from religion or dress alone.
 
-When this profile applies, the IMAGE PROMPT description MUST include ALL of
-the following — these are not optional cues, they are mandatory minimums:
+When this profile applies, use story-supported behaviour and period-accurate regional
+clothing. Faces remain readable. Do NOT require heavy beard, skullcap, pakol, or turban
+unless the story establishes that appearance. Do NOT ban clean-shaven or trimmed grooming
+unless disguise is narratively excluded.
 
-REQUIRED (must be present):
-1. Heavy long beard, dark or greying with age, untrimmed and rough-edged
-   (a clean-shaven or trimmed-modern look is FORBIDDEN unless the story
-   explicitly states disguise).
-2. Conservative regional clothing — shalwar kameez, loose kurta, with rough
-   waistcoat or shawl where regionally appropriate, in muted earth tones
-   with visible dust and wear.
-3. Hardened weathered face — sun-worn skin, deep brow shadow, hollow or
-   sharp cheek lines, tense jaw, narrowed or sunken eyes.
-4. Visible posture menace — guarded, hunched, watchful, or angled-away-
-   from-light stance. Never an open, relaxed, friendly, or balanced stance.
-5. Directional menace lighting — half-shadow on the face, harsh side or
-   under-light, weak phone glow, or single low bulb (SHARED §2.7). Never
-   soft balanced light.
-
-REQUIRED WHERE GEOGRAPHY SUPPORTS:
-- skullcap, prayer cap, pakol, turban, or wrapped head covering
-- worn dusty sandals or scuffed practical footwear
-
-ABSOLUTELY FORBIDDEN:
-- modern stylish influencer look
-- clean-shaven soft modern face (unless story says disguise)
-- fashionable hero jacket, polished urban styling
-- glamorous villain styling
-- warm devotional glow, saintly religious-teacher look
-- innocent civilian framing
-- balanced studio lighting on the face
-- friendly smile, open posture, gentle expression
-- readable religious text, readable extremist slogans, extremist logos
-- glorified weapons display, graphic gore
-
-KPK / tribal belt / Waziristan / Peshawar outskirts / Afghan-border context:
-Pashtun/north-western Pakistan cues — long beard; pakol or turban where
-appropriate; loose shalwar kameez; rough waistcoat; dusty sandals; weathered
-skin; sharp cheekbones; sun-worn face; guarded body language.
-
-Punjab / urban Pakistan extremist networks: shalwar kameez; waistcoat; long
-beard; skullcap where appropriate; conservative grooming; muted colours;
-controlled suspicious posture.
-
-Avoid for any of the above: modern stylish influencer look; clean-shaven soft
-face unless story states disguise; fashionable hero jacket; glamorous villain
-styling; warm devotional glow; saintly religious-teacher look; innocent
-civilian framing; readable religious text; readable extremist slogans;
-extremist logos; glorified weapons display; graphic gore.
+Avoid: readable religious text; extremist logos; propaganda glorification; graphic gore;
+making ordinary Muslim civilians look threatening (SHARED §2.6).
 
 §3.7 ARCHETYPE QUICK REFERENCE
 A. Pakistan-based Islamist militant / LeT / JeM / terror commander — see §3.6.
@@ -480,11 +339,28 @@ If a recurring character first appears without enough textual detail, infer a
 stable design from: era + geography + profession + class + role + context.
 Lock the inferred identity and reuse it consistently.
 
-§5.4 HOSTILE RECURRING CHARACTERS
-Maintain the same threatening visual identity across scenes: same hardened
-face structure; same guarded eye behaviour; same rough grooming family;
-same clothing logic; same suspicious posture language; same lack of warmth
-or heroism.
+§5.4 SUSPECT / HOSTILE RECURRING CHARACTERS (when §2 applies)
+Maintain stable identity across scenes: same face structure, grooming, clothing,
+footwear, bag, and props unless narration supports a change. Show tension through
+story-supported action and expression — not automatic sinister appearance or
+compulsory half-shadow.
+
+§5.5 POSITIVE IDENTITY AND RECURRING OBJECTS
+In roster and architecture fields choose ONE definite realization — never "jeep or sedan",
+"maybe an officer", or "shirt or kurta". Vehicles and transport must name one type with
+identifying features, not alternatives.
+
+Recurring characters and objects need positive identity descriptions in IMAGE PROMPT text —
+not generic negatives alone. Before any "no identity drift" negative, state the stable traits:
+apparent age band, face structure, hairstyle and colour, facial hair, glasses, build,
+clothing family, footwear, and identifying accessories for people; colour, material,
+shape, size, and distinctive features for recurring objects (vehicles, bags, uniforms,
+evidence items). Record recurring object traits in SPECIAL HANDLING NEEDS or roster-adjacent
+notes when story-critical. Allow changes only when
+narration, elapsed time, or an explicitly established costume change supports them.
+
+On repeat appearances, restate only the traits needed for recognition — do not paste full
+roster paragraphs every scene unless identity or costume changed.
 
 --------------------------------------------------------------------------------
 SHARED §6 — SOURCE TEXT (HINDI LINE) PRESERVATION
@@ -532,11 +408,10 @@ NEVER use fantasy symbolism, swirling smoke metaphors, surreal cross-sections,
 or split-screen composites.
 
 §7.4 ABSTRACT LINES INVOLVING DANGER / RADICALISATION / TERRORISM
-Ground them through: tense faces, suspicious devices, dim rooms, hidden
-phones, marked maps, closed shutters, coded notes without readable text,
-officers reviewing evidence, hostile actors watching screens with guarded
-body language. Do NOT create peaceful spiritual symbolism or soft emotional
-portraits of hostile actors.
+Ground them through story-supported action and setting: tense faces, suspicious devices,
+marked maps, closed shutters, coded notes without readable text, officers reviewing
+evidence, guarded body language. Do NOT default to dim rooms or sinister faces when the
+narration supports daylight or ordinary surroundings.
 
 --------------------------------------------------------------------------------
 SHARED §8 — SCENE CONTEXT LABEL RULES
@@ -552,17 +427,15 @@ object — not real names.
 - Avoid all real personal names where possible; describe role/archetype
   instead.
 
-§8.3 HOSTILE-SCENE STRENGTHENING
-If a scene includes a hostile actor, do NOT use soft labels. Strengthen the
-label with grounded threat language. Examples:
+§8.3 SCENE LABEL CLARITY
+Use concrete role + action + setting from the narration. Do not soften into vague labels,
+but do not inject menace words (shadow, hardened, hostile) unless the story supports them.
 
-  Soft (forbidden)              →   Stronger (preferred)
-  Young Man Watches Video       →   Hostile Recruiter Watches Screen
-  Religious Speaker Talks       →   Radical Handler Controls Room
-  Group Listening Quietly       →   Suspicious Group Receives Message
-  Man Uses Phone                →   Threat Network Studies Phone
-  Calm Speaker Addresses Room   →   Hostile Propagandist Shapes Narrative
-  Gentle Man In Room            →   Criminal Handler Waits In Shadow
+  Weak (forbidden)              →   Clear (preferred)
+  Young Man Watches Video       →   Courier Checks Phone Message
+  Man Uses Phone                →   Suspect Reads Platform Alert
+  Important Scene               →   Railway Locker Key Exchange
+  Gentle Man In Room            →   Contact Waits At Tea Stall
 
 §8.4 GOOD EXAMPLES
 Opening Cyber Room Silence • Screens Replay Suspicious Video • Officer
@@ -617,51 +490,40 @@ Consequence beat • Emotional punch • Climax beat • Aftermath beat •
 Abstract commentary visualized physically.
 
 --------------------------------------------------------------------------------
-SHARED §11 — UNIVERSAL NEGATIVES (sensitive content)
+SHARED §11 — NEGATIVE PROMPT SELECTION (Stage C)
 --------------------------------------------------------------------------------
 
-Always exclude in IMAGE PROMPT NEGATIVE section (Stage C). Stage A may add
-story-specific negatives on top of these.
+Stage C builds a compact NEGATIVE section per scene — approximately 6–12 items,
+semicolon-separated. Do NOT copy the entire shared library, character-library
+metadata blocks, or all story-level exclusions into every scene.
 
-Universal:
-photorealism; ultra realism; 3D render; CGI; ray tracing; global
-illumination; glossy surfaces; HDR realism; lens flare; blur; depth of field;
-bloom; neon colors; fantasy smoke; exaggerated caricature; text overlay;
-watermark; logo; readable labels; readable document text; readable insignia;
-modern futuristic infrastructure not supported by era.
+BASE CORE (include 5–7 of these on most scenes when relevant):
+photorealistic; 3D render; CGI; text overlay; watermark; logo; readable labels;
+readable document text; split-screen; collage; empty stage-like background.
 
-When hostile actors are present, ALWAYS include these strong anti-soft
-exclusions (these are the highest-priority negatives for hostile scenes):
-gentle face; innocent expression; warm smile; friendly smile; saintly glow;
-heroic pose; glamorous styling; cute look; sympathetic victim framing;
-soft devotional lighting; polished influencer appearance; fashionable
-villain glamour; harmless appearance; noble martyr framing; romanticised
-extremist look; ordinary man; regular passer-by; neutral civilian look;
-working-class everyman; unremarkable face in the crowd; documentary-flat
-hostile actor; blank neutral face; relaxed posture; open friendly stance;
-balanced studio lighting on the face; even soft daylight on the face;
-clean-shaven soft modern face (unless story states disguise); trimmed
-fashionable beard; humble teacher look; calm spiritual guide look; gentle
-uncle look; pleasant approachable expression; warm community elder framing;
-modern stylish jacket; polished urban styling on militant.
+ADD ONLY when this scene could plausibly err:
+- weapons / gore / blood — only if narration touches violence or weapons;
+- propaganda / extremist logos / readable religious text — only on propaganda or
+  confirmed extremist-beat scenes;
+- mobile UI / readable messages — only when phones or screens are focal;
+- identity firewall — only when Library lock is present: merged identity; wrong
+  locked character; identity drift; borrowed facial features;
+- story-specific negatives from STAGE CONFIG — only items relevant to THIS scene.
 
-When Islamist militant context is present, additionally exclude:
-readable religious text; readable propaganda slogans; extremist logos;
-extremist flags; ordinary Muslim civilians portrayed as threatening;
-religion-only threat coding; ethnic stereotyping; clean-shaven soft
-militant if config requires heavy long beard; gentle religious-teacher look
-for confirmed hostile extremist; saintly preacher framing for hostile
-recruiter; warm devotional glow on hostile figure; soft balanced light on
-militant face; modern fashionable dress on confirmed militant.
+NEVER bulk-paste anti-soft hostile lists (ordinary man; neutral civilian;
+harmless appearance; balanced studio lighting; even soft daylight; clean-shaven;
+skullcap; pakol; turban; long religious beard) into scenes without hostile subjects
+or without a story-supported identity reason.
 
-Common scene-specific exclusions (add when relevant):
-visible weapon if it should not appear; beard / clean-shaven if continuity
-requires; suit / tie if inappropriate; hero pose if inappropriate; crowd if
-scene should feel empty; smiling expression if mood is serious; readable app
-names; readable chat text; readable website names; readable phone numbers;
-readable maps; readable official seals; real political party symbols;
-explicit public figure labels; graphic gore; explicit brutality; blood
-splatter unless specifically required.
+Before output, scan positive description against negatives and remove contradictions:
+- glossy photographic paper or metal reflection is allowed; ban photorealistic and CGI,
+  not all gloss;
+- if background simplification is desired, ban illegible focal faces — do not ban all
+  blur or depth of field while keeping the main subject sharp;
+- ban photorealism and CGI rather than blanket-banning global illumination when natural
+  daylight is the positive goal.
+
+Stage A may list story-specific negatives; Stage C adds only those relevant to THIS scene.
 
 --------------------------------------------------------------------------------
 SHARED §12 — LOCKED CHARACTER LIBRARY
@@ -754,11 +616,10 @@ the LOCKED VISUAL DESCRIPTION for that character. Across all stages:
 - Do NOT re-infer attributes that the locked body already specifies.
   The library wins over SHARED §3 and SHARED §5 inference for that
   specific character.
-- The lock does NOT override SHARED §2 (hostile actor mandate) if the
-  story identifies the character as hostile. SHARED §2 still applies on
-  top, and the locked body is only used if it is consistent with §2;
-  otherwise flag the conflict (this should be rare — the library is
-  expected to be self-consistent with each character's role).
+- Verbatim library anchors are never overridden by SHARED §2. Copy the anchor
+  verbatim; apply scene action and readable lighting around it. If the anchor
+  contains menace or lighting wording that conflicts with §2 behaviour-based
+  rules, note the conflict for human review — do not drop or rewrite the anchor.
 
 §12.6 SCOPE OF VERBATIM COPY PER STAGE
 - Stage A: record the match in the RECURRING CHARACTER ROSTER by tagging
@@ -845,6 +706,15 @@ DO NOT
 - add commentary;
 - output anything before or after the STORY CONFIG BLOCK.
 
+CONTINUITY vs VISUAL DEFAULTS (apply while analyzing)
+- Lock factual continuity: era, geography, architecture, cast identity, library
+  matches, hostile-actor presence (yes/no), public figures, sensitive exclusions.
+- Set adaptable visual defaults per story: dominant times of day, seasonal light,
+  regional palette families, typical environments — grounded in the FULL_STORY,
+  not generic crime/investigation styling.
+- When hostile actors are absent, output N/A for every HOSTILE ACTOR VISUAL PROFILE
+  field and do not recommend threat lighting for ordinary scenes.
+
 WHAT TO ANALYZE
 
 A. STORY IDENTITY
@@ -893,6 +763,13 @@ in the roster. Non-locked characters proceed to inference per SHARED
 §3 and §5 as before.
 
 E.1 INFERENCE (for non-locked characters)
+
+E.1a DEFINITE CASTING (non-locked characters)
+When recording roster fields, choose ONE supported value per trait. Do not output
+alternative grooming, clothing, hair colour, age bands, or footwear options in roster
+fields. Distinguish source facts from creative casting choices. Mark uncertain historical
+facts honestly; do not present invented ages or identities as established.
+
 For each recurring character/group not LIBRARY-LOCKED, record per
 SHARED §3 and §5:
 name (only if in source); origin/region; ethno-regional visual context;
@@ -902,8 +779,8 @@ headwear; glasses; clothing baseline; posture language; emotional baseline;
 visual coding rule; do-not-misclassify rule; continuity rule; whether
 public-figure protection applies (SHARED §4).
 
-F. HOSTILE ACTOR DETECTION
-Per SHARED §2 and §3.6/§3.7. If hostile actors exist, record:
+F. HOSTILE ACTOR DETECTION (conditional — if absent, all fields N/A)
+Per SHARED §2 when present. If hostile actors exist, record behaviour-based profile:
 groups; origin/region; ethno-regional visual context; threat role;
 religious-political context; visual severity (low/medium/high); face and
 expression; grooming; headwear; clothing baseline; posture language;
@@ -919,11 +796,14 @@ clothing baseline; militant clothing baseline; class/status markers;
 era-accurate rules; what to avoid.
 
 I. COLOR SCRIPT DEFAULT
-Recommend a default palette per story tone — e.g. cold blue institutional;
-warm amber domestic; desaturated grey tension; muted earth tones; night
-sodium yellow; dusty daylight; restrained cyber screen glow. If hostile
-actors appear, define their palette as muted, shadowed, dusty, desaturated,
-or dimly lit — never warm, heroic, glamorous, or devotional.
+Recommend setting-specific palettes grounded in THIS story — e.g. monsoon
+grey-green exteriors; warm afternoon domestic amber; cool institutional
+fluorescent; dusty highway ochre; festival saffron and marigold; night market
+sodium and shop-front tungsten. Daylight scenes should stay naturally lit with
+local colour, not globally desaturated. If hostile actors appear, define their
+palette separately as muted, shadowed, dusty, or dimly lit — never warm, heroic,
+glamorous, or devotional. If hostile actors are absent, mark hostile palette
+fields N/A.
 
 J. LIGHTING BEHAVIOR
 Daylight; night; interior; institutional; cyber/screen; hostile actor;
@@ -947,14 +827,14 @@ What environment appears most frequently and the recommended default shot
 type for it (per SHARED §9).
 
 N. PRIMARY VISUAL ANCHOR GUIDANCE
-What dominates the frame across most scenes — e.g. face, phone, laptop
-screen, evidence folder, map, checkpoint, officer's hand, family doorway,
-empty street, press camera, courtroom bench, aircraft, border road,
-hospital bed, long-bearded militant figure, shadowed phone-lit face,
-closed shopfront, suspicious group posture. Explain how abstract lines
-should be anchored. If hostile actors appear, indicate whether the anchor
-should be threatening posture, shadowed face, suspicious phone use, tense
-group attention, hidden device, evidence screen, or network map.
+What dominates the frame across most scenes — derive from THIS story's actual
+beats (e.g. face, crowd, landscape, building facade, vehicle, market stall,
+family doorway, podium, map, document, phone, checkpoint, aircraft, border
+road, hospital bed). Do NOT default to desk-monitor-evidence-board templates
+when the narration supports richer anchors. Explain how abstract lines should
+be anchored in story-specific places and objects. If hostile actors appear,
+indicate whether the anchor should be threatening posture, guarded expression,
+suspicious phone use, tense group attention, or hidden device — otherwise N/A.
 
 O. SPECIAL HANDLING NEEDS
 Many abstract lines; multiple simultaneous locations; crowd scenes; time
@@ -1110,10 +990,10 @@ ABSTRACT LINE TRANSLATION GUIDANCE
 [3 to 5 concrete examples specific to this story showing how to ground likely abstract lines physically — see SHARED §7]
 
 HOSTILE ACTOR TRANSLATION GUIDANCE
-[If hostile actors appear, 3 to 5 concrete examples showing threat physically without gore, propaganda, or glorification — see SHARED §2. Otherwise N/A.]
+[If hostile actors appear, 3 to 5 examples of story-supported action/concealment beats — not appearance menace. Otherwise N/A.]
 
 ORIGIN-BASED CHARACTER APPLICATION GUIDANCE
-[3 to 5 concrete examples of how origin + region + role + ideology should affect appearance, applying militant styling only to identified hostile actors and keeping civilians neutral — see SHARED §3.]
+[3 to 5 examples of how origin + region + role affect ordinary appearance coding; civilians stay neutral; suspects may look ordinary — see SHARED §3.]
 
 5-SECOND PACING GUIDANCE
 Average Hindi line length per scene: [range]

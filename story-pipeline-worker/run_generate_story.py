@@ -402,15 +402,15 @@ def call_deepseek(
             wait_s = min(20, attempt * 3)
             log(f"[llm] transient HTTP {code}, retry {attempt}/{retries}, waiting {wait_s}s")
             time.sleep(wait_s)
-        except (urllib.error.URLError, TimeoutError, socket.timeout) as exc:
+        except (urllib.error.URLError, TimeoutError, socket.timeout, ConnectionError) as exc:
             if attempt >= retries:
                 raise RuntimeError(
-                    f"DeepSeek transport timeout after {retries} attempts "
+                    f"DeepSeek transport error after {retries} attempts "
                     f"(timeout={request_timeout_s}s): {exc}"
                 ) from exc
             wait_s = min(30, attempt * 5)
             log(
-                f"[llm] transport timeout ({request_timeout_s}s), "
+                f"[llm] transport error ({type(exc).__name__}), "
                 f"retry {attempt}/{retries}, waiting {wait_s}s"
             )
             time.sleep(wait_s)
@@ -1018,11 +1018,30 @@ def _collect_transcript_files(base_script_dir: Path) -> list[Path]:
         files = sorted(transcript_dir.glob("*.txt"), key=lambda p: p.name)
         if files:
             return files
-    for name in ("uploaded_transcript.txt", "combined_transcript.txt"):
+    for name in ("COMBINED_RESEARCH.txt", "uploaded_transcript.txt", "combined_transcript.txt"):
         path = base_script_dir / name
         if path.is_file():
             return [path]
     return []
+
+
+def load_existing_script_transcript(slug_folder: Path | None) -> str | None:
+    """Reuse saved combined research/transcript from a prior run (skip YouTube fetch)."""
+    if slug_folder is None:
+        return None
+    files = _collect_transcript_files(slug_folder / "script")
+    if not files:
+        return None
+    if len(files) == 1:
+        text = files[0].read_text(encoding="utf-8", errors="replace").strip()
+        return text if len(text) >= 100 else None
+    parts: list[tuple[str, str]] = []
+    for path in files:
+        text = path.read_text(encoding="utf-8", errors="replace").strip()
+        if text:
+            parts.append((path.stem, text))
+    combined = _combine_transcript_parts(parts, []).strip()
+    return combined if len(combined) >= 100 else None
 
 
 def load_uploaded_transcript(bundle: dict, slug_folder: Path | None) -> str | None:
@@ -1030,6 +1049,10 @@ def load_uploaded_transcript(bundle: dict, slug_folder: Path | None) -> str | No
     story = (bundle or {}).get("story") or {}
     if not story.get("has_uploaded_transcript"):
         return None
+
+    inline = (story.get("transcript") or "").strip()
+    if len(inline) >= 100:
+        return inline
 
     youtube_urls = story.get("youtube_urls") or []
     script_dirs: list[Path] = []
@@ -1106,7 +1129,8 @@ def run_generate(story_id: int, *, pointers_only: bool = False) -> None:
     research_dir = (slug_folder / "research") if slug_folder is not None else None
 
     uploaded_transcript = load_uploaded_transcript(bundle, slug_folder)
-    channel_research = False if uploaded_transcript else use_channel_first_research(bundle, master)
+    existing_transcript = None if uploaded_transcript else load_existing_script_transcript(slug_folder)
+    channel_research = False if (uploaded_transcript or existing_transcript) else use_channel_first_research(bundle, master)
     seed_url = urls[0] if urls else ""
     research_meta: dict = {}
 
@@ -1115,6 +1139,13 @@ def run_generate(story_id: int, *, pointers_only: bool = False) -> None:
         transcript_ok, transcript_failed = 1, 0
         log(
             f"[progress] stage=transcripts mode=uploaded chars={len(transcripts):,} "
+            "skip_youtube=1"
+        )
+    elif existing_transcript:
+        transcripts = existing_transcript
+        transcript_ok, transcript_failed = 1, 0
+        log(
+            f"[progress] stage=transcripts mode=existing_on_disk chars={len(transcripts):,} "
             "skip_youtube=1"
         )
     elif channel_research:
@@ -1208,6 +1239,7 @@ def run_generate(story_id: int, *, pointers_only: bool = False) -> None:
                 topic=story.get("title") or "",
                 deadline_ts=deadline_ts,
                 request_timeout_s=api_timeout_s,
+                slug_folder=slug_folder,
             )
         save_bullet_artifacts(slug_folder, research_for_prompt, bullet_entries)
         try:
@@ -1428,6 +1460,17 @@ def main() -> None:
             args.story_id,
             {
                 "story_meta": f"Generation timeout: {exc}",
+                "status": "failed",
+            },
+        )
+        log(f"error: {exc}")
+        raise SystemExit(1)
+    except (ConnectionError, RuntimeError) as exc:
+        client = DrupalStoryClient()
+        client.update_story(
+            args.story_id,
+            {
+                "story_meta": f"Generation failed: {exc}",
                 "status": "failed",
             },
         )

@@ -210,6 +210,22 @@ class StoryPipelineAssetStorage {
   }
 
   /**
+   * Write pasted transcript to script/uploaded_transcript.txt in the asset folder.
+   */
+  public function syncUploadedTranscript(NodeInterface $node): ?string {
+    if (!$node->hasField('field_transcript') || $node->get('field_transcript')->isEmpty()) {
+      return NULL;
+    }
+
+    $text = trim(strip_tags((string) ($node->get('field_transcript')->value ?? '')));
+    if ($text === '' || strlen($text) < 100) {
+      return NULL;
+    }
+
+    return $this->saveText($node, 'script', 'uploaded_transcript.txt', $text);
+  }
+
+  /**
    * Read raw story file text from the node upload or asset folder.
    */
   public function readRawStoryFileText(NodeInterface $node): string {

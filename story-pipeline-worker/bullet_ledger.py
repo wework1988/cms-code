@@ -367,6 +367,44 @@ def extract_one_source(
     return entry
 
 
+def _entry_from_saved(item: dict) -> dict:
+    return {
+        "source_id": item.get("source_id"),
+        "source_title": item.get("source_title"),
+        "story_topic": item.get("story_topic") or "",
+        "pointers": item.get("pointers") or [],
+        "bullets": item.get("bullets") or [],
+        "story_flow": item.get("story_flow") or [],
+        "raw": "",
+    }
+
+
+def load_saved_pointer_entries(slug_folder: Path | None) -> dict[str, dict]:
+    """Load per-source pointer extracts saved from a prior partial run."""
+    if slug_folder is None:
+        return {}
+    path = slug_folder / "script" / "source_bullets.json"
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(data, list):
+        return {}
+    saved: dict[str, dict] = {}
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        sid = str(item.get("source_id") or "").strip()
+        if not sid:
+            continue
+        count = int(item.get("pointer_count") or len(item.get("pointers") or []))
+        if count >= MIN_POINTERS_PER_SOURCE:
+            saved[sid] = _entry_from_saved(item)
+    return saved
+
+
 def assert_ledger_usable(entries: list[dict]) -> None:
     if not entries:
         raise RuntimeError("Pointer extract failed: no sources.")
@@ -398,6 +436,7 @@ def extract_bullet_ledger(
     topic: str = "",
     deadline_ts: float | None = None,
     request_timeout_s: int = 600,
+    slug_folder: Path | None = None,
 ) -> tuple[str, list[dict]]:
     """
     For each source in the combined file, extract 20–25 story pointers via LLM.
@@ -408,13 +447,25 @@ def extract_bullet_ledger(
         raise RuntimeError("No transcript sources found to extract pointers from.")
 
     template = load_extract_prompt_template()
+    saved_entries = load_saved_pointer_entries(slug_folder)
     entries: list[dict] = []
     log(f"[pointers] extracting from {len(sources)} source(s) (thinking=on, quality=max)")
 
     for idx, src in enumerate(sources, 1):
+        sid = src["source_id"]
+        if sid in saved_entries:
+            entry = saved_entries[sid]
+            n_p = len(entry.get("pointers") or [])
+            log(
+                f"[pointers] source {idx}/{len(sources)} "
+                f"id={sid} skip=resume pointers={n_p}"
+            )
+            entries.append(entry)
+            continue
+
         log(
             f"[pointers] source {idx}/{len(sources)} "
-            f"id={src['source_id']} chars={len(src['body']):,}"
+            f"id={sid} chars={len(src['body']):,}"
         )
         entry = extract_one_source(
             src=src,
@@ -427,6 +478,9 @@ def extract_bullet_ledger(
             request_timeout_s=request_timeout_s,
         )
         entries.append(entry)
+        if slug_folder is not None:
+            ledger = build_bullet_ledger_text(entries, topic=topic)
+            save_bullet_artifacts(slug_folder, ledger, entries)
 
     ledger = build_bullet_ledger_text(entries, topic=topic)
     return ledger, entries

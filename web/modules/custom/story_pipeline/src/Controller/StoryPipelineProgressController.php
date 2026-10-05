@@ -39,8 +39,16 @@ class StoryPipelineProgressController extends ControllerBase {
       ->sort('changed', 'DESC')
       ->execute();
 
-    $nodes = $ids ? $this->entityTypeManager()->getStorage('node')->loadMultiple($ids) : [];
-    return new JsonResponse($this->progressParser->getProgressMultiple($nodes));
+    $storage = $this->entityTypeManager()->getStorage('node');
+    $progress = [];
+    foreach ($ids as $nid) {
+      $node = $storage->load($nid);
+      if ($node instanceof NodeInterface && $node->bundle() === 'story') {
+        $progress[(string) $nid] = $this->progressParser->getProgress($node);
+      }
+      $storage->resetCache([$nid]);
+    }
+    return new JsonResponse($progress);
   }
 
   /**
@@ -72,7 +80,15 @@ class StoryPipelineProgressController extends ControllerBase {
       ->sort('changed', 'DESC')
       ->execute();
 
-    $nodes = $ids ? $this->entityTypeManager()->getStorage('node')->loadMultiple($ids) : [];
+    $storage = $this->entityTypeManager()->getStorage('node');
+    $nodes = [];
+    foreach ($ids as $nid) {
+      $node = $storage->load($nid);
+      if ($node instanceof NodeInterface && $node->bundle() === 'story') {
+        $nodes[] = $node;
+      }
+      $storage->resetCache([$nid]);
+    }
     return new JsonResponse($this->progressParser->getConsoleData($nodes, $offsets));
   }
 

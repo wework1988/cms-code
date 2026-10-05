@@ -10,7 +10,7 @@ Today's pull branch is **`2026-10-05`**.
 |---|---|---|
 | Drupal CMS | `/Applications/MAMP/htdocs/myresearch2` | This repo, branch `2026-10-05` |
 | Python worker | `/Applications/MAMP/htdocs/story-pipeline-worker` | Separate repo. Drupal launches this path |
-| MySQL database | database `myresearch` on `127.0.0.1:8889` | Not in git. Import a dump from the old Mac |
+| MySQL database | database `myresearch` on `127.0.0.1:8889` | Dump is `database/myresearch.sql` in this repo |
 | Story Studio | `story-studio/` inside this repo | Optional Next.js app on port 3000 |
 | Automation engine | `/Users/averma/project/research-story-17thmay-automation` | Needed only to run story jobs, not to open the CMS |
 
@@ -56,18 +56,27 @@ Put both folders at those exact paths. `WorkerLauncher.php` defaults to `/Applic
 
 ## 3. Import the database
 
-The dump is not in git. The user must supply `myresearch.sql` from the old Mac (or from their private S3 backup).
+The dump is `database/myresearch.sql` in this repo. Database name is `myresearch`. Import it after MAMP MySQL is running. Do not look for a separate dump from the user.
 
 ```bash
 export PATH="/Applications/MAMP/Library/bin/mysql80/bin:$PATH"
+cd /Applications/MAMP/htdocs/myresearch2
 
 mysql -uroot -proot -h127.0.0.1 -P8889 \
   -e "CREATE DATABASE IF NOT EXISTS myresearch CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
-mysql -uroot -proot -h127.0.0.1 -P8889 myresearch < /path/to/myresearch.sql
+mysql -uroot -proot -h127.0.0.1 -P8889 myresearch < database/myresearch.sql
 ```
 
-MAMP's default MySQL user is `root` with password `root`.
+MAMP's default MySQL user is `root` with password `root`. If that login fails, use the MySQL user shown in the MAMP start page and substitute it in both commands and in `settings.php`.
+
+Confirm the import loaded Drupal tables:
+
+```bash
+mysql -uroot -proot -h127.0.0.1 -P8889 myresearch -e "SHOW TABLES LIKE 'node%';"
+```
+
+The result must include `node` and `node_field_data`. If those tables are missing, stop. Do not run the Drupal installer.
 
 ## 4. Local files that git does not contain
 

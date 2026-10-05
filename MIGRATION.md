@@ -113,32 +113,32 @@ Uploaded images live in `web/sites/default/files`, which is also gitignored. Cop
 
 ### Worker environment
 
-The worker lives in this repo. Create its local env file. Do not commit `.env`.
+Create the worker env file on the new Mac. It is not in git.
 
 ```bash
 cd /Applications/MAMP/htdocs/myresearch2/story-pipeline-worker
 cp .env.example .env
 ```
 
-Edit `.env`:
+Open `story-pipeline-worker/.env` and set these by hand. Copy the values from the old Mac. Do not commit this file.
+
+| Variable | Where to copy it from on the old Mac |
+|---|---|
+| `DRUPAL_API_KEY` | `story-pipeline-worker/.env` on the old Mac, or run `vendor/bin/drush story-pipeline:info` in this repo after Drupal is up |
+| `DEEPSEEK_API_KEY` | `/Users/averma/project/research-story-17thmay-automation/.env` |
+| `DEEPSEEK_API_KEYS` | `/Applications/MAMP/htdocs/story-pipeline-worker/.env` (comma-separated; keep both keys) |
+| `eleven_labs_api_key` | `/Users/averma/project/research-story-17thmay-automation/.env` |
+
+Leave these paths as they are when the repo is in the same place as the old Mac:
 
 ```env
 DRUPAL_BASE_URL=http://localhost:8888/myresearch2/web
-DRUPAL_API_KEY=
 AUTOMATION_REPO=/Users/averma/project/research-story-17thmay-automation
 STORY_ASSET_ROOT=/Applications/MAMP/htdocs/myresearch2/cms-generate-stories
 STORY_ASSET_MIRROR=/Users/averma/project/research-story-17thmay-automation/cms-generate-stories
 ```
 
-Get `DRUPAL_API_KEY` after Drupal is running:
-
-```bash
-cd /Applications/MAMP/htdocs/myresearch2
-export PATH="/Applications/MAMP/bin/php/php8.3.14/bin:/Applications/MAMP/Library/bin/mysql80/bin:$PATH"
-vendor/bin/drush story-pipeline:info
-```
-
-Paste that key into `story-pipeline-worker/.env`. Do not put the key in git.
+If this Mac's username is not `averma`, change `AUTOMATION_REPO` and `STORY_ASSET_MIRROR` to the real automation folder. Change `STORY_ASSET_ROOT` only if this repo is not under `/Applications/MAMP/htdocs/myresearch2`.
 
 The imported database still points Drupal at the old folder outside this repo. Point it at the worker inside this repo:
 
@@ -153,14 +153,16 @@ If the repo is not in `/Applications/MAMP/htdocs/myresearch2`, use the real path
 
 ### Story Studio environment
 
-Only if the user wants Story Studio:
+Create this file on the new Mac. It is not in git.
 
 ```bash
 cd /Applications/MAMP/htdocs/myresearch2/story-studio
 cp .env.example .env
 ```
 
-Put the user's DeepSeek or OpenAI key in `.env`. An empty key still allows the demo project. Story Studio's SQLite file `prisma/dev.db` is not in git. A fresh migrate creates an empty database. Copy `prisma/dev.db` from the old Mac only to keep existing Story Studio projects.
+Open `story-studio/.env` and set `DEEPSEEK_API_KEY` to the same value as `DEEPSEEK_API_KEY` in the old Mac file `/Applications/MAMP/htdocs/myresearch2/story-studio/.env`. Leave `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` empty unless you copy those from that same file. They are blank on the old Mac.
+
+Story Studio's SQLite file `prisma/dev.db` is not in git. A fresh migrate creates an empty database. Copy `prisma/dev.db` from the old Mac only to keep existing Story Studio projects.
 
 ## 5. Install dependencies
 
@@ -198,6 +200,8 @@ cd /Users/averma/project/research-story-17thmay-automation
 git checkout 2026-08-12-step0-scene-structure
 ```
 
+Create `/Users/averma/project/research-story-17thmay-automation/.env` by hand. Copy `DEEPSEEK_API_KEY` and `eleven_labs_api_key` from the same file on the old Mac. This file is not in git.
+
 If the Mac username is not `averma`, clone the automation repo somewhere else and change `AUTOMATION_REPO` and `STORY_ASSET_MIRROR` in `story-pipeline-worker/.env` to that path. Leave `STORY_ASSET_ROOT` pointing at `cms-generate-stories` inside this CMS repo.
 
 Generated story folders under `cms-generate-stories` are local output. They are not required to boot the site. Copy them from the old Mac only to keep old scripts and audio.
@@ -229,5 +233,5 @@ Open `http://localhost:3000`.
 - Drupal white screen or database error: MySQL is not on port 8889, or `settings.php` does not match the import.
 - `composer install` uses the wrong PHP: put MAMP's PHP 8.3 first on `PATH`, then run it again.
 - Worker says the path does not exist: Drupal is still pointed at `/Applications/MAMP/htdocs/story-pipeline-worker`. Run the `drush config:set` command in the worker section so the path is `story-pipeline-worker` inside this repo.
-- Worker says the API key is missing: run `vendor/bin/drush story-pipeline:info` and copy the key into the worker `.env`.
+- Worker says the API key is missing: `story-pipeline-worker/.env` is missing `DRUPAL_API_KEY` or `DEEPSEEK_API_KEYS`. Copy them from the old Mac using the table in the worker section.
 - Story jobs fail before any LLM call: the automation repo is missing, or `AUTOMATION_REPO` points at the wrong folder.

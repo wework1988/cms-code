@@ -3,7 +3,7 @@ _core:
 
 api_key: ''
 automation_repo_path: '/Users/averma/project/research-story-17thmay-automation'
-worker_path: '/Applications/MAMP/htdocs/story-pipeline-worker'
+worker_path: '/Applications/MAMP/htdocs/myresearch2/story-pipeline-worker'
 story_asset_path: '/Users/averma/project/research-story-17thmay-automation/cms-generate-stories'
 pipeline_api_keys:
   deepseek_api_key: ''

@@ -71,7 +71,7 @@ class StoryPipelineSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Worker folder path'),
       '#description' => $this->t('Folder containing <code>run.sh</code> (story-pipeline-worker). Used when staff click “Run story jobs” in the admin UI.'),
-      '#default_value' => $config->get('worker_path') ?: '/Applications/MAMP/htdocs/story-pipeline-worker',
+      '#default_value' => $config->get('worker_path') ?: dirname(\Drupal::root()) . '/story-pipeline-worker',
       '#required' => TRUE,
     ];
 

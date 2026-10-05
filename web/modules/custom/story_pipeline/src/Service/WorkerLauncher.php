@@ -484,7 +484,7 @@ class WorkerLauncher {
   public function workerPath(): string {
     $path = trim((string) $this->configFactory->get('story_pipeline.settings')->get('worker_path'));
     if ($path === '') {
-      $path = '/Applications/MAMP/htdocs/story-pipeline-worker';
+      $path = dirname(DRUPAL_ROOT) . '/story-pipeline-worker';
     }
     $real = realpath($path);
     if ($real === FALSE) {

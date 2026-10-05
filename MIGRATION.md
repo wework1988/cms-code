@@ -9,7 +9,7 @@ Today's pull branch is **`2026-10-05`**.
 | Piece | Where | What it is |
 |---|---|---|
 | Drupal CMS | `/Applications/MAMP/htdocs/myresearch2` | This repo, branch `2026-10-05` |
-| Python worker | `/Applications/MAMP/htdocs/story-pipeline-worker` | Separate repo. Drupal launches this path |
+| Python worker | `story-pipeline-worker/` inside this repo | Same git repo as the CMS. Do not clone a second worker repo |
 | MySQL database | database `myresearch` on `127.0.0.1:8889` | Dump is `database/myresearch.sql` in this repo |
 | Story Studio | `story-studio/` inside this repo | Optional Next.js app on port 3000 |
 | Automation engine | `/Users/averma/project/research-story-17thmay-automation` | Needed only to run story jobs, not to open the CMS |
@@ -46,13 +46,11 @@ PHP must be 8.1 or newer. If `php8.3.14` is not the folder name on this MAMP ins
 
 ```bash
 git clone -b 2026-10-05 git@github.com:wework1988/cms-code.git /Applications/MAMP/htdocs/myresearch2
-
-git clone -b 2026-10-05 git@github.com:wework1988/cms-python-story-worker.git /Applications/MAMP/htdocs/story-pipeline-worker
 ```
 
-Both repos use branch `2026-10-05`. The worker branch is the existing worker code with no new commit. Its only uncommitted local file was an API-key pool, and that file stays off git.
+This one repo contains the CMS and the Python worker. The worker code is `story-pipeline-worker/` next to `web/`. Do not clone `cms-python-story-worker`.
 
-Put both folders at those exact paths. `WorkerLauncher.php` defaults to `/Applications/MAMP/htdocs/story-pipeline-worker`.
+If this machine already cloned the CMS and the site is open, stay in that folder and run `git pull` on branch `2026-10-05`. Then continue at the worker steps below. Do not start a second clone.
 
 ## 3. Import the database
 
@@ -115,8 +113,10 @@ Uploaded images live in `web/sites/default/files`, which is also gitignored. Cop
 
 ### Worker environment
 
+The worker lives in this repo. Create its local env file. Do not commit `.env`.
+
 ```bash
-cd /Applications/MAMP/htdocs/story-pipeline-worker
+cd /Applications/MAMP/htdocs/myresearch2/story-pipeline-worker
 cp .env.example .env
 ```
 
@@ -126,7 +126,8 @@ Edit `.env`:
 DRUPAL_BASE_URL=http://localhost:8888/myresearch2/web
 DRUPAL_API_KEY=
 AUTOMATION_REPO=/Users/averma/project/research-story-17thmay-automation
-STORY_ASSET_ROOT=/Users/averma/project/research-story-17thmay-automation/cms-generate-stories
+STORY_ASSET_ROOT=/Applications/MAMP/htdocs/myresearch2/cms-generate-stories
+STORY_ASSET_MIRROR=/Users/averma/project/research-story-17thmay-automation/cms-generate-stories
 ```
 
 Get `DRUPAL_API_KEY` after Drupal is running:
@@ -137,9 +138,18 @@ export PATH="/Applications/MAMP/bin/php/php8.3.14/bin:/Applications/MAMP/Library
 vendor/bin/drush story-pipeline:info
 ```
 
-Paste that key into the worker `.env`. Do not put the key in git.
+Paste that key into `story-pipeline-worker/.env`. Do not put the key in git.
 
-There is a second copy of the worker inside this repo at `story-pipeline-worker/`. Drupal does not launch that copy. Leave it. The live worker is the folder next to `myresearch2`.
+The imported database still points Drupal at the old folder outside this repo. Point it at the worker inside this repo:
+
+```bash
+cd /Applications/MAMP/htdocs/myresearch2
+export PATH="/Applications/MAMP/bin/php/php8.3.14/bin:/Applications/MAMP/Library/bin/mysql80/bin:$PATH"
+vendor/bin/drush config:set story_pipeline.settings worker_path /Applications/MAMP/htdocs/myresearch2/story-pipeline-worker -y
+vendor/bin/drush cr
+```
+
+If the repo is not in `/Applications/MAMP/htdocs/myresearch2`, use the real path to its `story-pipeline-worker` folder in that command and in `.env`.
 
 ### Story Studio environment
 
@@ -160,7 +170,7 @@ export PATH="/Applications/MAMP/bin/php/php8.3.14/bin:$PATH"
 cd /Applications/MAMP/htdocs/myresearch2
 composer install
 
-cd /Applications/MAMP/htdocs/story-pipeline-worker
+cd /Applications/MAMP/htdocs/myresearch2/story-pipeline-worker
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -188,7 +198,7 @@ cd /Users/averma/project/research-story-17thmay-automation
 git checkout 2026-08-12-step0-scene-structure
 ```
 
-If the Mac username is not `averma`, clone it somewhere else and change `AUTOMATION_REPO` and `STORY_ASSET_ROOT` in the worker `.env` to that path. Also set the Drupal worker path if the worker is not at `/Applications/MAMP/htdocs/story-pipeline-worker`. That setting is stored in the database at `admin/config/content/story-pipeline`.
+If the Mac username is not `averma`, clone the automation repo somewhere else and change `AUTOMATION_REPO` and `STORY_ASSET_MIRROR` in `story-pipeline-worker/.env` to that path. Leave `STORY_ASSET_ROOT` pointing at `cms-generate-stories` inside this CMS repo.
 
 Generated story folders under `cms-generate-stories` are local output. They are not required to boot the site. Copy them from the old Mac only to keep old scripts and audio.
 
@@ -197,11 +207,11 @@ Generated story folders under `cms-generate-stories` are local output. They are 
 1. MAMP Apache and MySQL are running.
 2. Open `http://localhost:8888/myresearch2/web`.
 3. Log in with the Drupal account from the imported database. Do not create a new install.
-4. Open `http://localhost:8888/myresearch2/web/admin/config/content/story-pipeline` and confirm the worker path exists.
+4. Open `http://localhost:8888/myresearch2/web/admin/config/content/story-pipeline` and confirm the worker path is `/Applications/MAMP/htdocs/myresearch2/story-pipeline-worker`.
 5. Confirm the worker can see Drupal:
 
 ```bash
-cd /Applications/MAMP/htdocs/story-pipeline-worker
+cd /Applications/MAMP/htdocs/myresearch2/story-pipeline-worker
 ./run.sh help
 ```
 
@@ -218,6 +228,6 @@ Open `http://localhost:3000`.
 
 - Drupal white screen or database error: MySQL is not on port 8889, or `settings.php` does not match the import.
 - `composer install` uses the wrong PHP: put MAMP's PHP 8.3 first on `PATH`, then run it again.
-- Worker says the path does not exist: the clone is not at `/Applications/MAMP/htdocs/story-pipeline-worker`.
+- Worker says the path does not exist: Drupal is still pointed at `/Applications/MAMP/htdocs/story-pipeline-worker`. Run the `drush config:set` command in the worker section so the path is `story-pipeline-worker` inside this repo.
 - Worker says the API key is missing: run `vendor/bin/drush story-pipeline:info` and copy the key into the worker `.env`.
 - Story jobs fail before any LLM call: the automation repo is missing, or `AUTOMATION_REPO` points at the wrong folder.

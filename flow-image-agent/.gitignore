@@ -1,0 +1,8 @@
+.local/
+.python-libs/
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+config.local.json

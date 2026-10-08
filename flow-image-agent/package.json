@@ -1,0 +1,13 @@
+{
+  "name": "flow-image-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "images": "node run-images.mjs",
+    "helper": "bash scripts/run_helper.sh"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2"
+  }
+}

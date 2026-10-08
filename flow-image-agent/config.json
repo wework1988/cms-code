@@ -1,0 +1,23 @@
+{
+  "host": "127.0.0.1",
+  "port": 8765,
+  "story_roots": [
+    "../general",
+    "../crime",
+    "../cms-generate-stories/general",
+    "../cms-generate-stories/crime",
+    "../cms-generate-stories/english",
+    "../cms-generate-stories/god_story"
+  ],
+  "allowed_origins": [
+    "chrome-extension://*"
+  ],
+  "model": "Nano Banana 2.1",
+  "aspect_ratio": "16:9",
+  "outputs_per_prompt": 1,
+  "download_variant": "2K Upscaled",
+  "min_landscape_width": 2048,
+  "aspect_tolerance": 0.08,
+  "token_file": ".local/pairing-token",
+  "state_dir": ".local/state"
+}

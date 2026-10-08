@@ -134,7 +134,7 @@ def _ensure_story_folder(
 ) -> Path:
     """Create subdirs + meta files when about to write assets."""
     category = normalize_story_type(story_type)
-    for sub in ("meta", "script", "prompts", "scenes", "image-prompts", "audio"):
+    for sub in ("meta", "script", "prompts", "scenes", "image-prompts", "images", "audio"):
         (dest / sub).mkdir(parents=True, exist_ok=True)
     (dest / "audio" / "english").mkdir(parents=True, exist_ok=True)
 

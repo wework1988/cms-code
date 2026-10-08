@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CMS Flow Image Agent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="brand">CMS / FLOW IMAGE AGENT</div>
+  <h1>Story → Flow → images/</h1>
+  <p>Nano Banana 2.1 · 16:9 · x1 · 2K Upscaled</p>
+
+  <label for="helperUrl">Local helper</label>
+  <input id="helperUrl" type="text" value="http://127.0.0.1:8765" autocomplete="off">
+
+  <label for="token">Pairing token</label>
+  <input id="token" type="password" placeholder="From flow-image-agent/.local/pairing-token" autocomplete="off">
+
+  <label for="story">Story</label>
+  <select id="story"><option value="">Load stories…</option></select>
+
+  <div class="row">
+    <div>
+      <label for="sceneFrom">From scene</label>
+      <input id="sceneFrom" type="number" min="1" value="1">
+    </div>
+    <div>
+      <label for="sceneTo">To scene</label>
+      <input id="sceneTo" type="number" min="1" value="2">
+    </div>
+  </div>
+
+  <div class="checks">
+    <label><input id="firstTwo" type="checkbox" checked> First two scenes (test)</label>
+    <label><input id="regenerate" type="checkbox"> Regenerate existing</label>
+  </div>
+
+  <div class="actions">
+    <button id="refreshStories" type="button">Refresh stories</button>
+    <button id="preview" type="button">Preview</button>
+  </div>
+
+  <div id="previewBox" class="preview">Select a story and preview before starting.</div>
+
+  <div class="actions">
+    <button id="start" type="button">Start</button>
+    <button id="pause" type="button">Pause</button>
+    <button id="resume" type="button">Resume</button>
+    <button id="stop" type="button">Stop</button>
+    <button id="retryFailed" type="button">Retry failed</button>
+  </div>
+
+  <pre id="status" aria-live="polite">Open a signed-in Google Flow project tab, start the local helper, then Start.</pre>
+
+  <details>
+    <summary>Troubleshooting</summary>
+    <p class="hint">Requires helper on loopback, pairing token, Flow project open, debugger free (close DevTools). Stop cannot cancel an already-submitted Google generation.</p>
+    <pre id="diag"></pre>
+  </details>
+
+  <script src="popup.js"></script>
+</body>
+</html>

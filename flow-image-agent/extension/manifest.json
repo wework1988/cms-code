@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "CMS Flow Image Agent",
+  "version": "1.0.0",
+  "description": "Generate Google Flow images into CMS story folders via a local helper.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads",
+    "debugger"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "https://flow.google.com/*",
+    "https://labs.google/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "CMS Flow Image Agent"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

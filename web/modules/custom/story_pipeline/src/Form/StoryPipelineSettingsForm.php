@@ -78,7 +78,7 @@ class StoryPipelineSettingsForm extends ConfigFormBase {
     $form['site']['story_asset_path'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Story asset folder path'),
-      '#description' => $this->t('Permanent folder for prompts, scenes, image prompts, audio, etc. Each story gets a subfolder under its type (<code>crime</code>, <code>general</code>, <code>english</code>), e.g. <code>/Users/averma/project/research-story-17thmay-automation/cms-generate-stories/crime/blue-drum/prompts/prompt.txt</code>. When set, files are saved here instead of Drupal <code>public://story-pipeline</code>. Also set <code>STORY_ASSET_ROOT</code> in worker <code>.env</code> to the same path.'),
+      '#description' => $this->t('Permanent folder for prompts, scenes, image prompts, audio, etc. Each story gets a subfolder under its type (<code>crime</code>, <code>general</code>, <code>english</code>, <code>god_story</code>) named <code>{node-id}-{title-slug}</code>, e.g. <code>.../cms-generate-stories/general/168-karwa-chauth-story/prompts/prompt.txt</code>. When set, files are saved here instead of Drupal <code>public://story-pipeline</code>. Also set <code>STORY_ASSET_ROOT</code> in worker <code>.env</code> to the same path.'),
       '#default_value' => $config->get('story_asset_path') ?: '/Users/averma/project/research-story-17thmay-automation/cms-generate-stories',
       '#required' => TRUE,
     ];

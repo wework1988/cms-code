@@ -9,7 +9,9 @@ use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 
 /**
- * Saves story pipeline files under story_asset_path/{type}/{slug}/ on disk.
+ * Saves story pipeline files under story_asset_path/{type}/{nid}-{slug}/ on disk.
+ *
+ * Folder naming matches story-pipeline-worker asset_store.folder_name().
  */
 class StoryPipelineAssetStorage {
 
@@ -58,6 +60,14 @@ class StoryPipelineAssetStorage {
   }
 
   /**
+   * CMS folder name: {node-id}-{title-slug} (matches worker asset_store.folder_name).
+   */
+  public function folderName(NodeInterface $node): string {
+    $slug = $this->slugify($node->getTitle(), 'story-' . $node->id());
+    return $node->id() . '-' . $slug;
+  }
+
+  /**
    * Machine name from story type term (general, crime, english, god_story).
    */
   public function storyTypeMachine(NodeInterface $node): string {
@@ -76,7 +86,49 @@ class StoryPipelineAssetStorage {
   }
 
   /**
+   * Read drupal-node-id.txt from a story asset folder, if present.
+   */
+  private function readNodeIdMeta(string $dir): string {
+    $meta = $dir . DIRECTORY_SEPARATOR . 'meta' . DIRECTORY_SEPARATOR . 'drupal-node-id.txt';
+    if (!is_file($meta)) {
+      return '';
+    }
+    return trim((string) file_get_contents($meta));
+  }
+
+  /**
+   * Locate an existing asset folder for this Drupal node (any naming scheme).
+   */
+  private function findExistingFolderByNodeId(string $type_root, string $story_id): ?string {
+    if (!is_dir($type_root)) {
+      return NULL;
+    }
+    $entries = scandir($type_root);
+    if ($entries === FALSE) {
+      return NULL;
+    }
+    sort($entries);
+    foreach ($entries as $name) {
+      if ($name === '.' || $name === '..') {
+        continue;
+      }
+      $child = $type_root . DIRECTORY_SEPARATOR . $name;
+      if (!is_dir($child)) {
+        continue;
+      }
+      if ($this->readNodeIdMeta($child) === $story_id) {
+        return $child;
+      }
+    }
+    return NULL;
+  }
+
+  /**
    * Resolve asset folder path without creating directories (read-only).
+   *
+   * Prefers {type}/{nid}-{slug}/. Reuses any existing folder for the same
+   * node id (including legacy {type}/{slug}/) so Drupal and the worker share
+   * one directory.
    */
   public function resolveStoryDir(NodeInterface $node): ?string {
     $root = $this->rootPath();
@@ -84,35 +136,40 @@ class StoryPipelineAssetStorage {
       return NULL;
     }
 
-    $slug = $this->slugify($node->getTitle(), 'story-' . $node->id());
+    $story_id = (string) $node->id();
+    $slug = $this->slugify($node->getTitle(), 'story-' . $story_id);
     $type = $this->storyTypeMachine($node);
     $type_root = $root . DIRECTORY_SEPARATOR . $type;
-    $dest = $type_root . DIRECTORY_SEPARATOR . $slug;
-    $legacy = $root . DIRECTORY_SEPARATOR . $slug;
-    $meta_id = $dest . DIRECTORY_SEPARATOR . 'meta' . DIRECTORY_SEPARATOR . 'drupal-node-id.txt';
+    $preferred = $type_root . DIRECTORY_SEPARATOR . $this->folderName($node);
 
-    if (!is_dir($dest) && is_dir($legacy)) {
-      $legacy_meta = $legacy . DIRECTORY_SEPARATOR . 'meta' . DIRECTORY_SEPARATOR . 'drupal-node-id.txt';
-      if (is_file($legacy_meta)) {
-        $existing = trim((string) file_get_contents($legacy_meta));
-        if ($existing === '' || $existing === (string) $node->id()) {
-          $dest = $legacy;
-          $meta_id = $legacy_meta;
-        }
+    // Prefer canonical {nid}-{slug} when it already exists for this node.
+    if (is_dir($preferred) && $this->readNodeIdMeta($preferred) === $story_id) {
+      return $preferred;
+    }
+
+    $existing = $this->findExistingFolderByNodeId($type_root, $story_id);
+    if ($existing !== NULL) {
+      return $existing;
+    }
+
+    // Legacy layouts from older Drupal / local mirror runs.
+    $legacy_candidates = [
+      $type_root . DIRECTORY_SEPARATOR . $slug,
+      $type_root . DIRECTORY_SEPARATOR . $slug . '-' . $story_id,
+      $root . DIRECTORY_SEPARATOR . $slug,
+    ];
+    foreach ($legacy_candidates as $candidate) {
+      if (!is_dir($candidate)) {
+        continue;
+      }
+      $existing_id = $this->readNodeIdMeta($candidate);
+      $slug_only = $type_root . DIRECTORY_SEPARATOR . $slug;
+      if ($existing_id === $story_id || ($existing_id === '' && $candidate === $slug_only)) {
+        return $candidate;
       }
     }
 
-    if (is_dir($dest) && is_file($meta_id)) {
-      $existing = trim((string) file_get_contents($meta_id));
-      if ($existing !== '' && $existing !== (string) $node->id()) {
-        $dest = $type_root . DIRECTORY_SEPARATOR . $slug . '-' . $node->id();
-      }
-    }
-    elseif (is_dir($dest) && !is_file($meta_id)) {
-      $dest = $type_root . DIRECTORY_SEPARATOR . $slug . '-' . $node->id();
-    }
-
-    return $dest;
+    return $preferred;
   }
 
   /**

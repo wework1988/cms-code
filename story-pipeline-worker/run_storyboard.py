@@ -106,16 +106,22 @@ def ensure_image_prompts_only(story_dir: Path) -> Path | None:
     if not prompt.is_file():
         return None
 
-    subprocess.run(
+    result = subprocess.run(
         [
             sys.executable,
             str(export_script()),
             "--prompt",
             str(prompt),
         ],
-        check=True,
         cwd=str(automation_repo() / "crime-section" / "helper"),
     )
+    if result.returncode != 0 and not target.is_file():
+        raise subprocess.CalledProcessError(result.returncode, result.args)
+    if result.returncode != 0:
+        print(
+            f"[export] WARN: export_prompt_derivatives exited {result.returncode}; "
+            f"continuing because {target.name} exists"
+        )
     return target if target.is_file() else None
 
 

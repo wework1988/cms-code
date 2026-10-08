@@ -24,3 +24,6 @@ Thumbs.db
 /story-studio/prisma/dev.db
 /story-studio/prisma/dev.db-journal
 /story-studio/.env
+
+# Playwright/Digen runner (own git repo + large local assets)
+/playright-automation/

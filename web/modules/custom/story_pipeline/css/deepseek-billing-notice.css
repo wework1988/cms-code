@@ -1,0 +1,161 @@
+/**
+ * Compact DeepSeek billing notice beside the admin toolbar or sidebar.
+ */
+
+.deepseek-billing-notice {
+  position: fixed;
+  z-index: 490;
+  top: calc(var(--drupal-displace-offset-top, 3rem) + 0.75rem);
+  right: calc(var(--drupal-displace-offset-right, 0px) + 0.75rem);
+  width: 13.5rem;
+  max-width: calc(100vw - var(--drupal-displace-offset-left, 0px) - var(--drupal-displace-offset-right, 0px) - 1.5rem);
+  padding: 0.55rem 0.7rem 0.5rem;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  background: #f4f4f5;
+  color: #3f3f46;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.deepseek-billing-notice[data-tone="off-peak"] {
+  border-color: #86efac;
+  background: #f3fbf6;
+  color: #146c43;
+}
+
+.deepseek-billing-notice[data-tone="peak"] {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.deepseek-billing-notice[data-tone="unverified"] {
+  border-color: #d4d4d8;
+  background: #f4f4f5;
+  color: #3f3f46;
+}
+
+.deepseek-billing-notice__toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.deepseek-billing-notice__toggle:focus-visible,
+.deepseek-billing-notice__tooltip a:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+.deepseek-billing-notice__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.deepseek-billing-notice__date,
+.deepseek-billing-notice__clock,
+.deepseek-billing-notice__remaining {
+  font-variant-numeric: tabular-nums;
+}
+
+.deepseek-billing-notice__estimate {
+  margin: 0.35rem 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
+.deepseek-billing-notice__estimate-short {
+  display: none;
+}
+
+.deepseek-billing-notice__tooltip {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 1;
+  width: min(18rem, calc(100vw - 1.5rem));
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  background: #fff;
+  color: #232429;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.deepseek-billing-notice:hover .deepseek-billing-notice__tooltip,
+.deepseek-billing-notice:focus-within .deepseek-billing-notice__tooltip,
+.deepseek-billing-notice.is-open .deepseek-billing-notice__tooltip {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.deepseek-billing-notice__tooltip p {
+  margin: 0 0 0.5rem;
+}
+
+.deepseek-billing-notice__tooltip a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+@media (max-width: 43rem) {
+  .deepseek-billing-notice {
+    width: 10.75rem;
+    max-width: calc(100vw - var(--drupal-displace-offset-left, 0px) - 1rem);
+    padding: 0.4rem 0.5rem 0.35rem;
+  }
+
+  .deepseek-billing-notice__toggle {
+    gap: 0;
+  }
+
+  .deepseek-billing-notice__label {
+    font-size: 0.75rem;
+  }
+
+  .deepseek-billing-notice__date {
+    display: none;
+  }
+
+  .deepseek-billing-notice__estimate {
+    margin-top: 0.2rem;
+  }
+
+  .deepseek-billing-notice__estimate-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .deepseek-billing-notice__estimate-short {
+    display: inline;
+  }
+}
+
+@media print {
+  .deepseek-billing-notice {
+    display: none;
+  }
+}

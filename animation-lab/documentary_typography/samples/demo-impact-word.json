@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:landscape",
+  "preset": "documentary_bold",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional demonstration word. It is not a claim about any person or scene.",
+  "overlays": [
+    {
+      "id": "demo_word",
+      "type": "impact_word",
+      "purpose": "One supplied word, large and still.",
+      "text": "लापता",
+      "badge": "काल्पनिक प्रदर्शन",
+      "label_placement": "auto",
+      "prefer": "upper_left",
+      "template": "upper_left",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+# Optional. Story Studio still accepts pasted transcripts when this is not installed.
+# A proxy is not required. Rotating residential proxies are a paid option and do not
+# guarantee that YouTube will return captions.
+youtube-transcript-api>=1.2.2

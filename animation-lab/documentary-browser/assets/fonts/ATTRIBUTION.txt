@@ -1,0 +1,4 @@
+Noto Sans and Noto Sans Devanagari, weight 400.
+Licensed under the SIL Open Font License. See OFL-Latin.txt and OFL-Devanagari.txt.
+Files are the woff2 builds published by the Fontsource project.
+These files are served locally during rendering. The browser does not fetch fonts from a CDN.

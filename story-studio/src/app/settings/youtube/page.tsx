@@ -27,8 +27,9 @@ export default function YouTubeSettingsPage() {
     <AppShell active="youtube">
       <h1 className="mb-2 text-3xl font-semibold">YouTube OAuth</h1>
       <p className="mb-6 max-w-2xl text-slate-600">
-        Connect your YouTube channel to fetch <strong>official captions</strong> for videos you own or manage.
-        Story Studio does not scrape third-party videos and does not fetch captions for arbitrary URLs.
+        Connect your YouTube channel to fetch official captions for videos you own or manage.
+        OAuth cannot download captions from arbitrary research videos. Public caption fetch, in the project
+        workspace, is separate and can be blocked; manual paste always remains available.
       </p>
 
       <Card>
@@ -63,7 +64,7 @@ export default function YouTubeSettingsPage() {
                 </Button>
               )}
               <p className="text-slate-500">
-                Manual transcript paste remains the default for all sources, including YouTube reference URLs.
+                Manual transcript paste remains available for every source, including when public caption fetch is blocked.
               </p>
             </>
           )}

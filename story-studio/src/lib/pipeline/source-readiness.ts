@@ -6,7 +6,7 @@ export class MissingTranscriptError extends Error {
   ) {
     const names = missingSources.map((s) => s.title).join(", ");
     super(
-      `Generation blocked: paste a transcript for all sources before running the pipeline. Missing: ${names}. YouTube URLs are kept as references only.`,
+      `Generation blocked until every source has a transcript. Fetch captions or paste a transcript. Missing: ${names}.`,
     );
     this.name = "MissingTranscriptError";
   }

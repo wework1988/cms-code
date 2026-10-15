@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { runPipelineStage } from "@/lib/pipeline/runner";
+import { shouldReusePreparedFacts } from "@/lib/transcript/fetch-source";
 
 /** Prepare the external-writer handoff without invoking planning or narration. */
 export async function POST(_: Request, { params }: { params: Promise<{ projectId: string }> }) {
@@ -9,14 +10,23 @@ export async function POST(_: Request, { params }: { params: Promise<{ projectId
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       select: {
-        sources: { select: { title: true, rawTranscript: true } },
+        sources: { select: { title: true, rawTranscript: true, _count: { select: { claims: true } } } },
         _count: { select: { factPackItems: true } },
       },
     });
     if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     // Reuse prepared facts, including the user's edits and disabled selections.
-    if (project._count.factPackItems > 0) {
+    // A source whose transcript changed has its claims removed, so those facts are prepared again.
+    if (
+      shouldReusePreparedFacts({
+        factCount: project._count.factPackItems,
+        sources: project.sources.map((source) => ({
+          rawTranscript: source.rawTranscript,
+          claimCount: source._count?.claims,
+        })),
+      })
+    ) {
       return NextResponse.json({ ok: true, factCount: project._count.factPackItems });
     }
     if (project.sources.length === 0) {

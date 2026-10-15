@@ -122,6 +122,45 @@ class StoryPipelineManager {
   }
 
   /**
+   * Machine slug for a Voice Type taxonomy term label.
+   */
+  public function getVoiceTypeMachine(TermInterface $term): string {
+    return match ($term->label()) {
+      'God' => 'god',
+      'Bindass Gupshup' => 'bindass-gupshup',
+      'Crime' => 'crime',
+      'Explainer' => 'explainer',
+      default => strtolower(preg_replace('/[\s_]+/', '-', $term->label()) ?? 'voice'),
+    };
+  }
+
+  /**
+   * Resolve narration voice: Story Voice Type term first, then Story Type fallback.
+   *
+   * @return array{0: string, 1: string}
+   *   [voice_id, voice_type_slug]
+   */
+  public function resolveStoryVoice(NodeInterface $node, ?TermInterface $story_type = NULL): array {
+    if ($node->hasField('field_voice_type') && !$node->get('field_voice_type')->isEmpty()) {
+      $voice_term = $node->get('field_voice_type')->entity;
+      if ($voice_term instanceof TermInterface) {
+        $voice_id = $voice_term->hasField('field_voice_id')
+          ? trim((string) ($voice_term->get('field_voice_id')->value ?? ''))
+          : '';
+        return [$voice_id, $this->getVoiceTypeMachine($voice_term)];
+      }
+    }
+
+    if (!$story_type instanceof TermInterface && $node->hasField('field_story_type')) {
+      $story_type = $node->get('field_story_type')->entity;
+    }
+    if ($story_type instanceof TermInterface && $story_type->hasField('field_voice_id')) {
+      return [trim((string) ($story_type->get('field_voice_id')->value ?? '')), ''];
+    }
+    return ['', ''];
+  }
+
+  /**
    * Output file URLs for admin lists (no heavy text field bodies).
    *
    * @return array{
@@ -130,6 +169,8 @@ class StoryPipelineManager {
    *   image_prompts_file_url: string|null,
    *   eleven_labs_file_urls: string[],
    *   eleven_labs_file_urls_english: string[],
+   *   image_file_urls: string[],
+   *   video_file_urls: string[],
    *   story_asset_folder: string|null,
    * }
    */
@@ -144,6 +185,8 @@ class StoryPipelineManager {
     $story_asset_folder = NULL;
     $eleven_labs_urls = [];
     $eleven_labs_english_urls = [];
+    $image_file_urls = [];
+    $video_file_urls = [];
 
     if ($this->assetStorage->isEnabled()) {
       $index = $this->assetStorage->assetIndex($node);
@@ -167,6 +210,22 @@ class StoryPipelineManager {
           $url = $this->assetDownloadUrl($node, $rel);
           if ($url) {
             $eleven_labs_english_urls[] = $url;
+          }
+        }
+      }
+      if (!empty($index['files']['images']) && is_array($index['files']['images'])) {
+        foreach ($index['files']['images'] as $rel) {
+          $url = $this->assetDownloadUrl($node, $rel);
+          if ($url) {
+            $image_file_urls[] = $url;
+          }
+        }
+      }
+      if (!empty($index['files']['videos']) && is_array($index['files']['videos'])) {
+        foreach ($index['files']['videos'] as $rel) {
+          $url = $this->assetDownloadUrl($node, $rel);
+          if ($url) {
+            $video_file_urls[] = $url;
           }
         }
       }
@@ -207,6 +266,8 @@ class StoryPipelineManager {
       'image_prompts_file_url' => $image_prompts_url,
       'eleven_labs_file_urls' => $eleven_labs_urls,
       'eleven_labs_file_urls_english' => $eleven_labs_english_urls,
+      'image_file_urls' => $image_file_urls,
+      'video_file_urls' => $video_file_urls,
       'story_asset_folder' => $story_asset_folder,
     ];
   }
@@ -274,11 +335,12 @@ class StoryPipelineManager {
     $type = $this->getTypeMachine($term);
     $settings_raw = $term->get('field_pipeline_settings')->value ?? '{}';
     $settings = json_decode($settings_raw, TRUE) ?: [];
-    $voice_id = $term->hasField('field_voice_id')
-      ? trim((string) ($term->get('field_voice_id')->value ?? ''))
-      : '';
+    [$voice_id, $voice_type] = $this->resolveStoryVoice($node, $term);
     if ($voice_id !== '') {
       $settings['voice_id'] = $voice_id;
+    }
+    if ($voice_type !== '') {
+      $settings['voice_type'] = $voice_type;
     }
     $english_voice_id = $this->getEnglishVoiceId();
     if ($english_voice_id !== '') {
@@ -453,6 +515,14 @@ class StoryPipelineManager {
     }
 
     $node->save();
+    if (!empty($data['scene_file_content']) && ($data['status'] ?? '') === 'storyboard_done') {
+      try {
+        \Drupal::service('story_pipeline.animations')->enqueueSceneMapsIfEnabled($node);
+      }
+      catch (\Throwable $error) {
+        \Drupal::logger('story_pipeline')->error('Saved scenes did not start map generation: @message', ['@message' => $error->getMessage()]);
+      }
+    }
     return $node;
   }
 

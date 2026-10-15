@@ -1,25 +1,58 @@
-const YOUTUBE_PATTERNS = [
-  /(?:youtube\.com\/watch\?v=|youtube\.com\/watch\?.*&v=)([a-zA-Z0-9_-]{11})/,
-  /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-  /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-  /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-  /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/,
-];
+const VIDEO_ID = /^[a-zA-Z0-9_-]{11}$/;
 
-export function extractYouTubeVideoId(url: string): string | null {
-  const trimmed = url.trim();
-  for (const pattern of YOUTUBE_PATTERNS) {
-    const match = trimmed.match(pattern);
-    if (match?.[1]) return match[1];
-  }
-  return null;
+const YOUTUBE_HOSTS = new Set([
+  "youtube.com",
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+]);
+
+const SHORT_HOSTS = new Set(["youtu.be", "www.youtu.be"]);
+
+function isVideoId(value: string | null | undefined): value is string {
+  return Boolean(value && VIDEO_ID.test(value));
 }
 
-export function normalizeYouTubeUrl(url: string): { videoId: string; canonicalUrl: string } | null {
-  const videoId = extractYouTubeVideoId(url);
+export function parseYouTubeVideoUrl(input: string): { videoId: string; canonicalUrl: string } | null {
+  let url: URL;
+  try {
+    url = new URL(input.trim());
+  } catch {
+    return null;
+  }
+
+  if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+  if (url.username || url.password) return null;
+
+  const host = url.hostname.toLowerCase().replace(/\.$/, "");
+  let videoId: string | null = null;
+
+  if (SHORT_HOSTS.has(host)) {
+    const id = url.pathname.split("/").filter(Boolean)[0];
+    videoId = isVideoId(id) ? id : null;
+  } else if (YOUTUBE_HOSTS.has(host)) {
+    const parts = url.pathname.split("/").filter(Boolean);
+    if (parts[0] === "watch") {
+      videoId = isVideoId(url.searchParams.get("v")) ? url.searchParams.get("v") : null;
+    } else if (
+      (parts[0] === "shorts" || parts[0] === "embed" || parts[0] === "live" || parts[0] === "v") &&
+      isVideoId(parts[1])
+    ) {
+      videoId = parts[1];
+    }
+  }
+
   if (!videoId) return null;
   return {
     videoId,
     canonicalUrl: `https://www.youtube.com/watch?v=${videoId}`,
   };
+}
+
+export function extractYouTubeVideoId(url: string): string | null {
+  return parseYouTubeVideoUrl(url)?.videoId ?? null;
+}
+
+export function normalizeYouTubeUrl(url: string): { videoId: string; canonicalUrl: string } | null {
+  return parseYouTubeVideoUrl(url);
 }

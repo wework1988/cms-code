@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "module": "cinematic_overlays",
+  "input": "fixture:landscape",
+  "preset": "documentary_bold",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional fact panel. The sentence is not evidence.",
+  "overlays": [
+    {
+      "id": "demo_fact",
+      "type": "key_fact",
+      "purpose": "A small supporting note beside empty footage.",
+      "text": "काल्पनिक तथ्य",
+      "context": "यह माप वास्तविक नहीं है",
+      "badge": "काल्पनिक प्रदर्शन",
+      "label_placement": "auto",
+      "prefer": "lower_left",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.45,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

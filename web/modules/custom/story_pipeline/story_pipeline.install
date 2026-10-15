@@ -211,7 +211,62 @@ function story_pipeline_install(): void {
     ])
     ->save();
 
+  story_pipeline_ensure_voice_type();
   story_pipeline_configure_displays();
+  story_pipeline_update_9032();
+}
+
+/**
+ * Voice Type vocabulary, term voice ID field, and Story field_voice_type.
+ */
+function story_pipeline_ensure_voice_type(): void {
+  if (!Vocabulary::load('voice_type')) {
+    Vocabulary::create([
+      'vid' => 'voice_type',
+      'name' => 'Voice Type',
+      'description' => 'Narration voice presets (God, Bindass Gupshup, Crime, Explainer).',
+    ])->save();
+  }
+
+  story_pipeline_create_string_field('taxonomy_term', 'voice_type', 'field_voice_id', 'ElevenLabs voice ID');
+
+  if (!FieldStorageConfig::loadByName('node', 'field_voice_type')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_voice_type',
+      'entity_type' => 'node',
+      'type' => 'entity_reference',
+      'settings' => ['target_type' => 'taxonomy_term'],
+      'cardinality' => 1,
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'story', 'field_voice_type')) {
+    FieldConfig::create([
+      'field_name' => 'field_voice_type',
+      'entity_type' => 'node',
+      'bundle' => 'story',
+      'label' => 'Voice type',
+      'required' => FALSE,
+      'settings' => [
+        'handler' => 'default:taxonomy_term',
+        'handler_settings' => [
+          'target_bundles' => ['voice_type' => 'voice_type'],
+        ],
+      ],
+    ])->save();
+  }
+
+  foreach (['God', 'Bindass Gupshup', 'Crime', 'Explainer'] as $label) {
+    $existing = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'voice_type', 'name' => $label]);
+    if ($existing) {
+      continue;
+    }
+    Term::create([
+      'vid' => 'voice_type',
+      'name' => $label,
+    ])->save();
+  }
 }
 
 /**
@@ -361,6 +416,134 @@ function story_pipeline_schema(): array {
       'story_type_tid' => ['story_type_tid'],
       'story_nid' => ['story_nid'],
       'expected_publish' => ['expected_publish'],
+    ],
+  ];
+
+  $schema['story_pipeline_anim_prompt'] = [
+    'description' => 'Revision history for the animation planning master prompt.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'body' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+      'animation_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'map',
+        'description' => 'map or timeline. Future types are not stored until implemented.',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['story_pipeline_anim_job'] = [
+    'description' => 'Immutable map-animation job snapshots.',
+    'fields' => [
+      'job_id' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+      'nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'vid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'script_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'script' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+      'prompt_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'prompt_text' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+      'language' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE, 'default' => 'hi'],
+      'renderer' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+      'duration_seconds' => ['type' => 'float', 'not null' => TRUE],
+      'max_clips' => ['type' => 'int', 'not null' => TRUE, 'default' => 3],
+      'animation_type' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'map',
+        'description' => 'Animation type for this job. Older rows are map.',
+      ],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+      'status' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+      'message' => ['type' => 'text', 'not null' => FALSE],
+      'job_dir' => ['type' => 'varchar', 'length' => 512, 'not null' => TRUE],
+    ],
+    'primary key' => ['job_id'],
+    'indexes' => [
+      'nid_status' => ['nid', 'status'],
+    ],
+  ];
+  $schema['story_pipeline_anim_override'] = [
+    'description' => 'Manual catalogue or custom-point choices for a map animation job.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'job_id' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+      'nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'clip_id' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE],
+      'request_id' => ['type' => 'varchar', 'length' => 80, 'not null' => TRUE],
+      'original_name' => ['type' => 'text', 'not null' => TRUE],
+      'original_level' => ['type' => 'varchar', 'length' => 32, 'not null' => FALSE],
+      'place_id' => ['type' => 'varchar', 'length' => 80, 'not null' => TRUE],
+      'source' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+      'catalogue_version' => ['type' => 'varchar', 'length' => 128, 'not null' => FALSE],
+      'fingerprint' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'script_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => FALSE],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'revision' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+      'updated' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'job_request' => ['job_id', 'request_id'],
+    ],
+    'indexes' => [
+      'nid' => ['nid'],
+    ],
+  ];
+  $schema['story_pipeline_anim_alias'] = [
+    'description' => 'CMS record of a user-confirmed location spelling.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'alias_sqlite_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'place_id' => ['type' => 'varchar', 'length' => 80, 'not null' => TRUE],
+      'request_id' => ['type' => 'varchar', 'length' => 80, 'not null' => FALSE],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'active' => ['type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 1],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'alias_sqlite' => ['alias_sqlite_id'],
+    ],
+  ];
+  $schema['story_pipeline_map_theme'] = [
+    'description' => 'Custom map appearance templates. Built-in templates are not stored here.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'theme_id' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'name' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      'description' => ['type' => 'text', 'not null' => FALSE],
+      'revision' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 1],
+      'status' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE, 'default' => 'active'],
+      'document' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+      'updated' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'theme_id' => ['theme_id'],
+    ],
+  ];
+  $schema['story_pipeline_map_theme_revision'] = [
+    'description' => 'Earlier revisions of a custom map appearance template.',
+    'fields' => [
+      'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+      'theme_id' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+      'revision' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+      'document' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+      'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+      'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'theme_revision' => ['theme_id', 'revision'],
     ],
   ];
 
@@ -998,4 +1181,158 @@ function story_pipeline_update_9030(): void {
   }
 
   story_pipeline_configure_displays();
+}
+
+/**
+ * Voice Type taxonomy + Story field_voice_type reference.
+ */
+function story_pipeline_update_9031(): void {
+  story_pipeline_ensure_voice_type();
+  story_pipeline_configure_displays();
+}
+
+/**
+ * Animation prompt revisions and map-animation job snapshots.
+ */
+function story_pipeline_update_9032(): void {
+  $schema = \Drupal::database()->schema();
+  if (!$schema->tableExists('story_pipeline_anim_prompt')) {
+    $schema->createTable('story_pipeline_anim_prompt', [
+      'description' => 'Revision history for the animation planning master prompt.',
+      'fields' => [
+        'id' => ['type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE],
+        'body' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+        'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+      ],
+      'primary key' => ['id'],
+    ]);
+  }
+  if (!$schema->tableExists('story_pipeline_anim_job')) {
+    $schema->createTable('story_pipeline_anim_job', [
+      'description' => 'Immutable map-animation job snapshots.',
+      'fields' => [
+        'job_id' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+        'nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'vid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'script_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+        'script' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+        'prompt_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'prompt_text' => ['type' => 'text', 'size' => 'big', 'not null' => TRUE],
+        'language' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE, 'default' => 'hi'],
+        'renderer' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+        'duration_seconds' => ['type' => 'float', 'not null' => TRUE],
+        'max_clips' => ['type' => 'int', 'not null' => TRUE, 'default' => 3],
+        'uid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'created' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+        'status' => ['type' => 'varchar', 'length' => 40, 'not null' => TRUE],
+        'message' => ['type' => 'text', 'not null' => FALSE],
+        'job_dir' => ['type' => 'varchar', 'length' => 512, 'not null' => TRUE],
+      ],
+      'primary key' => ['job_id'],
+      'indexes' => [
+        'nid_status' => ['nid', 'status'],
+      ],
+    ]);
+  }
+  $count = (int) \Drupal::database()->select('story_pipeline_anim_prompt', 'p')->countQuery()->execute()->fetchField();
+  if ($count === 0) {
+    \Drupal::database()->insert('story_pipeline_anim_prompt')->fields([
+      'body' => \Drupal\story_pipeline\Service\AnimationManager::DEFAULT_PROMPT,
+      'uid' => 0,
+      'created' => \Drupal::time()->getRequestTime(),
+    ])->execute();
+  }
+}
+
+/**
+ * Per-type animation prompts. Existing prompt rows stay on Map.
+ */
+function story_pipeline_update_9033(): void {
+  $schema = \Drupal::database()->schema();
+  $type_field = [
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default' => 'map',
+    'description' => 'map or timeline.',
+  ];
+  if ($schema->tableExists('story_pipeline_anim_prompt') && !$schema->fieldExists('story_pipeline_anim_prompt', 'animation_type')) {
+    $schema->addField('story_pipeline_anim_prompt', 'animation_type', $type_field);
+    \Drupal::database()->update('story_pipeline_anim_prompt')
+      ->fields(['animation_type' => 'map'])
+      ->isNull('animation_type')
+      ->execute();
+  }
+  if ($schema->tableExists('story_pipeline_anim_job') && !$schema->fieldExists('story_pipeline_anim_job', 'animation_type')) {
+    $schema->addField('story_pipeline_anim_job', 'animation_type', $type_field);
+    \Drupal::database()->update('story_pipeline_anim_job')
+      ->fields(['animation_type' => 'map'])
+      ->execute();
+  }
+  if ($schema->tableExists('story_pipeline_anim_prompt')) {
+    $count = (int) \Drupal::database()->select('story_pipeline_anim_prompt', 'p')
+      ->condition('animation_type', 'timeline')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    if ($count === 0) {
+      \Drupal::database()->insert('story_pipeline_anim_prompt')->fields([
+        'body' => \Drupal\story_pipeline\Service\AnimationManager::DEFAULT_TIMELINE_PROMPT,
+        'uid' => 0,
+        'created' => \Drupal::time()->getRequestTime(),
+        'animation_type' => 'timeline',
+      ])->execute();
+    }
+  }
+}
+
+/**
+ * Store manual map-location choices and remembered spellings.
+ */
+/**
+ * Store custom map appearance templates separately from built-in ones.
+ */
+function story_pipeline_update_9036(): void {
+  $schema = \Drupal::database()->schema();
+  $full = story_pipeline_schema();
+  foreach (['story_pipeline_map_theme', 'story_pipeline_map_theme_revision'] as $table) {
+    if (!$schema->tableExists($table)) {
+      $schema->createTable($table, $full[$table]);
+    }
+  }
+}
+
+function story_pipeline_update_9035(): void {
+  $schema = \Drupal::database()->schema();
+  $full = story_pipeline_schema();
+  foreach (['story_pipeline_anim_override', 'story_pipeline_anim_alias'] as $table) {
+    if (!$schema->tableExists($table)) {
+      $schema->createTable($table, $full[$table]);
+    }
+  }
+}
+
+/**
+ * Seed master prompts for the documentary animation types. Map and Timeline rows stay as they are.
+ */
+function story_pipeline_update_9034(): void {
+  if (!\Drupal::database()->schema()->tableExists('story_pipeline_anim_prompt')) {
+    return;
+  }
+  foreach (\Drupal\story_pipeline\Service\AnimationManager::DOCUMENTARY_PROMPTS as $type => $body) {
+    $count = (int) \Drupal::database()->select('story_pipeline_anim_prompt', 'p')
+      ->condition('animation_type', $type)
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    if ($count === 0) {
+      \Drupal::database()->insert('story_pipeline_anim_prompt')->fields([
+        'body' => $body,
+        'uid' => 0,
+        'created' => \Drupal::time()->getRequestTime(),
+        'animation_type' => $type,
+      ])->execute();
+    }
+  }
 }

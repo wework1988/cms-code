@@ -40,30 +40,36 @@ def asset_mirror_root() -> Path | None:
 
 def mirror_story_folder(primary_folder: Path | None) -> Path | None:
     """Copy the full story asset tree to STORY_ASSET_MIRROR when configured."""
-    if primary_folder is None or not primary_folder.is_dir():
-        return None
-    root = asset_root()
-    mirror = asset_mirror_root()
-    if root is None or mirror is None:
-        return None
-    if root.resolve() == mirror.resolve():
-        return None
-    try:
-        rel = primary_folder.resolve().relative_to(root.resolve())
-    except ValueError:
-        return None
-    target = mirror / rel
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(primary_folder, target, dirs_exist_ok=True)
-    print(f"[assets] mirrored → {target}")
-    return target
+    # Disabled: do not copy CMS stories into research-story-17thmay-automation.
+    _ = primary_folder
+    return None
+    # if primary_folder is None or not primary_folder.is_dir():
+    #     return None
+    # root = asset_root()
+    # mirror = asset_mirror_root()
+    # if root is None or mirror is None:
+    #     return None
+    # if root.resolve() == mirror.resolve():
+    #     return None
+    # try:
+    #     rel = primary_folder.resolve().relative_to(root.resolve())
+    # except ValueError:
+    #     return None
+    # target = mirror / rel
+    # target.parent.mkdir(parents=True, exist_ok=True)
+    # shutil.copytree(primary_folder, target, dirs_exist_ok=True)
+    # print(f"[assets] mirrored → {target}")
+    # return target
 
 
-def folder_name(story_id: int | str, title: str) -> str:
-    """CMS folder name: {node-id}-{title-slug}."""
+def folder_name(story_id: int | str, title: str, voice_type: str | None = None) -> str:
+    """Name new folders with the bundle's voice; existing folders keep their paths."""
     story_id = str(story_id)
     title_slug = slugify(title or "", fallback=f"story-{story_id}")
-    return f"{story_id}-{title_slug}"
+    voice = os.environ.get("STORY_ASSET_VOICE_TYPE", "") if voice_type is None else voice_type
+    voice_slug = slugify(voice, fallback="")
+    suffix = f"--voice-{voice_slug}" if voice_slug else ""
+    return f"{story_id}-{title_slug}{suffix}"
 
 
 def _legacy_story_folder(root: Path, slug: str) -> Path:
@@ -90,6 +96,17 @@ def _find_existing_folder_by_node_id(type_root: Path, story_id: str) -> Path | N
     return None
 
 
+def _find_existing_folder_any_type(root: Path, story_id: str) -> Path | None:
+    """Find a story folder by node id across all type directories (and root)."""
+    search_roots = [root / t for t in sorted(VALID_STORY_TYPES)]
+    search_roots.append(root)
+    for type_root in search_roots:
+        found = _find_existing_folder_by_node_id(type_root, story_id)
+        if found is not None:
+            return found
+    return None
+
+
 def _resolve_story_folder(
     slug: str,
     story_id: int | str,
@@ -106,11 +123,14 @@ def _resolve_story_folder(
     type_root = root / category
     preferred = type_root / folder_name(story_id, title or slug)
 
-    existing = _find_existing_folder_by_node_id(type_root, story_id)
+    # Prefer any existing folder for this node (even if Drupal story_type differs
+    # from the folder category, e.g. assets under general/ while type is God Story).
+    existing = _find_existing_folder_any_type(root, story_id)
     if existing is not None:
         return existing
 
     legacy_candidates = [
+        type_root / folder_name(story_id, title or slug, voice_type=""),
         type_root / slug,
         type_root / f"{slug}-{story_id}",
         _legacy_story_folder(root, slug),
@@ -120,7 +140,7 @@ def _resolve_story_folder(
             continue
         meta = candidate / "meta" / "drupal-node-id.txt"
         existing_id = _read_node_id(meta)
-        if existing_id == story_id or (not existing_id and candidate == type_root / slug):
+        if existing_id == story_id or (not existing_id and candidate in (type_root / slug, type_root / folder_name(story_id, title or slug, voice_type=""))):
             return candidate
 
     return preferred
@@ -218,6 +238,7 @@ def sync_storyboard_outputs(
         (story_dir / f"output_config_{slug}.md", dest / "prompts" / f"output_config_{slug}.md"),
         (story_dir / "scene.txt", dest / "scenes" / "scene.txt"),
         (story_dir / f"output_story_breakdown_{slug}.md", dest / "scenes" / f"output_story_breakdown_{slug}.md"),
+        (story_dir / "overlay_hints.txt", dest / "scenes" / "overlay_hints.txt"),
         (story_dir / "image-prompts-only.txt", dest / "image-prompts" / "image-prompts-only.txt"),
     ]
     for src, out in mapping:
@@ -378,6 +399,7 @@ def seed_workspace_from_assets(
         (dest / "scenes" / f"output_story_breakdown_{slug}.md", story_dir / f"output_story_breakdown_{slug}.md"),
         (dest / "prompts" / "prompt.txt", story_dir / "prompt.txt"),
         (dest / "scenes" / "scene.txt", story_dir / "scene.txt"),
+        (dest / "scenes" / "overlay_hints.txt", story_dir / "overlay_hints.txt"),
         (dest / "image-prompts" / "image-prompts-only.txt", story_dir / "image-prompts-only.txt"),
         (dest / "script" / "FULL_STORY.txt", story_dir / "FULL_STORY.txt"),
     ]

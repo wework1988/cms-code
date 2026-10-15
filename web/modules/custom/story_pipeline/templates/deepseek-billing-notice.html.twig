@@ -1,0 +1,26 @@
+{#
+  Compact DeepSeek API billing estimate. JavaScript fills the live values.
+#}
+<aside class="deepseek-billing-notice" data-deepseek-billing-notice data-tone="unverified" aria-label="{{ 'DeepSeek API billing status'|t }}" aria-busy="true">
+  <button type="button" class="deepseek-billing-notice__toggle" data-billing-toggle aria-expanded="false">
+    <span class="deepseek-billing-notice__label" data-billing-label>{{ 'DeepSeek'|t }}</span>
+    <span class="deepseek-billing-notice__date" data-billing-date></span>
+    <span class="deepseek-billing-notice__clock" data-billing-clock></span>
+    <span class="deepseek-billing-notice__remaining" data-billing-remaining></span>
+  </button>
+  <p class="deepseek-billing-notice__estimate">
+    <span class="deepseek-billing-notice__estimate-full">{{ 'Schedule-based estimate. DeepSeek determines actual billing.'|t }}</span>
+    <span class="deepseek-billing-notice__estimate-short">{{ 'Estimate'|t }}</span>
+  </p>
+  <div class="deepseek-billing-notice__tooltip" data-billing-tooltip role="region" aria-label="{{ 'DeepSeek billing schedule'|t }}">
+    <p data-billing-summary></p>
+    <p>{{ 'Schedule-based estimate. DeepSeek determines actual billing.'|t }}</p>
+    <p data-billing-schedule>
+      {{ 'Peak hours are Monday–Friday, 09:00–12:00 and 14:00–18:00 Beijing time. Each interval includes its start and excludes its end. All other hours are off-peak. Saturdays and Sundays are off-peak all day, including weekends designated as adjusted working days. Chinese public holidays are off-peak all day.'|t }}
+    </p>
+    <a href="{{ pricing_url }}" data-billing-pricing-link target="_blank" rel="noopener noreferrer">{{ 'Official pricing'|t }}</a>
+  </div>
+</aside>
+<noscript>
+  <p>{{ 'Schedule-based estimate. JavaScript is required to compare the current Beijing time with the DeepSeek peak schedule. DeepSeek determines actual billing.'|t }}</p>
+</noscript>

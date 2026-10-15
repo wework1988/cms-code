@@ -135,9 +135,9 @@ class StoryPipelineRunForm extends FormBase {
       '#items' => [
         $this->t('<strong>Write story from YouTube</strong> — when the story only has YouTube URLs, no script yet.'),
         $this->t('<strong>Prepare bullets from transcript</strong> — when you pasted a transcript on the story; skips YouTube download and only extracts bullet pointers.'),
-        $this->t('<strong>Build storyboard</strong> — when the full script is saved; creates scene + image prompt files.'),
-        $this->t('<strong>Build storyboard + narration audio</strong> — storyboard and ElevenLabs MP3s in one job.'),
-        $this->t('<strong>Full pipeline (all steps + audio)</strong> — YouTube → script → storyboard → MP3s (best for bulk).'),
+        $this->t('<strong>Build storyboard (+ Flow images + Digen videos)</strong> — when the full script is saved; creates scenes + image prompts, generates <em>all</em> scene images in Google Flow into <code>images/</code>, then missing Digen videos into <code>videos/</code>. Chrome must stay signed into Flow and Digen on this Mac. Set <code>FLOW_IMAGES=0</code> / <code>DIGEN_VIDEOS=0</code> in the worker env to skip steps.'),
+        $this->t('<strong>Build storyboard + narration audio (+ Flow + Digen)</strong> — storyboard, Flow images, Digen videos, and ElevenLabs MP3s in one job.'),
+        $this->t('<strong>Full pipeline (all steps + audio + Flow + Digen)</strong> — YouTube → script → storyboard → Flow images → Digen videos → MP3s (best for bulk).'),
         $this->t('<strong>Create narration audio only</strong> — when storyboard is already done; makes MP3s from the script.'),
       ],
     ];
@@ -237,6 +237,24 @@ class StoryPipelineRunForm extends FormBase {
       foreach ($serialized['eleven_labs_file_urls_english'] ?? [] as $i => $url) {
         $n = $i + 1;
         $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Audio (English) @n', ['@n' => $n]) . '</a>';
+      }
+      $image_urls = $serialized['image_file_urls'] ?? [];
+      if ($image_urls !== []) {
+        $count = count($image_urls);
+        $outputs[] = '<br><strong>' . $this->t('Images (@count)', ['@count' => $count]) . '</strong>';
+        foreach ($image_urls as $i => $url) {
+          $n = $i + 1;
+          $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Image @n', ['@n' => $n]) . '</a>';
+        }
+      }
+      $video_urls = $serialized['video_file_urls'] ?? [];
+      if ($video_urls !== []) {
+        $count = count($video_urls);
+        $outputs[] = '<br><strong>' . $this->t('Videos (@count)', ['@count' => $count]) . '</strong>';
+        foreach ($video_urls as $i => $url) {
+          $n = $i + 1;
+          $outputs[] = '<a href="' . htmlspecialchars($url) . '" target="_blank">' . $this->t('Video @n', ['@n' => $n]) . '</a>';
+        }
       }
       if (!empty($serialized['story_asset_folder'])) {
         $outputs[] = '<br><small>' . $this->t('Folder: @path', [
@@ -434,13 +452,13 @@ class StoryPipelineRunForm extends FormBase {
     ];
     $form['bulk']['actions']['run_storyboard_audio'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Run storyboard + audio on selected'),
+      '#value' => $this->t('Run storyboard + audio + Flow + Digen on selected'),
       '#submit' => ['::submitBulkJob'],
       '#bulk_job' => 'storyboard_elevenlabs',
     ];
     $form['bulk']['actions']['run_storyboard'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Run storyboard only on selected'),
+      '#value' => $this->t('Run storyboard + Flow + Digen on selected'),
       '#submit' => ['::submitBulkJob'],
       '#bulk_job' => 'storyboard',
     ];

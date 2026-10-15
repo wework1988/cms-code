@@ -5,6 +5,34 @@ story_pipeline.admin:
   parent: system.admin_config_content
   weight: 10
 
+story_pipeline.location_aliases:
+  title: 'Remembered location spellings'
+  description: 'View, disable, or remove user-confirmed map location spellings.'
+  route_name: story_pipeline.location_aliases
+  parent: system.admin_config_content
+  weight: 13
+
+story_pipeline.animation_geography:
+  title: 'Animation geography'
+  description: 'Installed map catalogue versions and coverage limits.'
+  route_name: story_pipeline.animation_geography
+  parent: system.admin_config_content
+  weight: 12
+
+story_pipeline.map_themes:
+  title: 'Map appearance'
+  description: 'Built-in and custom map colour templates.'
+  route_name: story_pipeline.map_themes
+  parent: system.admin_config_content
+  weight: 14
+
+story_pipeline.animation_prompt:
+  title: 'Animation planning prompt'
+  description: 'Editorial prompts for map and timeline animation inserts.'
+  route_name: story_pipeline.animation_prompt
+  parent: system.admin_config_content
+  weight: 11
+
 story_pipeline.run:
   title: 'Run story jobs'
   description: 'Start storyboard and audio jobs (no terminal needed)'
@@ -39,3 +67,16 @@ story_pipeline.character_library:
   route_name: story_pipeline.character_library
   parent: system.admin_content
   weight: 7
+
+story_pipeline.monitor:
+  title: 'Story Monitor'
+  description: 'Worker, Flow, Digen and recovery status'
+  route_name: story_pipeline.monitor
+  parent: system.admin_content
+  weight: 4
+
+story_pipeline.main_monitor:
+  title: 'Story Monitor'
+  route_name: story_pipeline.monitor
+  menu_name: main
+  weight: 19

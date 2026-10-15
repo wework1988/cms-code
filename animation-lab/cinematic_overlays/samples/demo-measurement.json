@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "module": "cinematic_overlays",
+  "input": "fixture:landscape",
+  "preset": "documentary_bold",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional distance drawn between two supplied screen points. The pixels were not converted into kilometres.",
+  "overlays": [
+    {
+      "id": "demo_measure",
+      "type": "measurement",
+      "purpose": "Bracket two supplied points and show a supplied distance.",
+      "value": "18",
+      "unit": "किमी",
+      "kind": "distance",
+      "context": "काल्पनिक दूरी",
+      "badge": "काल्पनिक प्रदर्शन",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.55,
+      "hold_duration": 2.1,
+      "exit_duration": 0.4,
+      "points": [
+        { "x": 0.22, "y": 0.62 },
+        { "x": 0.62, "y": 0.62 }
+      ]
+    }
+  ]
+}

@@ -34,6 +34,12 @@ story_pipeline.planner_completed_tab:
   base_route: story_pipeline.tracker
   weight: 10
 
+story_pipeline.story_animations_tab:
+  route_name: story_pipeline.animations
+  title: 'Animations'
+  base_route: entity.node.edit_form
+  weight: 16
+
 story_pipeline.story_characters_tab:
   route_name: story_pipeline.story_characters
   title: 'Characters'

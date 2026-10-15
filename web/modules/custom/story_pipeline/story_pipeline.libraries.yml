@@ -43,3 +43,53 @@ story-characters:
       css/story-characters.css: {}
   dependencies:
     - core/drupal.autocomplete
+
+location-resolution:
+  version: 1.0
+  js:
+    https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js: { type: external, minified: true }
+    js/location-resolution.js: {}
+  css:
+    theme:
+      https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css: { type: external }
+      css/location-resolution.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+map-theme:
+  version: 1.1
+  js:
+    js/map-theme-preview.js: {}
+  css:
+    theme:
+      css/map-theme.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+deepseek-billing-notice:
+  version: 1.1
+  css:
+    theme:
+      css/deepseek-billing-notice.css: {}
+  js:
+    js/deepseek-billing-status.js: {}
+    js/deepseek-billing-notice.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
+story-monitor:
+  version: 1.0
+  css:
+    theme:
+      css/story-monitor.css: {}
+  js:
+    js/story-monitor.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once

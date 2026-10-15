@@ -320,6 +320,12 @@ class JobProgressParser {
       $rest = trim($last[2]);
       [$caption, $detail] = array_pad(explode(' · ', $rest, 2), 2, '');
 
+      // Storyboard may hit 100% before Flow images / Digen videos finish.
+      $post = $this->parsePostStoryboardProgress($text);
+      if ($post !== NULL) {
+        return $post;
+      }
+
       if ($pct >= 100 || stripos($caption, 'Complete') !== FALSE) {
         return [
           'state' => 'done',
@@ -337,6 +343,11 @@ class JobProgressParser {
       ];
     }
 
+    $post = $this->parsePostStoryboardProgress($text);
+    if ($post !== NULL) {
+      return $post;
+    }
+
     if (preg_match('/\bdone\.\s*$/m', $text)) {
       return [
         'state' => 'done',
@@ -347,6 +358,89 @@ class JobProgressParser {
     }
 
     return $this->parseHeuristicProgress($text, $job_action);
+  }
+
+  /**
+   * Flow images + Digen videos run after storyboard PROGRESS 100%.
+   *
+   * @return array{state: string, percent: int, label: string, detail: string}|null
+   */
+  private function parsePostStoryboardProgress(string $text): ?array {
+    $has_flow = str_contains($text, '[flow-images]');
+    $has_digen = str_contains($text, '[digen-videos]') || str_contains($text, '[CMS]');
+    if (!$has_flow && !$has_digen) {
+      return NULL;
+    }
+
+    // Prefer the latest post-storyboard PROGRESS line (88%/96% from digen runner).
+    if (preg_match_all('/PROGRESS\s+\[[#-]+\]\s+(\d+)%\s+·\s+(Flow images|Digen videos)(?:\s+·\s+(.+))?/i', $text, $m, PREG_SET_ORDER)) {
+      $last = end($m);
+      $pct = min(99, max(70, (int) $last[1]));
+      $label = trim($last[2]);
+      $detail = trim($last[3] ?? '');
+      return [
+        'state' => 'running',
+        'percent' => $pct,
+        'label' => $label,
+        'detail' => $detail,
+      ];
+    }
+
+    if ($has_digen) {
+      $saved = 0;
+      if (preg_match_all('/Saved:.*scene_\d+\.mp4/i', $text, $sm)) {
+        $saved = count($sm[0]);
+      }
+      elseif (preg_match_all('/scene_\d+\.mp4/i', $text, $sm)) {
+        $saved = count(array_unique($sm[0]));
+      }
+      if (str_contains($text, '[digen-videos] done')) {
+        return [
+          'state' => 'running',
+          'percent' => 96,
+          'label' => (string) t('Digen videos'),
+          'detail' => (string) t('Videos written — finishing upload'),
+        ];
+      }
+      return [
+        'state' => 'running',
+        'percent' => min(95, 88 + min(7, $saved)),
+        'label' => (string) t('Digen videos'),
+        'detail' => $saved > 0
+          ? (string) t('@n video(s) saved so far', ['@n' => $saved])
+          : (string) t('Generating scene videos in Digen…'),
+      ];
+    }
+
+    // Flow images in progress / done.
+    $completed = 0;
+    if (preg_match_all('/Scene\s+(\d+):\s+saved/i', $text, $fm)) {
+      $completed = count($fm[0]);
+    }
+    if (str_contains($text, '[flow-images] done') || str_contains($text, 'Flow images: finished')) {
+      return [
+        'state' => 'running',
+        'percent' => 86,
+        'label' => (string) t('Flow images'),
+        'detail' => (string) t('@n image(s) ready — starting videos if enabled', ['@n' => $completed]),
+      ];
+    }
+    if (str_contains($text, '[flow-images] WARN soft-fail') || str_contains($text, 'Flow images incomplete')) {
+      return [
+        'state' => 'running',
+        'percent' => 82,
+        'label' => (string) t('Flow images (partial)'),
+        'detail' => (string) t('@n saved — check log; videos may skip', ['@n' => $completed]),
+      ];
+    }
+    return [
+      'state' => 'running',
+      'percent' => min(85, 70 + min(14, $completed * 2)),
+      'label' => (string) t('Flow images'),
+      'detail' => $completed > 0
+        ? (string) t('Scene @n saved…', ['@n' => $completed])
+        : (string) t('Generating scene images in Google Flow…'),
+    ];
   }
 
   /**
@@ -392,7 +486,10 @@ class JobProgressParser {
         ['Stage A', 30, 'Stage A — story config'],
         ['Stage B', 45, 'Stage B — scene breakdown'],
         ['Stage C', 60, 'Stage C — image prompts'],
-        ['[drupal] POST', 92, 'Uploading results'],
+        ['[flow-images]', 72, 'Generating Flow images'],
+        ['[digen-videos]', 88, 'Generating Digen videos'],
+        ['[CMS]', 90, 'Digen CMS video run'],
+        ['[drupal] POST', 97, 'Uploading results'],
         ['done.', 100, 'Complete'],
       ],
     };
@@ -464,6 +561,9 @@ class JobProgressParser {
         return $line;
       }
       if (str_contains($line, 'Traceback')) {
+        continue;
+      }
+      if (str_contains($line, 'pip install --upgrade pip') || str_contains($line, 'You are using pip version')) {
         continue;
       }
       if (strlen($line) > 10 && strlen($line) < 200 && !str_starts_with($line, '[')) {

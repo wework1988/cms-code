@@ -47,6 +47,19 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@story_pipeline.character_extractor'
+  story_pipeline.map_themes:
+    class: Drupal\story_pipeline\Service\MapThemeRepository
+    arguments:
+      - '@database'
+      - '@state'
+  story_pipeline.animations:
+    class: Drupal\story_pipeline\Service\AnimationManager
+    arguments:
+      - '@database'
+      - '@file_system'
+      - '@story_pipeline.asset_storage'
+      - '@story_pipeline.worker_launcher'
+      - '@story_pipeline.map_themes'
   story_pipeline.character_ai_extractor:
     class: Drupal\story_pipeline\Service\CharacterAiExtractor
     arguments:

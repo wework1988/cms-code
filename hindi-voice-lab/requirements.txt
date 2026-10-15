@@ -1,0 +1,10 @@
+# Direct dependencies for the standalone Hindi Voice Lab.
+# chatterbox-tts 0.1.7 pins torch==2.6.0, torchaudio==2.6.0, transformers==5.2.0,
+# diffusers==0.29.0, librosa==0.11.0, gradio==6.8.0, safetensors==0.5.3,
+# conformer==0.3.2, and pykakasi==2.3.0.
+# Its multilingual loader hardcodes t3_mtl23ls_v2.safetensors. Do not float
+# the package to a newer Git commit without re-checking that API.
+chatterbox-tts==0.1.7
+resemble-perth==1.0.1
+# Bundled FFmpeg binary so MP3/M4A reference clips work without a system install.
+imageio-ffmpeg==0.6.0

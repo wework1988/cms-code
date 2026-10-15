@@ -60,6 +60,18 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
         else:
             p = p.expanduser().resolve()
         roots.append(p)
+
+    # Worker/CMS jobs set STORY_ASSET_ROOT — include it so discovery finds sync'd stories.
+    asset_root = (os.environ.get("STORY_ASSET_ROOT") or "").strip()
+    if asset_root:
+        root = Path(asset_root).expanduser().resolve()
+        if root not in roots:
+            roots.append(root)
+        for cat in ("general", "crime", "english", "god_story"):
+            cat_root = root / cat
+            if cat_root not in roots:
+                roots.append(cat_root)
+
     data["story_roots_resolved"] = roots
     data["token_file"] = str(Path(data["token_file"]).expanduser())
     if not Path(data["token_file"]).is_absolute():

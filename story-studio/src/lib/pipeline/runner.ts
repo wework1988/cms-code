@@ -1137,18 +1137,25 @@ export async function createProjectWithSources(input: {
   });
 
   for (const src of input.sources) {
+    let kind = src.kind;
     let videoId: string | null = null;
-    let url = src.url ?? null;
-    if (src.kind === "youtube" && src.url) {
+    let url: string | null = null;
+    if (src.url?.trim()) {
       const normalized = normalizeYouTubeUrl(src.url);
-      videoId = normalized?.videoId ?? null;
-      url = normalized?.canonicalUrl ?? src.url;
+      if (!normalized) {
+        throw new Error("Enter a valid YouTube video URL. Other links are not fetched.");
+      }
+      videoId = normalized.videoId;
+      url = normalized.canonicalUrl;
+      kind = "youtube";
+    } else if (src.kind === "youtube") {
+      throw new Error("Enter a valid YouTube video URL. Other links are not fetched.");
     }
 
     await prisma.source.create({
       data: {
         projectId: project.id,
-        kind: src.kind,
+        kind,
         title: src.title ?? (videoId ? `YouTube ${videoId}` : "Pasted transcript"),
         url,
         videoId,

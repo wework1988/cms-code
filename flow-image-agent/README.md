@@ -11,18 +11,36 @@ Generate Google Flow images for any CMS story folder and save them as `images/00
 - Story layout already used by playright: `<story>/images/001.png` (etc.). This agent writes the same folder with the real decoded format extension.
 - Pairing token + loopback bind + path sandbox keep the helper local-only.
 
-## One-command run (recommended)
+## CMS Build storyboard integration
+
+When you click **Build storyboard (+ Flow images)** in Drupal, the worker:
+
+1. Finishes Stages A–C and writes `image-prompts/image-prompts-only.txt`
+2. Calls this agent with `--all` to generate **every** scene image sequentially
+3. Saves into `<story>/images/001.jpg`, `002.jpg`, …
+
+Requirements on the worker Mac:
+
+- Chrome signed into Google Flow (Chrome-FlowAgent profile / debug port — see below)
+- `flow-image-agent` next to `story-pipeline-worker` (this folder)
+- Optional escape hatch: `FLOW_IMAGES=0` in the worker `.env` skips image generation
+- Soft-fail: if Flow errors mid-run, storyboard text still marks complete; re-run `--all` to resume
+
+## One-command run (manual)
 
 ```bash
 cd /Users/alokkumarverma/project/cms-code/flow-image-agent
+# Smoke test (2 scenes)
 ./scripts/run_images.sh 164-how-captain-saved-video-done --first-two
+# All scenes (same as CMS storyboard hook)
+./scripts/run_images.sh 164-how-captain-saved-video-done --all
 ```
 
-That single command:
+That command:
 
 1. Starts the local helper if needed  
-2. Creates a job for scenes 1–2  
-3. Opens Chrome (dedicated profile under `.local/chrome-profile`)  
+2. Creates a job for the selected scenes  
+3. Opens Chrome with your Flow login profile  
 4. Configures Nano Banana 2.1 · Image · 16:9 · x1  
 5. Generates, downloads **2K Upscaled**, saves into the story `images/` folder  
 
@@ -34,14 +52,22 @@ CHROME_FLOW_REFRESH_LOGIN=1 ./scripts/start_chrome_debug.sh
 
 The Flow project URL is saved to `.local/flow-project-url.txt` for later runs.
 
+With `flow_accounts` configured, use a separate signed-in `profile_dir` for each Gmail. The runner checks Flow's account label against the configured email before saving the project URL or generating. Each account has its own saved project URL. A startup account change and quota rotation restart Chrome with the selected profile; an already open Chrome with the wrong Gmail stops with an identity error.
+
+The default rotation threshold is 115. `.local/flow-account-state.json` counts confirmed new generations, including images whose download later fails; gallery reuse does not increment the counter. Quota errors mark that Gmail exhausted for the local tracking day, and rotation skips it. When every account is unavailable, the runner stops instead of cycling. Counters and exhaustion flags reset at UTC midnight, including during a running job. This is local tracking, not Flow's quota API: manual generations, older failed downloads, and Flow's actual reset schedule may differ. Run only one Flow image runner at a time; managed watchdog jobs share the Chrome lock, while direct `run_images.sh` invocations do not acquire it.
+
 Or pass the project explicitly:
 
 ```bash
 FLOW_PROJECT_URL='https://labs.google/fx/tools/flow/project/YOUR_ID' \
-  ./scripts/run_images.sh 164-how-captain-saved-video-done --first-two
+  ./scripts/run_images.sh 164-how-captain-saved-video-done --all
 ```
 
 Other examples:
+
+The CLI waits a random 10–30 seconds between scenes by default and logs each pause. Use `--delay N` to choose a fixed pause in seconds. Restart a running CLI process to load changes to this setting.
+
+Generation failures (including timeouts and content rejections) can request up to two DeepSeek prompt revisions per scene, persisted in `images/prompt-revisions/`. Retries use the same scene number and pause between attempts. Exhausted or unavailable repair marks that scene failed and continues. Quota, unusual-activity, browser, settings, download, and save errors do not trigger prompt rewriting.
 
 ```bash
 ./scripts/run_images.sh 165-pakistan-army --from 1 --to 2

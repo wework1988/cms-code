@@ -225,6 +225,9 @@ def require_elevenlabs(keys: dict[str, str]) -> str:
 
 def apply_asset_root_from_bundle(bundle: dict | None) -> None:
     """Use Drupal story_asset_path when STORY_ASSET_ROOT is not in worker .env."""
+    # Apply per-story context even when the root was already configured. Clear
+    # absent voices so a later bundle cannot inherit another story's suffix.
+    os.environ["STORY_ASSET_VOICE_TYPE"] = str(((bundle or {}).get("settings") or {}).get("voice_type") or "").strip()
     if (os.environ.get("STORY_ASSET_ROOT") or "").strip():
         return
     path = ((bundle or {}).get("story_asset_path") or "").strip()

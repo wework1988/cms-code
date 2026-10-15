@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Map story</title>
+    <style>
+      @font-face {
+        font-family: "Story Devanagari";
+        src: url("/assets/fonts/DevanagariSangamMN.ttc") format("collection");
+        font-weight: 400 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Story Latin";
+        src: url("/assets/fonts/Arial.ttf") format("truetype");
+        font-weight: 400 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Story Condensed";
+        src: url("/assets/fonts/BebasNeue-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Story Devanagari Bold";
+        src: url("/assets/fonts/NotoSansDevanagari-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #0e1a2e;
+        width: 1920px;
+        height: 1080px;
+      }
+      #map, #tint, #hue, #vignette, #glow, #hud {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+      }
+      #map { z-index: 0; }
+      #tint { z-index: 1; pointer-events: none; }
+      #hue { z-index: 2; pointer-events: none; }
+      #vignette { z-index: 3; pointer-events: none; }
+      #glow { z-index: 4; pointer-events: none; }
+      #hud {
+        pointer-events: none;
+        z-index: 5;
+      }
+      .maplibregl-ctrl, .ol-attribution { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <canvas id="tint"></canvas>
+    <canvas id="hue"></canvas>
+    <canvas id="vignette"></canvas>
+    <canvas id="glow"></canvas>
+    <canvas id="hud"></canvas>
+    <script type="module" src="/bundle.js"></script>
+  </body>
+</html>

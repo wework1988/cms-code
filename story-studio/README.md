@@ -1,6 +1,6 @@
 # Story Studio
 
-Local-first web app for turning 1–5 trusted source transcripts into an **original Hindi documentary narration script**. YouTube URLs may be stored as **references only** — transcripts must be pasted manually, or fetched via **official OAuth** for videos you own.
+Local-first web app for turning 1–5 trusted source transcripts into an **original Hindi documentary narration script**. For each source you can paste a transcript, fetch public YouTube captions from a video URL, or both. Fetching a transcript does not generate a story. Official YouTube OAuth remains available only for videos you own or manage.
 
 Story Studio is intentionally **source-only**: it does not run external fact-checking or web research. It extracts neutral facts, merges them, plans a new narrative structure, writes Hindi narration, and runs an **editorial originality check** (not legal clearance).
 
@@ -8,6 +8,7 @@ Story Studio is intentionally **source-only**: it does not run external fact-che
 
 - Node.js **18+** (Node 20+ recommended)
 - npm
+- Python 3, only if you want public YouTube caption fetch. Manual paste works without it.
 
 ## Setup
 
@@ -15,6 +16,7 @@ Story Studio is intentionally **source-only**: it does not run external fact-che
 cd story-studio
 cp .env.example .env
 npm install
+python3 -m pip install -r scripts/requirements-transcript.txt
 npx prisma migrate dev
 npm run db:seed
 ```
@@ -47,14 +49,19 @@ OPENAI_MODEL="gpt-4o-mini"
 
 If no API key is set, the dashboard shows a setup banner and the **Demo project** still loads fixture data without calling an LLM.
 
-### Transcripts (manual default)
+### Transcripts
 
-Story Studio **does not scrape** YouTube watch pages or third-party captions. For every source:
+Each source can have a YouTube URL, a pasted transcript, or both. Fetching is explicit: it does not run when you type, when the page loads, or when you prepare fact bullets.
 
-1. **Paste a transcript manually** (default), or
-2. For **videos you own/manage**, connect YouTube OAuth at `/settings/youtube` and use **Fetch official captions**
+1. **Paste a transcript** and save it. This always works, including when Python or YouTube is unavailable.
+2. **Fetch transcript** on a YouTube URL. Story Studio asks the maintained `youtube-transcript-api` Python library for public captions, prefers human captions in Hindi or English, then automatic captions in that same language, and will not silently switch languages or translate.
+3. For **videos you own or manage**, connect YouTube OAuth at `/settings/youtube` and use **Fetch official captions**. OAuth is not a way to download captions from arbitrary videos.
 
-Generation is **blocked** until every source has a pasted or officially fetched transcript.
+A blocked or failed fetch leaves the URL and any saved transcript in place and keeps the paste box available. Replacing an existing transcript requires confirmation. Successful fetches are cached by video, language, and caption type. Requests run one at a time.
+
+Public fetch can be rate-limited or blocked by YouTube. There is no guaranteed bypass. Optional proxy settings in `.env` are off by default. A rotating residential proxy is a paid third-party service, does not guarantee success, and is never purchased automatically. Proxy credentials stay on the server.
+
+Generation and fact preparation stay blocked until every source has a saved transcript.
 
 ### YouTube OAuth (owned videos only)
 
@@ -88,14 +95,24 @@ Integration tests use `prisma/test.db` (auto-created via `prisma db push` during
 ## Main flow
 
 1. **Dashboard** — create a project or open the demo
-2. **New story wizard** — topic, Hindi output, **prompt profile**, sources (YouTube URL or pasted transcript)
+2. **New story wizard** — topic, Hindi output, **prompt profile**, sources (YouTube URL, pasted transcript, or both)
 3. **Research workspace tabs**
-   - Sources (paste/edit transcript fallback)
+   - Sources (fetch a YouTube transcript, paste or edit it, or fetch official captions for a video you own)
    - Fact Bank (editable, pinnable — preserved across merges)
    - Narrative Plan (select or edit treatments)
    - Script (save edits, version history, paragraph regeneration)
    - Originality QA (PASS / WARN / BLOCK workflow)
 4. **Generate original story** — runs the full pipeline via `POST /api/projects/:id/generate-original-story`
+
+### URL → transcript → fact pointers → Copy master prompt
+
+1. Create a project with one or more YouTube URLs. You can also paste a transcript at the same time.
+2. Open the project, choose Hindi or English, and click **Fetch transcript**. Use **Fetch missing transcripts** to walk the empty sources one at a time. This does not write a story.
+3. Edit the transcript if needed and click **Save transcript**. If the fetch is blocked, paste the transcript into the same box.
+4. Click **Generate fact bullets**. Review, edit, or disable bullets in **Fact Bank**.
+5. Click **Copy master prompt** and paste it into your external writing model.
+
+Changing a saved transcript clears claim pointers that came from the old text. Pinned or edited bullets that depended on it are disabled so they are not copied as current. Generate fact bullets again after a transcript change.
 
 ### Write externally in ChatGPT or Claude
 
@@ -133,7 +150,8 @@ Each stage can also be rerun individually through `/api/projects/:id/stages/:sta
 - **Zod** validates API payloads and LLM JSON
 - **Server-side ID validation** — claim/fact IDs assigned and validated server-side; LLM-returned IDs are never trusted
 - **LLM abstraction** supports OpenAI-compatible providers server-side only
-- **Manual transcript mode** by default; no third-party caption scraping
+- **Manual paste** always available, including when public caption fetch is not installed or YouTube blocks the request
+- **Public YouTube captions** through a server-side `TranscriptProvider` and `scripts/fetch_public_captions.py` (`youtube-transcript-api`). Cached, queued, and never started automatically
 - **Official YouTube OAuth captions** for owned/authorized videos only (`/settings/youtube`)
 - **Transcript segments** persisted with timestamps during normalization
 - **All-source originality** — plans and scripts compared against every source fingerprint (lexical + semantic + structural)

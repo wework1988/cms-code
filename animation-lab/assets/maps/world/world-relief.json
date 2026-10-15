@@ -1,0 +1,29 @@
+{
+  "url": "/assets/maps/world/world-relief.jpg",
+  "extent": [
+    -180,
+    -85.0511,
+    180,
+    85.0511
+  ],
+  "coordinates": [
+    [
+      -180,
+      85.0511
+    ],
+    [
+      180,
+      85.0511
+    ],
+    [
+      180,
+      -85.0511
+    ],
+    [
+      -180,
+      -85.0511
+    ]
+  ],
+  "source": "Natural Earth II 50m shaded relief (public domain)",
+  "note": "Shaded relief, not satellite imagery. Coarse at district scale."
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "coverage_note": "Only places listed here are supported. Do not assume worldwide coverage.",
+  "places": {
+    "india": {
+      "id": "india",
+      "name": "India",
+      "aliases": ["भारत", "Bharat", "Republic of India", "IND"],
+      "level": "country",
+      "parent": null,
+      "geojson": "assets/maps/india/india.geojson",
+      "source_id": "natural_earth_50m_admin0_india",
+      "match": {"ADMIN": "India"}
+    },
+    "uttar_pradesh": {
+      "id": "uttar_pradesh",
+      "name": "Uttar Pradesh",
+      "aliases": ["उत्तर प्रदेश", "UP", "U.P.", "UttarPradesh"],
+      "level": "state",
+      "parent": "india",
+      "geojson": "assets/maps/india/uttar-pradesh.geojson",
+      "source_id": "geoboundaries_ind_adm1_2011_uttar_pradesh",
+      "match": {"shapeName": "Uttar Pradesh"}
+    },
+    "gorakhpur": {
+      "id": "gorakhpur",
+      "name": "Gorakhpur",
+      "aliases": [
+        "Gorakhpur District",
+        "गोरखपुर",
+        "गोरखपुर जिला",
+        "Gorakhpur district"
+      ],
+      "level": "district",
+      "parent": "uttar_pradesh",
+      "geojson": "assets/maps/india/gorakhpur-district.geojson",
+      "source_id": "geoboundaries_ind_adm2_2021_gorakhpur",
+      "match": {"shapeName": "Gorakhpur", "shapeType": "ADM2"},
+      "disambiguation": "District polygon (ADM2). Not Gorakhpur city point."
+    }
+  }
+}

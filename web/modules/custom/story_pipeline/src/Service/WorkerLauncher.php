@@ -43,10 +43,10 @@ class WorkerLauncher {
     return [
       'generate' => t('Write story from YouTube'),
       'generate_pointers' => t('Prepare bullets from transcript'),
-      'storyboard' => t('Build storyboard'),
-      'storyboard_elevenlabs' => t('Build storyboard + narration audio'),
+      'storyboard' => t('Build storyboard (+ Flow images + Digen videos)'),
+      'storyboard_elevenlabs' => t('Build storyboard + narration audio (+ Flow + Digen)'),
       'elevenlabs' => t('Create narration audio only'),
-      'full_pipeline' => t('Full pipeline (all steps + audio)'),
+      'full_pipeline' => t('Full pipeline (all steps + audio + Flow + Digen)'),
     ];
   }
 
@@ -476,6 +476,17 @@ class WorkerLauncher {
         throw new \InvalidArgumentException('Story needs a pasted transcript (at least 100 characters).');
       }
     }
+
+    if (in_array($job, ['elevenlabs', 'storyboard_elevenlabs', 'full_pipeline'], TRUE)
+      && $node->hasField('field_voice_type')
+      && !$node->get('field_voice_type')->isEmpty()) {
+      [$voice_id] = $this->manager->resolveStoryVoice($node);
+      if ($voice_id === '') {
+        throw new \InvalidArgumentException(
+          'Selected Voice type has no ElevenLabs voice ID. Edit the Voice Type term and set the voice ID.'
+        );
+      }
+    }
   }
 
   /**
@@ -552,6 +563,13 @@ class WorkerLauncher {
     if ($node->bundle() !== 'story') {
       return FALSE;
     }
+    $state_path = $this->workerPath() . '/.pipeline-jobs/story-' . (int) $node->id() . '.json';
+    if (is_file($state_path)) {
+      $state = json_decode((string) file_get_contents($state_path), TRUE);
+      if (in_array($state['status'] ?? '', ['queued', 'running'], TRUE)) {
+        return TRUE;
+      }
+    }
     return $this->findStoryRunningPids((int) $node->id()) !== [];
   }
 
@@ -616,6 +634,19 @@ class WorkerLauncher {
     }
 
     $story_id = (int) $node->id();
+    // Persist explicit Stop before killing processes so the watchdog cannot restart it.
+    $worker_path = $this->workerPath();
+    $watchdog = $worker_path . '/pipeline_watchdog.py';
+    $python = $worker_path . '/.venv/bin/python';
+    if (is_file($watchdog) && is_file($python)) {
+      $stop_command = 'cd ' . escapeshellarg($worker_path) . ' && '
+        . escapeshellarg($python) . ' ' . escapeshellarg($watchdog)
+        . ' stop ' . escapeshellarg((string) $story_id) . ' 2>&1';
+      exec($stop_command, $stop_output, $stop_exit);
+      if ($stop_exit !== 0) {
+        throw new \RuntimeException('Could not persist watchdog stop: ' . implode(' ', $stop_output));
+      }
+    }
     $pids = $this->findStoryRunningPids($story_id);
 
     $last = $this->lastJobInfo($node);
@@ -787,6 +818,180 @@ class WorkerLauncher {
     $full = $dir_path . '/' . basename($uri);
     touch($full);
     return [$uri, $full];
+  }
+
+  /**
+   * Start a map-animation worker without changing the story pipeline status.
+   */
+  public function launchAnimation(string $snapshot_path, string $log_path, ?string $retry_clip = NULL, bool $regenerate_presentation = FALSE, bool $resume_locations = FALSE, bool $restyle_variant = FALSE): void {
+    if (!$this->shellCommandsAllowed()) {
+      throw new \RuntimeException('PHP cannot start background jobs on this server (shell_exec is disabled).');
+    }
+    $snapshot_real = realpath($snapshot_path);
+    if ($snapshot_real === FALSE || !is_file($snapshot_real)) {
+      throw new \RuntimeException('Animation snapshot was not written.');
+    }
+    $python = $this->animationPython();
+    $script = $this->workerPath() . '/run_animations.py';
+    if (!is_file($script)) {
+      throw new \RuntimeException('Animation worker script is missing.');
+    }
+    $cmd = escapeshellarg($python) . ' ' . escapeshellarg($script) . ' --snapshot ' . escapeshellarg($snapshot_real);
+    if ($retry_clip !== NULL) {
+      if (!preg_match('/^clip_\d{2}$/', $retry_clip)) {
+        throw new \InvalidArgumentException('Invalid clip id.');
+      }
+      $cmd .= ' --retry-clip ' . escapeshellarg($retry_clip);
+    }
+    if ($regenerate_presentation) {
+      $cmd .= ' --regenerate-presentation';
+    }
+    if ($resume_locations) {
+      $cmd .= ' --resume-locations';
+    }
+    if ($restyle_variant) {
+      $cmd .= ' --restyle-variant';
+    }
+    $log_dir = dirname($log_path);
+    if (!is_dir($log_dir) && !mkdir($log_dir, 0775, TRUE) && !is_dir($log_dir)) {
+      throw new \RuntimeException('Could not create the animation log directory.');
+    }
+    $shell = sprintf('nohup %s >> %s 2>&1 & echo $!', $cmd, escapeshellarg($log_path));
+    $this->loggerFactory->get('story_pipeline')->info('Launching animation job: @cmd', ['@cmd' => $shell]);
+    shell_exec($shell);
+  }
+
+  /**
+   * Map rendering imports Shapely, which lives in the animation-lab virtualenv.
+   */
+  /**
+   * Run a catalogue command. Arguments are passed as an array, not a shell string.
+   *
+   * @return array<string, mixed>
+   */
+  /**
+   * Resolve a map theme through the Python template contract.
+   *
+   * @return array<string, mixed>
+   */
+  public function resolveMapTheme(string $style, array $overrides = [], ?string $theme_id = NULL, ?string $name = NULL, ?array $base_theme = NULL): array {
+    $payload = [
+      'style' => $style,
+      'overrides' => $overrides,
+      'theme_id' => $theme_id,
+      'name' => $name,
+    ];
+    if (is_array($base_theme)) {
+      $payload['base_theme'] = $base_theme;
+    }
+    $payload = $this->runCatalogueModule('map_story.theme_cli', ['snapshot'], json_encode($payload, JSON_UNESCAPED_UNICODE));
+    $theme = $payload['theme'] ?? NULL;
+    if (!is_array($theme) || empty($theme['id']) || empty($theme['tokens'])) {
+      throw new \RuntimeException('Theme snapshot was incomplete.');
+    }
+    return $theme;
+  }
+
+  /**
+   * @return array<string, mixed>
+   */
+  private function runCatalogueModule(string $module, array $args, ?string $stdin = NULL): array {
+    $python = $this->animationPython();
+    $lab = dirname($python, 3);
+    $command = array_merge([$python, '-m', $module], $args);
+    $descriptors = [
+      0 => ['pipe', 'r'],
+      1 => ['pipe', 'w'],
+      2 => ['pipe', 'w'],
+    ];
+    $process = proc_open($command, $descriptors, $pipes, $lab);
+    if (!is_resource($process)) {
+      throw new \RuntimeException('Theme helper could not be started.');
+    }
+    if ($stdin !== NULL) {
+      fwrite($pipes[0], $stdin);
+    }
+    fclose($pipes[0]);
+    $stdout = stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+    fclose($pipes[2]);
+    $code = proc_close($process);
+    $decoded = json_decode((string) $stdout, TRUE);
+    if (!is_array($decoded)) {
+      throw new \RuntimeException('Theme helper returned an unreadable response.');
+    }
+    if ($code !== 0 || empty($decoded['ok'])) {
+      throw new \InvalidArgumentException((string) ($decoded['error'] ?? 'Theme request was rejected.'));
+    }
+    unset($stderr);
+    return $decoded;
+  }
+
+  public function runCatalogue(array $args, ?string $stdin = NULL): array {
+    $python = $this->animationPython();
+    $lab = dirname($python, 3);
+    $script = $lab . '/map_story/catalogue_api.py';
+    if (!is_file($script)) {
+      throw new \RuntimeException('Catalogue helper is missing.');
+    }
+    $command = array_merge([$python, '-m', 'map_story.catalogue_api'], $args);
+    $descriptors = [
+      0 => ['pipe', 'r'],
+      1 => ['pipe', 'w'],
+      2 => ['pipe', 'w'],
+    ];
+    $process = proc_open($command, $descriptors, $pipes, $lab);
+    if (!is_resource($process)) {
+      throw new \RuntimeException('Catalogue helper could not be started.');
+    }
+    fwrite($pipes[0], $stdin ?? '');
+    fclose($pipes[0]);
+    $output = stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    $code = proc_close($process);
+    $decoded = json_decode((string) $output, TRUE);
+    if (!is_array($decoded)) {
+      throw new \RuntimeException('Catalogue helper returned an unreadable response.');
+    }
+    if ($code !== 0 || empty($decoded['ok'])) {
+      throw new \InvalidArgumentException((string) ($decoded['error'] ?? 'Catalogue request was rejected.'));
+    }
+    return $decoded;
+  }
+
+  public function animationPython(): string {
+    $candidates = [
+      dirname($this->workerPath()) . '/animation-lab/.venv/bin/python',
+      $this->workerPath() . '/../animation-lab/.venv/bin/python',
+    ];
+    foreach ($candidates as $path) {
+      if (is_file($path)) {
+        return $path;
+      }
+    }
+    throw new \RuntimeException('Animation Python is missing. Install animation-lab requirements into animation-lab/.venv.');
+  }
+
+  /**
+   * Installed catalogue summary. Omits filesystem paths.
+   */
+  public function catalogStatus(): array {
+    $path = dirname($this->workerPath()) . '/animation-lab/assets/maps/catalog/status.json';
+    if (!is_file($path)) {
+      return [
+        'installed' => FALSE,
+        'limitations' => ['The geographic catalogue has not been imported. Run the animation-lab import commands; do not refresh it from a page request.'],
+      ];
+    }
+    $data = json_decode((string) file_get_contents($path), TRUE);
+    if (!is_array($data)) {
+      return ['installed' => FALSE, 'limitations' => ['Catalogue status could not be read.']];
+    }
+    unset($data['path'], $data['sqlite'], $data['database']);
+    $data['installed'] = TRUE;
+    return $data;
   }
 
 }

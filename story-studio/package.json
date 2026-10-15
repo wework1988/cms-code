@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "transcript:setup": "python3 -m pip install -r scripts/requirements-transcript.txt"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

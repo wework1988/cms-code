@@ -1,0 +1,29 @@
+{
+  "url": "/assets/maps/india/india-relief.jpg",
+  "extent": [
+    68,
+    5,
+    98,
+    37
+  ],
+  "coordinates": [
+    [
+      68,
+      37
+    ],
+    [
+      98,
+      37
+    ],
+    [
+      98,
+      5
+    ],
+    [
+      68,
+      5
+    ]
+  ],
+  "source": "Natural Earth II 50m shaded relief (public domain)",
+  "note": "Regional crop for India/UP/district framing. Still NE2 50m; not high-res satellite."
+}

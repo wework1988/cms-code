@@ -69,7 +69,7 @@ Use this when your Hindi/English script is ready (written in Cursor, Google Docs
 
 ### Step 2 — Run the storyboard pipeline
 
-**Easiest (no Terminal):** go to **Content → Run story jobs** and click **Build storyboard**.  
+**Easiest (no Terminal):** go to **Content → Run story jobs** and click **Build storyboard (+ Flow images)**. That also generates every scene image in Google Flow (Chrome must stay signed in on this Mac; use `FLOW_IMAGES=0` in the worker `.env` to skip images).  
 See **`STORY-PIPELINE-RUN-JOBS-README.md`** for start/stop/monitor instructions.
 
 <details>

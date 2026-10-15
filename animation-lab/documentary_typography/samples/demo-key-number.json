@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:landscape",
+  "preset": "documentary_bold",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional distance. The number, unit, and context were supplied. Nothing was calculated from pixels.",
+  "overlays": [
+    {
+      "id": "demo_number",
+      "type": "key_number",
+      "purpose": "Show a supplied distance without inventing a statistic.",
+      "value": "18",
+      "unit": "किमी",
+      "context": "काल्पनिक दूरी",
+      "kind": "distance",
+      "badge": "काल्पनिक प्रदर्शन",
+      "label_placement": "auto",
+      "prefer": "upper_right",
+      "template": "upper_right",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

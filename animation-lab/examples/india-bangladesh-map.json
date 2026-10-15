@@ -1,0 +1,27 @@
+{
+  "type": "map_zoom",
+  "duration": 10,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "start_view": {"center": [80, 23], "longitude_span": 58},
+  "end_view": {"center": [90.3, 23.7], "longitude_span": 15},
+  "zoom": {"start": 3, "end": 6.5},
+  "first_country": "India",
+  "target_country": "Bangladesh",
+  "first_caption": "भारत",
+  "target_label": "बांग्लादेश",
+  "target_caption": "भारत के पूर्व में स्थित बांग्लादेश",
+  "callout": {"start": 6.8, "anchor": [90.35, 23.8]},
+  "labels": [
+    {"name": "INDIA", "anchor": [78.5, 22]},
+    {"name": "BANGLADESH", "anchor": [90.3, 24]},
+    {"name": "PAKISTAN", "anchor": [68.5, 28]},
+    {"name": "NEPAL", "anchor": [83.8, 28.3]},
+    {"name": "BHUTAN", "anchor": [90.4, 27.6]},
+    {"name": "MYANMAR", "anchor": [95.8, 22]},
+    {"name": "CHINA", "anchor": [99, 33]},
+    {"name": "SRI LANKA", "anchor": [81.3, 7]},
+    {"name": "BAY OF BENGAL", "anchor": [88, 16]}
+  ]
+}

@@ -13,6 +13,8 @@ SOURCE_PROFILE="${CHROME_USER_DATA_DIR:-$HOME/Library/Application Support/Google
 FLOW_PROFILE="${CHROME_FLOW_USER_DATA_DIR:-$HOME/Library/Application Support/Google/Chrome-FlowAgent}"
 LOG_FILE="${TMPDIR:-/tmp}/flow-chrome-debug.log"
 FORCE_SYNC="${CHROME_FLOW_REFRESH_LOGIN:-0}"
+SKIP_SYNC="${CHROME_FLOW_SKIP_SYNC:-0}"
+FORCE_RESTART="${CHROME_FLOW_FORCE_RESTART:-0}"
 
 if [[ ! -x "$CHROME_BIN" ]]; then
   echo "Chrome not found at: $CHROME_BIN" >&2
@@ -20,8 +22,11 @@ if [[ ! -x "$CHROME_BIN" ]]; then
 fi
 
 if curl -s -m 1 "http://127.0.0.1:${PORT}/json/version" >/dev/null 2>&1; then
-  echo "Chrome already listening on debugging port ${PORT}."
-  exit 0
+  if [[ "$FORCE_RESTART" != "1" ]]; then
+    echo "Chrome already listening on debugging port ${PORT}."
+    exit 0
+  fi
+  echo "Restarting Chrome so a different Flow profile can attach to port ${PORT}…"
 fi
 
 quit_chrome() {
@@ -49,6 +54,13 @@ quit_chrome() {
 
 sync_login_profile() {
   mkdir -p "$FLOW_PROFILE"
+  if [[ "$SKIP_SYNC" == "1" ]]; then
+    echo "Using dedicated Flow Chrome profile (no copy from main Chrome): $FLOW_PROFILE"
+    if [[ ! -d "$FLOW_PROFILE/Default" ]]; then
+      echo "This profile is empty. Sign into Google Flow in the Chrome window that opens, then re-run."
+    fi
+    return 0
+  fi
   if [[ -d "$FLOW_PROFILE/Default" && "$FORCE_SYNC" != "1" ]]; then
     echo "Using existing Flow agent Chrome profile: $FLOW_PROFILE"
     echo "(Set CHROME_FLOW_REFRESH_LOGIN=1 to re-copy login from your main Chrome.)"
@@ -90,7 +102,7 @@ nohup "$CHROME_BIN" \
   --profile-directory=Default \
   --no-first-run \
   --no-default-browser-check \
-  about:blank \
+  "${CHROME_FLOW_START_URL:-about:blank}" \
   >"$LOG_FILE" 2>&1 &
 CHROME_PID=$!
 echo "Chrome PID: $CHROME_PID"

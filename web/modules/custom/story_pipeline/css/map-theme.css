@@ -1,0 +1,15 @@
+.map-theme-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  border: 1px solid #172b4d;
+  vertical-align: middle;
+}
+
+.map-theme-preview {
+  width: min(640px, 100%);
+  height: auto;
+  border: 1px solid #d4dce4;
+  background: #ddecf3;
+}

@@ -1,0 +1,13 @@
+#story-monitor {max-width:1500px;margin:1rem auto;color:#172b35}
+.sm-toolbar {display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:18px;background:#edf5f4;border-radius:10px;position:sticky;top:0;z-index:2}
+.sm-toolbar input {margin-left:auto;min-width:230px;padding:10px}
+.sm-toolbar button {padding:10px 16px;cursor:pointer}
+.sm-health {padding:12px;border-left:4px solid #317f71;background:#f2f8f6}
+.sm-story {border:1px solid #cbd7dc;border-radius:10px;margin:14px 0;background:white;overflow:hidden}
+.sm-story summary {padding:20px;cursor:pointer;display:flex;justify-content:space-between;gap:15px;background:#f6f9fa}
+.sm-story summary::before {content:'▸';margin-right:6px}.sm-story[open] summary::before{content:'▾'}
+.sm-story summary strong {flex:1}.sm-badge {background:#e3ecef;padding:3px 12px;border-radius:20px;font-size:14px}
+.sm-body {padding:20px;overflow:auto}.sm-components {display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.sm-components>div {padding:15px;background:#f3f7f8;border:1px solid #dbe5e8;border-radius:8px}.sm-components p{margin:10px 0}
+.sm-body table {width:100%;border-collapse:collapse;font-size:14px}.sm-body th,.sm-body td{padding:10px;text-align:left;border-bottom:1px solid #dbe5e8;overflow-wrap:anywhere;max-width:420px}
+.sm-offline .sm-story {opacity:.65}.sm-offline [role=status]{color:#a32c20;font-weight:bold}

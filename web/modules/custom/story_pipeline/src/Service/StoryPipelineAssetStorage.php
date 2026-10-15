@@ -60,11 +60,18 @@ class StoryPipelineAssetStorage {
   }
 
   /**
-   * CMS folder name: {node-id}-{title-slug} (matches worker asset_store.folder_name).
+   * New folder name: {node-id}-{title-slug}--voice-{voice-type}.
    */
   public function folderName(NodeInterface $node): string {
     $slug = $this->slugify($node->getTitle(), 'story-' . $node->id());
-    return $node->id() . '-' . $slug;
+    $voice = '';
+    if ($node->hasField('field_voice_type') && !$node->get('field_voice_type')->isEmpty()) {
+      $term = $node->get('field_voice_type')->entity;
+      if ($term instanceof TermInterface) {
+        $voice = $this->slugify($term->label(), '');
+      }
+    }
+    return $node->id() . '-' . $slug . ($voice !== '' ? '--voice-' . $voice : '');
   }
 
   /**
@@ -124,11 +131,26 @@ class StoryPipelineAssetStorage {
   }
 
   /**
+   * Find a story folder by node id across all type directories.
+   */
+  private function findExistingFolderAnyType(string $root, string $story_id): ?string {
+    $types = array_merge(self::VALID_TYPES, ['']);
+    foreach ($types as $type) {
+      $type_root = $type === '' ? $root : $root . DIRECTORY_SEPARATOR . $type;
+      $found = $this->findExistingFolderByNodeId($type_root, $story_id);
+      if ($found !== NULL) {
+        return $found;
+      }
+    }
+    return NULL;
+  }
+
+  /**
    * Resolve asset folder path without creating directories (read-only).
    *
    * Prefers {type}/{nid}-{slug}/. Reuses any existing folder for the same
-   * node id (including legacy {type}/{slug}/) so Drupal and the worker share
-   * one directory.
+   * node id (including under a different type folder) so Drupal and the worker
+   * share one directory.
    */
   public function resolveStoryDir(NodeInterface $node): ?string {
     $root = $this->rootPath();
@@ -142,6 +164,12 @@ class StoryPipelineAssetStorage {
     $type_root = $root . DIRECTORY_SEPARATOR . $type;
     $preferred = $type_root . DIRECTORY_SEPARATOR . $this->folderName($node);
 
+    // Prefer any existing folder for this node across type directories.
+    $existing_any = $this->findExistingFolderAnyType($root, $story_id);
+    if ($existing_any !== NULL) {
+      return $existing_any;
+    }
+
     // Prefer canonical {nid}-{slug} when it already exists for this node.
     if (is_dir($preferred) && $this->readNodeIdMeta($preferred) === $story_id) {
       return $preferred;
@@ -154,6 +182,7 @@ class StoryPipelineAssetStorage {
 
     // Legacy layouts from older Drupal / local mirror runs.
     $legacy_candidates = [
+      $type_root . DIRECTORY_SEPARATOR . $story_id . '-' . $slug,
       $type_root . DIRECTORY_SEPARATOR . $slug,
       $type_root . DIRECTORY_SEPARATOR . $slug . '-' . $story_id,
       $root . DIRECTORY_SEPARATOR . $slug,
@@ -164,7 +193,8 @@ class StoryPipelineAssetStorage {
       }
       $existing_id = $this->readNodeIdMeta($candidate);
       $slug_only = $type_root . DIRECTORY_SEPARATOR . $slug;
-      if ($existing_id === $story_id || ($existing_id === '' && $candidate === $slug_only)) {
+      $old_canonical = $type_root . DIRECTORY_SEPARATOR . $story_id . '-' . $slug;
+      if ($existing_id === $story_id || ($existing_id === '' && in_array($candidate, [$slug_only, $old_canonical], TRUE))) {
         return $candidate;
       }
     }
@@ -367,6 +397,35 @@ class StoryPipelineAssetStorage {
         if ($audio_english !== []) {
           $index['files']['audio_english'] = $audio_english;
         }
+      }
+    }
+
+    $images_dir = $dir . DIRECTORY_SEPARATOR . 'images';
+    if (is_dir($images_dir)) {
+      $images = [];
+      foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+        foreach (glob($images_dir . DIRECTORY_SEPARATOR . '*.' . $ext) ?: [] as $img) {
+          $images[] = 'images/' . basename($img);
+        }
+      }
+      // Stable scene order: 001.jpg, 002.png, …
+      natcasesort($images);
+      $images = array_values($images);
+      if ($images !== []) {
+        $index['files']['images'] = $images;
+      }
+    }
+
+    $videos_dir = $dir . DIRECTORY_SEPARATOR . 'videos';
+    if (is_dir($videos_dir)) {
+      $videos = [];
+      foreach (glob($videos_dir . DIRECTORY_SEPARATOR . 'scene_*.mp4') ?: [] as $mp4) {
+        $videos[] = 'videos/' . basename($mp4);
+      }
+      natcasesort($videos);
+      $videos = array_values($videos);
+      if ($videos !== []) {
+        $index['files']['videos'] = $videos;
       }
     }
 

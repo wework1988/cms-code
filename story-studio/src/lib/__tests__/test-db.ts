@@ -28,6 +28,7 @@ export async function resetTestDb() {
   await db.narrativeFingerprint.deleteMany();
   await db.factPackItem.deleteMany();
   await db.claim.deleteMany();
+  await db.publicCaptionCache.deleteMany();
   await db.transcriptSegment.deleteMany();
   await db.source.deleteMany();
   await db.pipelineRun.deleteMany();

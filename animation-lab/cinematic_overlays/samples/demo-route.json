@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "module": "cinematic_overlays",
+  "input": "fixture:landscape",
+  "preset": "cinematic_minimal",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Screen-space route through supplied points. This is not perspective tracking or a map.",
+  "overlays": [
+    {
+      "id": "demo_route",
+      "type": "route_direction",
+      "purpose": "Draw a direction along supplied screen points.",
+      "arrow": true,
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.7,
+      "hold_duration": 2.0,
+      "exit_duration": 0.4,
+      "points": [
+        { "x": 0.18, "y": 0.62 },
+        { "x": 0.4, "y": 0.48 },
+        { "x": 0.68, "y": 0.42 }
+      ]
+    }
+  ]
+}

@@ -26,8 +26,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Projects</h1>
           <p className="mt-2 max-w-2xl text-slate-600">
-            Turn pasted source transcripts into an original Hindi narration — YouTube URLs are references only —
-            with fact isolation, narrative planning, and editorial originality checks.
+            Turn source transcripts into fact bullets and a master prompt. Fetch a YouTube transcript or paste one — fetching does not write the story.
           </p>
         </div>
         <div className="flex gap-3">

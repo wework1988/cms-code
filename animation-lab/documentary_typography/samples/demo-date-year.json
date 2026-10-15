@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:landscape",
+  "preset": "archival_editorial",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional historical year. The renderer does not restrict years to the present, and this value is not evidence.",
+  "overlays": [
+    {
+      "id": "demo_year",
+      "type": "date_year",
+      "purpose": "Large year with a supplied explanation.",
+      "year": "1854",
+      "explanation": "काल्पनिक वर्ष",
+      "badge": "काल्पनिक प्रदर्शन",
+      "template": "upper_left",
+      "label_placement": "auto",
+      "prefer": "upper_left",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

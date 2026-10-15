@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "general/152-priso-story-updated/video/scene_1.mp4",
+  "preset": "cinematic_minimal",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Editorial demonstration title. It is not a quotation, a chapter from the story, or a verified place name.",
+  "source_story": "152-priso-story-updated",
+  "source_scene": "scene_1",
+  "subtitle_area": { "y": 0.86, "height": 0.14 },
+  "overlays": [
+    {
+      "id": "editorial_title",
+      "type": "chapter_title",
+      "purpose": "Show a restrained editorial title, marked as a demonstration.",
+      "text": "एक अलग दुनिया",
+      "editorial_demonstration": true,
+      "badge": "प्रदर्शन",
+      "quotation": false,
+      "template": "lower_left",
+      "timing_source": "manual",
+      "review_state": "editorial_demonstration",
+      "start_time": 0.8,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.0,
+      "exit_duration": 0.4,
+      "label": { "x": 0.06, "y": 0.62 }
+    }
+  ]
+}

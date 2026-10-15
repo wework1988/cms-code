@@ -1,0 +1,1 @@
+"""Shared documentary graphics foundation."""

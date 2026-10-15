@@ -1,53 +1,64 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { hashTranscript, normalizeTranscript } from "@/lib/transcript/normalize";
-import { persistTranscriptSegments } from "@/lib/pipeline/segments";
+import { commitSourceTranscript } from "@/lib/transcript/commit";
 import { fetchOfficialYouTubeCaptions } from "@/lib/youtube/official-captions";
 import { isYouTubeOAuthConfigured } from "@/lib/youtube/oauth";
 
+const bodySchema = z.object({ replace: z.boolean().optional() }).partial();
+
 export async function POST(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ projectId: string; sourceId: string }> },
 ) {
-  const { sourceId } = await params;
+  const { projectId, sourceId } = await params;
+  const body = bodySchema.parse(await request.json().catch(() => ({})));
 
   if (!isYouTubeOAuthConfigured()) {
     return NextResponse.json(
-      { error: "Official YouTube captions require OAuth configuration." },
+      { error: "Official YouTube captions require OAuth configuration. This does not download captions for arbitrary videos." },
       { status: 503 },
     );
   }
 
-  const source = await prisma.source.findUniqueOrThrow({ where: { id: sourceId } });
+  const source = await prisma.source.findFirst({ where: { id: sourceId, projectId } });
+  if (!source) return NextResponse.json({ error: "Source not found in this project." }, { status: 404 });
 
-  if (source.kind !== "youtube" || !source.videoId) {
+  if (!source.videoId) {
     return NextResponse.json(
-      { error: "Official captions can only be fetched for YouTube reference sources with a valid video ID." },
+      { error: "Official captions can only be fetched for a source with a valid YouTube video ID." },
       { status: 400 },
+    );
+  }
+
+  if (source.rawTranscript?.trim() && !body.replace) {
+    return NextResponse.json(
+      { error: "This source already has a transcript. Confirm replacement before fetching official captions." },
+      { status: 409 },
     );
   }
 
   try {
     const result = await fetchOfficialYouTubeCaptions(source.videoId);
-    const normalized = normalizeTranscript(result.text);
-
-    await prisma.source.update({
-      where: { id: sourceId },
-      data: {
-        rawTranscript: normalized,
-        normalizedHash: hashTranscript(normalized),
-        transcriptStatus: "transcript_ready",
-        transcriptOrigin: "official_oauth",
-      },
+    const saved = await commitSourceTranscript({
+      projectId,
+      sourceId,
+      text: result.text,
+      origin: "official_oauth",
+      language: result.language ?? source.language,
+      captionKind: null,
+      segments: result.segments,
+      expectedRevision: source.transcriptRevision,
     });
-
-    await persistTranscriptSegments(sourceId, normalized, result.segments);
+    if (!saved.ok) {
+      return NextResponse.json({ error: saved.message, code: saved.code }, { status: saved.code === "stale" ? 409 : 404 });
+    }
 
     return NextResponse.json({
       ok: true,
       transcriptOrigin: "official_oauth",
-      charCount: normalized.length,
-      message: "Official captions fetched for owned/authorized video only.",
+      charCount: saved.normalized.length,
+      message: "Official captions fetched for a video on your connected channel. This does not fetch arbitrary videos.",
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch official captions";

@@ -1,0 +1,14 @@
+{
+  "duration": 10,
+  "fps": 30,
+  "width": 1280,
+  "height": 720,
+  "title": "1857 · विद्रोह का विस्तार",
+  "subtitle": "MEERUT → DELHI → KANPUR",
+  "cities": [
+    {"name": "मेरठ", "english": "MEERUT", "lat": 28.9845, "lon": 77.7064, "reveal": 1.5, "label_offset": [22, -45]},
+    {"name": "दिल्ली", "english": "DELHI", "lat": 28.6139, "lon": 77.2090, "reveal": 4, "label_offset": [-122, 18]},
+    {"name": "कानपुर", "english": "KANPUR", "lat": 26.4499, "lon": 80.3319, "reveal": 6.5, "label_offset": [24, -40]}
+  ],
+  "connections": [{"from": 0, "to": 1, "start": 2.4, "end": 4}, {"from": 0, "to": 2, "start": 4.6, "end": 6.5}]
+}

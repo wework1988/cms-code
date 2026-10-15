@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hindi Voice Studio</title>
+  <link rel="stylesheet" href="/studio.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Hindi Voice Studio</div>
+    <nav class="nav" aria-label="Main">
+      <button type="button" data-screen="voices" class="nav-button" aria-current="page">My Voices</button>
+      <button type="button" data-screen="speak" class="nav-button">Text to Speech</button>
+      <button type="button" data-screen="history" class="nav-button">Generation History</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="screen-voices" class="screen" aria-labelledby="voices-title">
+      <div class="page-head">
+        <div>
+          <h1 id="voices-title">My Voices</h1>
+          <p class="subtitle">Save your voice once and use it for Hindi narration.</p>
+        </div>
+        <button type="button" class="primary" id="add-voice">+ Add voice</button>
+      </div>
+      <label class="search">
+        <span class="visually-hidden">Search voices</span>
+        <input id="voice-search" type="search" placeholder="Search by name or description">
+      </label>
+      <div id="voice-list" class="list"></div>
+    </section>
+
+    <section id="screen-speak" class="screen" hidden aria-labelledby="speak-title">
+      <h1 id="speak-title" class="visually-hidden">Text to Speech</h1>
+      <div class="studio">
+        <div class="editor-column">
+          <div class="voice-row">
+            <button type="button" id="voice-chip" class="voice-chip">
+              <span class="avatar" id="chip-avatar">?</span>
+              <span id="chip-name">Choose a voice</span>
+            </button>
+            <div id="voice-picker" class="picker" hidden>
+              <input id="picker-search" type="search" placeholder="Search voices" aria-label="Search voices">
+              <div id="picker-list"></div>
+            </div>
+          </div>
+          <label class="title-field">
+            <span>Title <span class="optional">(optional)</span></span>
+            <input id="piece-title" type="text" maxlength="120" placeholder="Episode 12 — Introduction">
+          </label>
+          <label class="script-field">
+            <span class="visually-hidden">Hindi text</span>
+            <textarea id="script" rows="14" placeholder="यहाँ अपना हिंदी टेक्स्ट लिखें…"></textarea>
+          </label>
+          <div class="editor-tools">
+            <span id="char-count">0 characters</span>
+            <button type="button" id="insert-sample">Insert sample</button>
+            <button type="button" id="insert-example">Insert narration example</button>
+            <button type="button" id="insert-pause">Insert pause</button>
+          </div>
+          <p id="no-voice" class="notice" hidden>Add a voice to generate speech. <button type="button" id="add-voice-inline" class="link">Add voice</button></p>
+          <button type="button" class="primary generate" id="generate">Generate speech</button>
+          <p id="generate-status" class="status" role="status"></p>
+          <div class="player-bar">
+            <audio id="result-audio" controls preload="none"></audio>
+            <a id="download-wav" class="button" hidden download>WAV</a>
+            <a id="download-mp3" class="button" hidden download>MP3</a>
+          </div>
+          <details class="preview-box">
+            <summary>Narration preview</summary>
+            <pre id="preview-text">Choose Preview to see spoken text, pauses, and settings.</pre>
+            <button type="button" id="refresh-preview">Update preview</button>
+          </details>
+        </div>
+        <aside class="side" aria-label="Settings and recent history">
+          <div class="tabs" role="tablist">
+            <button type="button" id="tab-settings" role="tab" aria-selected="true" aria-controls="panel-settings">Settings</button>
+            <button type="button" id="tab-history" role="tab" aria-selected="false" aria-controls="panel-history">History</button>
+          </div>
+          <div id="panel-settings" role="tabpanel">
+            <label>Selected voice
+              <select id="voice-select"></select>
+            </label>
+            <label>Delivery
+              <select id="preset"></select>
+            </label>
+            <p id="preset-note" class="hint"></p>
+            <label class="check">
+              <input id="consistent" type="checkbox" checked>
+              <span>Consistent delivery</span>
+            </label>
+            <p class="hint">Reuses this voice’s saved reference, settings, and seed to reduce variation. Results can still vary with the text and device.</p>
+            <fieldset>
+              <legend>Pauses</legend>
+              <label>Sentence pause (ms)
+                <input id="sentence-pause" type="number" min="0" max="5000" step="10" value="450">
+              </label>
+              <label>Paragraph pause (ms)
+                <input id="paragraph-pause" type="number" min="0" max="5000" step="10" value="800">
+              </label>
+            </fieldset>
+            <p class="hint">Explicit tags such as [pause=300ms] are read here and are not spoken. A blank line is a paragraph.</p>
+            <section class="output-note">
+              <h2>Output</h2>
+              <p id="output-line"></p>
+            </section>
+            <details id="advanced">
+              <summary>Advanced settings</summary>
+              <p class="hint">These are the installed Chatterbox generate() arguments. There is no separate similarity or stability control.</p>
+              <label>Exaggeration <input id="exaggeration" type="number" min="0" max="1.5" step="0.05"></label>
+              <label>CFG weight <input id="cfg-weight" type="number" min="0" max="1" step="0.05"></label>
+              <label>Temperature <input id="temperature" type="number" min="0.05" max="1.5" step="0.05"></label>
+              <label>Repetition penalty <input id="repetition" type="number" min="1" max="3" step="0.05"></label>
+              <label>min_p <input id="min-p" type="number" min="0" max="0.5" step="0.01"></label>
+              <label>top_p <input id="top-p" type="number" min="0.5" max="1" step="0.01"></label>
+              <label>Seed <input id="seed" type="number" min="0" max="2147483647" step="1"></label>
+              <label>Device
+                <select id="device">
+                  <option value="auto">auto</option>
+                  <option value="mps">mps</option>
+                  <option value="cpu">cpu</option>
+                  <option value="cuda">cuda</option>
+                </select>
+              </label>
+              <label class="check"><input id="offline" type="checkbox"> Offline mode</label>
+              <p id="model-line" class="hint"></p>
+            </details>
+            <div class="side-actions">
+              <button type="button" class="primary" id="save-settings">Save settings for this voice</button>
+              <button type="button" id="reset-settings">Reset settings</button>
+              <button type="button" id="new-take">New take</button>
+            </div>
+          </div>
+          <div id="panel-history" role="tabpanel" hidden>
+            <label class="search">
+              <span class="visually-hidden">Search recent generations</span>
+              <input id="mini-search" type="search" placeholder="Search history">
+            </label>
+            <div id="mini-history" class="mini-list"></div>
+            <button type="button" class="link" id="view-all-history">View all history</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="screen-history" class="screen" hidden aria-labelledby="history-title">
+      <div class="page-head">
+        <div>
+          <h1 id="history-title">Generation History</h1>
+          <p class="subtitle">Your generated audio is saved locally and available to download later.</p>
+        </div>
+        <button type="button" class="primary" id="create-first">Create your first audio</button>
+      </div>
+      <div class="filters">
+        <label>Search
+          <input id="history-search" type="search" placeholder="Text, title, or voice">
+        </label>
+        <label>Voice
+          <select id="history-voice"><option value="">All voices</option></select>
+        </label>
+        <label>From
+          <input id="history-from" type="date">
+        </label>
+        <label>To
+          <input id="history-to" type="date">
+        </label>
+        <label>Status
+          <select id="history-status">
+            <option value="">Any status</option>
+            <option value="completed">Completed</option>
+            <option value="generating">Generating</option>
+            <option value="failed">Failed</option>
+            <option value="interrupted">Interrupted</option>
+          </select>
+        </label>
+        <label>Sort
+          <select id="history-sort">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </label>
+        <button type="button" id="clear-filters">Clear filters</button>
+      </div>
+      <div id="history-list" class="list"></div>
+      <div class="pager">
+        <button type="button" id="page-prev">Previous</button>
+        <span id="page-label"></span>
+        <button type="button" id="page-next">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="add-dialog" aria-labelledby="add-title">
+    <form id="add-form" method="dialog">
+      <h2 id="add-title">Add voice</h2>
+      <ol class="steps" id="step-labels">
+        <li data-step="1">Upload recording</li>
+        <li data-step="2">Choose sample</li>
+        <li data-step="3">Save voice</li>
+      </ol>
+      <div data-step-panel="1">
+        <p>Audio stays on this machine. It is not uploaded to a service.</p>
+        <label class="drop" id="drop-zone">
+          Drag a recording here, or browse
+          <input id="upload-file" type="file" accept=".wav,.mp3,.m4a,.flac,.ogg,.aiff,.aif">
+        </label>
+        <progress id="upload-progress" max="100" value="0" hidden></progress>
+        <p id="upload-error" class="error" role="alert"></p>
+      </div>
+      <div data-step-panel="2" hidden>
+        <p id="sample-advice"></p>
+        <audio id="source-audio" controls></audio>
+        <label>Start (seconds) <input id="clip-start" type="number" min="0" step="0.1"></label>
+        <label>End (seconds) <input id="clip-end" type="number" min="0" step="0.1"></label>
+        <button type="button" id="preview-clip">Preview selected sample</button>
+        <audio id="clip-audio" controls></audio>
+        <p id="clip-warnings" class="hint"></p>
+        <details>
+          <summary>Details</summary>
+          <p id="clip-details"></p>
+        </details>
+      </div>
+      <div data-step-panel="3" hidden>
+        <label>Voice name <input id="voice-name" required maxlength="80"></label>
+        <label>Description <span class="optional">(optional)</span>
+          <input id="voice-description" maxlength="240">
+        </label>
+        <audio id="save-preview" controls></audio>
+        <label class="check"><input id="use-now" type="checkbox" checked> Use this voice now</label>
+        <details>
+          <summary>Details</summary>
+          <p>This is a saved cloning reference, not a fine-tuned model. The rest of a long recording is kept and is not used as training.</p>
+        </details>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" id="add-back">Back</button>
+        <button type="button" class="primary" id="add-next">Continue</button>
+        <button type="button" id="add-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="edit-dialog" aria-labelledby="edit-title">
+    <form method="dialog">
+      <h2 id="edit-title">Edit voice</h2>
+      <label>Voice name <input id="edit-name" required maxlength="80"></label>
+      <label>Description <input id="edit-description" maxlength="240"></label>
+      <div class="dialog-actions">
+        <button type="button" class="primary" id="edit-save">Save</button>
+        <button type="button" id="edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <article>
+      <h2 id="detail-title"></h2>
+      <p id="detail-meta"></p>
+      <pre id="detail-text"></pre>
+      <audio id="detail-audio" controls></audio>
+      <p id="detail-missing" class="notice" hidden>Audio unavailable</p>
+      <div class="dialog-actions">
+        <a id="detail-wav" class="button" hidden download>WAV</a>
+        <a id="detail-mp3" class="button" hidden download>MP3</a>
+        <button type="button" id="load-editor">Load into editor</button>
+      </div>
+      <details>
+        <summary>Settings and model</summary>
+        <pre id="detail-settings"></pre>
+      </details>
+      <p id="detail-error" class="error"></p>
+      <button type="button" id="detail-close">Close</button>
+    </article>
+  </dialog>
+
+  <dialog id="replace-dialog" aria-labelledby="replace-title">
+    <form method="dialog">
+      <h2 id="replace-title">Replace the current draft?</h2>
+      <p>The editor already has different text. Loading this generation will replace the draft and title.</p>
+      <div class="dialog-actions">
+        <button type="button" class="primary" id="replace-yes" value="yes">Replace draft</button>
+        <button type="button" id="replace-no">Keep current draft</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/studio.js"></script>
+</body>
+</html>

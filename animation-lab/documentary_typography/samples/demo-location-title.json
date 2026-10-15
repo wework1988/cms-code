@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:landscape",
+  "preset": "archival_editorial",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional demonstration. The region and place were typed into this plan. They are not evidence and they were not inferred from the prison footage.",
+  "overlays": [
+    {
+      "id": "demo_location",
+      "type": "location_title",
+      "purpose": "Two-line location stack on a blank fixture.",
+      "region": "उत्तराखंड",
+      "place": "उत्तरकाशी",
+      "badge": "काल्पनिक प्रदर्शन",
+      "template": "upper_left",
+      "label_placement": "auto",
+      "prefer": "upper_left",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

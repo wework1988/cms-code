@@ -1,0 +1,199 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\diff;
+
+use Drupal\Component\Diff\Diff;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Field\FieldTypePluginManagerInterface;
+
+/**
+ * Entity comparison service that prepares a diff of a pair of entities.
+ */
+class DiffEntityComparison {
+
+  protected ImmutableConfig $pluginsConfig;
+  protected array $fieldTypeDefinitions;
+
+  /**
+   * Constructs a DiffEntityComparison object.
+   */
+  public function __construct(
+    protected ConfigFactoryInterface $configFactory,
+    protected DiffFormatter $diffFormatter,
+    FieldTypePluginManagerInterface $plugin_manager,
+    protected DiffEntityParser $entityParser,
+    protected DiffBuilderManager $diffBuilderManager,
+  ) {
+    $this->pluginsConfig = $this->configFactory->get('diff.plugins');
+    $this->fieldTypeDefinitions = $plugin_manager->getDefinitions();
+  }
+
+  /**
+   * This method should return an array of items ready to be compared.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $left_entity
+   *   The left entity.
+   * @param \Drupal\Core\Entity\ContentEntityInterface $right_entity
+   *   The right entity.
+   *
+   * @return array
+   *   Items ready to be compared by the Diff component.
+   */
+  public function compareRevisions(ContentEntityInterface $left_entity, ContentEntityInterface $right_entity): array {
+    $result = [];
+
+    $left_values = $this->entityParser->parseEntity($left_entity);
+    $right_values = $this->entityParser->parseEntity($right_entity);
+
+    foreach ($left_values as $left_key => $values) {
+      [, $field_key] = \explode(':', $left_key);
+      // Get the compare settings for this field type.
+      $compare_settings = $this->pluginsConfig->get('fields.' . $field_key);
+      $result[$left_key] = [
+        '#name' => (isset($compare_settings['settings']['show_header']) && $compare_settings['settings']['show_header'] == 0) ? '' : $values['label'],
+        '#settings' => $compare_settings,
+        '#data' => [],
+      ];
+
+      // Fields which exist on the right entity also.
+      if (isset($right_values[$left_key])) {
+        $result[$left_key]['#data'] += $this->combineFields($left_values[$left_key], $right_values[$left_key]);
+        // Unset the field from the right entity so that we know if the right
+        // entity has any fields that left entity doesn't have.
+        unset($right_values[$left_key]);
+      }
+      // This field exists only on the left entity.
+      else {
+        $result[$left_key]['#data'] += $this->combineFields($left_values[$left_key], []);
+      }
+    }
+
+    // Fields which exist only on the right entity.
+    foreach ($right_values as $right_key => $values) {
+      [, $field_key] = \explode(':', $right_key);
+      $compare_settings = $this->pluginsConfig->get('fields.' . $field_key);
+      $result[$right_key] = [
+        '#name' => (isset($compare_settings['settings']['show_header']) && $compare_settings['settings']['show_header'] == 0) ? '' : $values['label'],
+        '#settings' => $compare_settings,
+        '#data' => [],
+      ];
+      $result[$right_key]['#data'] += $this->combineFields([], $right_values[$right_key]);
+    }
+
+    return $result;
+  }
+
+  /**
+   * Combine two fields into an array with keys '#left' and '#right'.
+   *
+   * @param array $left_values
+   *   Entity field formatted into an array of strings.
+   * @param array $right_values
+   *   Entity field formatted into an array of strings.
+   *
+   * @return array
+   *   Array resulted after combining the left and right values.
+   */
+  protected function combineFields(array $left_values, array $right_values): array {
+    $result = [
+      '#left' => [],
+      '#right' => [],
+    ];
+    $max = \max([\count($left_values), \count($right_values)]);
+    for ($delta = 0; $delta < $max; $delta++) {
+      // EXPERIMENTAL: Transform thumbnail from ImageFieldBuilder.
+      // @todo Make thumbnail / rich diff data pluggable.
+      // @see https://www.drupal.org/node/2840566
+      if (isset($left_values[$delta])) {
+        $value = $left_values[$delta];
+        if (isset($value['#thumbnail'])) {
+          $result['#left_thumbnail'][] = $value['#thumbnail'];
+          $value = $value['data'];
+        }
+        $result['#left'][] = \is_array($value) ? \implode("\n", $value) : $value;
+      }
+      if (isset($right_values[$delta])) {
+        $value = $right_values[$delta];
+        if (isset($value['#thumbnail'])) {
+          $result['#right_thumbnail'][] = $value['#thumbnail'];
+          $value = $value['data'];
+        }
+        $result['#right'][] = \is_array($value) ? \implode("\n", $value) : $value;
+      }
+    }
+
+    // If a field has multiple values combine them into one single string.
+    $result['#left'] = \implode("\n", $result['#left']);
+    $result['#right'] = \implode("\n", $result['#right']);
+
+    return $result;
+  }
+
+  /**
+   * Prepare the table rows for #type 'table'.
+   *
+   * @param string $a
+   *   The source string to compare from.
+   * @param string $b
+   *   The target string to compare to.
+   * @param bool $show_header
+   *   Display diff context headers. For example, "Line x".
+   * @param array $line_stats
+   *   Tracks line numbers across multiple calls to DiffFormatter.
+   *
+   * @see \Drupal\Component\Diff\DiffFormatter::format
+   *
+   * @return array
+   *   Array of rows usable with #type => 'table' returned by the core diff
+   *   formatter when format a diff.
+   */
+  public function getRows($a, $b, bool $show_header = FALSE, array &$line_stats = []): array {
+    if ($line_stats === []) {
+      $line_stats = [
+        'counter' => ['x' => 0, 'y' => 0],
+        'offset' => ['x' => 0, 'y' => 0],
+      ];
+    }
+
+    // Header is the line counter.
+    $this->diffFormatter->show_header = $show_header;
+    $diff = new Diff($a, $b);
+
+    return $this->diffFormatter->format($diff);
+  }
+
+  /**
+   * Splits the strings into lines and counts the resulted number of lines.
+   *
+   * @param array $diff
+   *   Array of strings.
+   */
+  public function processStateLine(array &$diff): void {
+    $data = $diff['#data'];
+    if (isset($data['#left']) && $data['#left'] != '') {
+      if (\is_string($data['#left'])) {
+        $diff['#data']['#left'] = \explode("\n", $data['#left']);
+      }
+      $diff['#data']['#count_left'] = \count($diff['#data']['#left']);
+    }
+    else {
+      $diff['#data']['#count_left'] = 0;
+      $diff['#data']['#left'] = [];
+    }
+    if (isset($data['#right']) && $data['#right'] != '') {
+      if (\is_string($data['#right'])) {
+        $diff['#data']['#right'] = \explode("\n", $data['#right']);
+      }
+      $diff['#data']['#count_right'] = \count($diff['#data']['#right']);
+    }
+    else {
+      $diff['#data']['#count_right'] = 0;
+      $diff['#data']['#right'] = [];
+    }
+  }
+
+}

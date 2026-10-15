@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "module": "cinematic_overlays",
+  "input": "fixture:landscape",
+  "preset": "archival_editorial",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional evidence crop. The picture was drawn for this fixture.",
+  "overlays": [
+    {
+      "id": "demo_evidence",
+      "type": "evidence_inset",
+      "purpose": "Reveal a supplied crop with its source label.",
+      "asset": "animation-lab/documentary_graphics/samples/assets/demo-crop.png",
+      "source_label": "काल्पनिक स्रोत",
+      "provenance": { "note": "Drawn for the fixture. Not a document from the story." },
+      "badge": "काल्पनिक प्रदर्शन",
+      "label_placement": "auto",
+      "prefer": "lower_right",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.55,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

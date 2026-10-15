@@ -212,3 +212,104 @@ story_pipeline.character_autocomplete:
     _controller: '\Drupal\story_pipeline\Controller\CharacterLibraryAutocompleteController::handle'
   requirements:
     _custom_access: '\Drupal\story_pipeline\Access\StoryPipelineStaffAccessCheck::access'
+
+story_pipeline.monitor:
+  path: '/admin/content/story-pipeline/monitor'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryMonitorController::page'
+    _title: 'Story Monitor'
+  requirements:
+    _permission: 'run story pipeline jobs'
+
+story_pipeline.animations:
+  path: '/node/{node}/animations'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\StoryAnimationsForm'
+    _title: 'Generate animation videos'
+  requirements:
+    _permission: 'generate story animations'
+    _entity_access: 'node.view'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.animation_file:
+  path: '/node/{node}/animations/{job_id}/file'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryAnimationController::file'
+  requirements:
+    _permission: 'generate story animations'
+    _entity_access: 'node.view'
+    node: \d+
+    job_id: '[a-f0-9]{16}'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.location_search:
+  path: '/node/{node}/animations/location-search'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\LocationCatalogueController::search'
+  requirements:
+    _permission: 'generate story animations'
+    _entity_access: 'node.view'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.location_preview:
+  path: '/node/{node}/animations/location-preview'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\LocationCatalogueController::preview'
+  requirements:
+    _permission: 'generate story animations'
+    _entity_access: 'node.view'
+    node: \d+
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+story_pipeline.location_aliases:
+  path: '/admin/config/content/story-pipeline/location-aliases'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\LocationAliasForm'
+    _title: 'Remembered location spellings'
+  requirements:
+    _permission: 'administer animation prompt'
+
+story_pipeline.animation_geography:
+  path: '/admin/config/content/story-pipeline/animation-geography'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\AnimationGeographyController::view'
+    _title: 'Animation geography catalogue'
+  requirements:
+    _permission: 'administer animation prompt'
+
+story_pipeline.map_themes:
+  path: '/admin/config/content/story-pipeline/map-themes'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\MapThemeForm'
+    _title: 'Map appearance'
+  requirements:
+    _permission: 'manage map appearance templates'
+
+story_pipeline.animation_prompt:
+  path: '/admin/config/content/story-pipeline/animation-prompt'
+  defaults:
+    _form: '\Drupal\story_pipeline\Form\AnimationPromptForm'
+    _title: 'Animation planning master prompt'
+  requirements:
+    _permission: 'administer animation prompt'
+
+story_pipeline.monitor_data:
+  path: '/admin/content/story-pipeline/monitor/data.json'
+  defaults:
+    _controller: '\Drupal\story_pipeline\Controller\StoryMonitorController::data'
+  requirements:
+    _permission: 'run story pipeline jobs'

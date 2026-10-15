@@ -21,6 +21,8 @@ from drupal_client import DrupalStoryClient
 from secrets import apply_asset_root_from_bundle, leased_deepseek_key, load_all_env, resolve_keys
 from asset_store import finalize_drupal_payload, seed_workspace_from_assets, sync_storyboard_outputs
 from audio_languages import generate_story_audio, sync_generated_audio
+from run_digen_videos import run_digen_videos_for_story
+from run_flow_images import run_flow_images_for_story
 from workspace import prepare_storyboard_workspace
 
 
@@ -408,16 +410,55 @@ def run_storyboard(
         if "prompt_file_content" not in payload:
             sys.exit("error: prompt.txt was not created — check pipeline logs")
 
-        assets_on_disk = sync_storyboard_outputs(
+        asset_dest = sync_storyboard_outputs(
             story_dir, slug, story_id, _title, _story_type
-        ) is not None
+        )
+        assets_on_disk = asset_dest is not None
 
         if elevenlabs and max_step >= 4:
             run_elevenlabs_step(repo, story_dir, bundle, keys, payload)
             if sync_generated_audio(story_dir, slug, story_id, _title, _story_type, payload):
                 assets_on_disk = True
 
+        # After prompts are on disk: Flow images, then Digen videos (both soft-fail).
+        post_meta_parts: list[str] = []
+        if asset_dest is not None and max_step >= 4:
+            try:
+                flow_completed = run_flow_images_for_story(
+                    asset_dest,
+                    story_id=story_id,
+                    update_status=lambda body: client.update_story(story_id, body),
+                )
+                post_meta_parts.append("Flow images: completed." if flow_completed else "Flow images: skipped.")
+            except Exception as flow_exc:  # noqa: BLE001
+                post_meta_parts.append(
+                    f"Flow images incomplete: {flow_exc}. "
+                    "Storyboard text is saved; resume with flow-image-agent --all."
+                )
+                print(f"[flow-images] WARN soft-fail: {flow_exc}")
+
+            # Videos need a full image set; runner itself skips if incomplete.
+            try:
+                videos_completed = run_digen_videos_for_story(
+                    asset_dest,
+                    story_id=story_id,
+                    update_status=lambda body: client.update_story(story_id, body),
+                )
+                post_meta_parts.append("Digen videos: completed." if videos_completed else "Digen videos: skipped.")
+            except Exception as digen_exc:  # noqa: BLE001
+                post_meta_parts.append(
+                    f"Digen videos incomplete: {digen_exc}. "
+                    "Images are saved; resume with WAIT_READY=1 npm run run:cms:missing."
+                )
+                print(f"[digen-videos] WARN soft-fail: {digen_exc}")
+
         payload = finalize_drupal_payload(payload, assets_on_disk=assets_on_disk)
+        if post_meta_parts:
+            existing_meta = (payload.get("story_meta") or "").strip()
+            joined = "\n".join(post_meta_parts)
+            payload["story_meta"] = (
+                f"{existing_meta}\n{joined}".strip() if existing_meta else joined
+            )
 
         print(f"[drupal] POST update story {story_id}")
         result = client.update_story(story_id, payload)

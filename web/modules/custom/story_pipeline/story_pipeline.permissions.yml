@@ -14,6 +14,18 @@ track stories:
   title: 'Use story planner'
   description: 'Add and track planned stories with production checklists.'
 
+generate story animations:
+  title: 'Generate story animation videos'
+  description: 'Queue map animation jobs from a saved story script.'
+
+manage map appearance templates:
+  title: 'Manage map appearance templates'
+  description: 'Save, update, archive, and choose the default shared map appearance. Selecting a theme for one job does not need this permission.'
+
+administer animation prompt:
+  title: 'Administer animation planning prompt'
+  description: 'Edit and restore the animation planning master prompt.'
+
 manage story characters:
   title: 'Manage story characters'
   description: 'Extract characters from stories, edit the character library, and apply locked looks.'

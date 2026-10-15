@@ -92,6 +92,11 @@ class DrupalStoryClient:
         return r.json()
 
     def update_story(self, story_id: int | str, payload: dict[str, Any]) -> dict[str, Any]:
+        if os.environ.get("PIPELINE_MANAGED") == "1":
+            # The watchdog owns overall completion; stage workers update artifacts only.
+            payload = dict(payload)
+            payload.pop("status", None)
+            payload.pop("story_meta", None)
         r = self.session.post(
             self._url(f"/api/story-pipeline/stories/{story_id}/update"),
             json=payload,

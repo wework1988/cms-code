@@ -1,0 +1,37 @@
+{
+  "_comment": "Four Gmail slots. Enable each account after signing that Gmail into its Chrome-FlowAgent-N profile once. Passwords are never stored.",
+  "flow_accounts": [
+    {
+      "id": "account-1",
+      "email": "wework1988@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-2",
+      "email": "second-gmail@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-2",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-3",
+      "email": "third-gmail@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-3",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-4",
+      "email": "fourth-gmail@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-4",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    }
+  ]
+}

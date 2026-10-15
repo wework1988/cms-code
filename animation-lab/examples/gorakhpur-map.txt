@@ -1,0 +1,7 @@
+Show Gorakhpur district in Uttar Pradesh, India. Start with a world map
+and highlight the whole of India. Zoom to India, then highlight Uttar
+Pradesh in red while keeping India subdued. Zoom to Uttar Pradesh,
+highlight Gorakhpur district in yellow-green, then zoom to Gorakhpur.
+Finish with an arrow pointing to the district and a text box saying
+‘गोरखपुर’. Use realistic shaded terrain, bright borders and smooth
+cinematic movement. Hold the final label long enough to read.

@@ -164,7 +164,9 @@ def create_or_resume_job(
 ) -> JobManifest:
     images_dir = resolve_under_roots(images_dir, roots)
     existing = load_manifest(images_dir, roots)
-    if existing and existing.control == "running" and existing.lock_owner:
+    # Block only when a runner still holds the lock. Orphaned control=running
+    # (e.g. SIGPIPE / killed CLI) must be resumable without a manual stop.
+    if existing and existing.control == "running" and existing.lock_owner and existing.active_scene is not None:
         raise RuntimeError(
             f"Job {existing.job_id} is already running for this story "
             f"(active scene {existing.active_scene}). Pause/stop it first."
@@ -290,6 +292,10 @@ def next_queued_scene(manifest: JobManifest) -> SceneState | None:
         key=lambda s: s.scene,
     )
     for item in items:
+        if manifest.scene_from is not None and item.scene < manifest.scene_from:
+            continue
+        if manifest.scene_to is not None and item.scene > manifest.scene_to:
+            continue
         if item.status in ("queued", "failed") and item.error_category != "policy_rejection":
             if item.status == "failed" and item.error_category == "policy_rejection":
                 continue

@@ -1,0 +1,2480 @@
+{
+  "boundaries": [
+    {
+      "country": "IN",
+      "level": "ADM2",
+      "code": "76128533B41477629049356",
+      "name": "Lakshadweep",
+      "reason": "unresolved"
+    },
+    {
+      "country": "AF",
+      "level": "ADM2",
+      "code": "17698898B12728543796406",
+      "name": "Sarkani",
+      "reason": "unresolved"
+    }
+  ],
+  "updated_at": "2026-10-13T20:30:05+00:00",
+  "settlements": [
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.1163602",
+      "name": "Thar Parkar District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1164536",
+      "name": "South Waziristan Agency",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "04.1165218",
+      "name": "Shekhupura District",
+      "state_place_id": "gb-adm1-PK-PB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "04.1167458",
+      "name": "Rahimyar Khan",
+      "state_place_id": "gb-adm1-PK-PB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.1167717",
+      "name": "Poonch District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1168705",
+      "name": "Orakzai Agency",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.1169606",
+      "name": "Muzaffarabad District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1170122",
+      "name": "Mohmand Agency",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.1170297",
+      "name": "Mirpur District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1171388",
+      "name": "Malakand Protected Area",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.1172127",
+      "name": "Larkana",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.1173037",
+      "name": "Kotli District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1173641",
+      "name": "Khyber Agency",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "07.1176775",
+      "name": "Hunza-Nagar District",
+      "state_place_id": "gb-adm1-PK-GB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1180280",
+      "name": "Dera Ismail Khan Tribal Area",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.1183781",
+      "name": "Bājaur Agency",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.1376894",
+      "name": "Mirpur Khas District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.6641955",
+      "name": "Musa Khel District",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.6641961",
+      "name": "Qila Abdullah District",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.6641963",
+      "name": "Qila Saifullah",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.6641965",
+      "name": "Wāshuk District",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.7352189",
+      "name": "Naushahro Firoz",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.7419041",
+      "name": "Tank Frontier Region",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.7419043",
+      "name": "Bannu Tribal Area",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.7419044",
+      "name": "Lakki Marwat Tribal Area",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.7419049",
+      "name": "Peshawar Frontier Region",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.7419050",
+      "name": "Tribal Area Adjoining Kohat District",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "04.7419159",
+      "name": "Nankāna Sāhib District",
+      "state_place_id": "gb-adm1-PK-PB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.7536187",
+      "name": "Bhimbar District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.7536188",
+      "name": "Bagh",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.8061265",
+      "name": "Tor Ghar",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.8199376",
+      "name": "Neelum District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "07.8309748",
+      "name": "Astor",
+      "state_place_id": "gb-adm1-PK-GB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.8309754",
+      "name": "Haveli",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.8309755",
+      "name": "Hatian",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.8309758",
+      "name": "Harnai",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.8309759",
+      "name": "Shirāni",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "07.8358421",
+      "name": "Diamīr",
+      "state_place_id": "gb-adm1-PK-GB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "06.8986039",
+      "name": "Sudhanoti District",
+      "state_place_id": "gb-adm1-PK-JK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.9034783",
+      "name": "Qamber Shahdadkot District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.9625902",
+      "name": "Tando Mohammad Khan District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.10300608",
+      "name": "Sujawal District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "04.10344547",
+      "name": "Vehari District",
+      "state_place_id": "gb-adm1-PK-PB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.11744831",
+      "name": "Karachi Central District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.11744832",
+      "name": "Karachi East District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.11744833",
+      "name": "Karachi South District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.11744835",
+      "name": "Korangi District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.11744837",
+      "name": "Malir District",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.11744842",
+      "name": "Sohbatpur District",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "04.11886901",
+      "name": "Chiniot",
+      "state_place_id": "gb-adm1-PK-PB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.12105028",
+      "name": "Lower Kohistan District",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "03.12105031",
+      "name": "Upper Kohistan District",
+      "state_place_id": "gb-adm1-PK-KP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "05.12105033",
+      "name": "District of West Karachi",
+      "state_place_id": "gb-adm1-PK-SD",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "admin2",
+      "code": "02.13631695",
+      "name": "Usta Muhammad District",
+      "state_place_id": "gb-adm1-PK-BA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1163237",
+      "name": "Tolti",
+      "admin1": "07",
+      "admin2": "1183615",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1165119",
+      "name": "Shigar",
+      "admin1": "07",
+      "admin2": "1183615",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1167398",
+      "name": "Raiwind",
+      "admin1": "04",
+      "admin2": "1174623",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1167534",
+      "name": "Qubo Saeed Khan",
+      "admin1": "05",
+      "admin2": "9034783",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1167648",
+      "name": "Qadirpur Ran",
+      "admin1": "04",
+      "admin2": "1169821",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1170436",
+      "name": "Mian Sahib",
+      "admin1": "05",
+      "admin2": "1165106",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1170677",
+      "name": "Matiari",
+      "admin1": "05",
+      "admin2": "7419157",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1171376",
+      "name": "Malakwal",
+      "admin1": "04",
+      "admin2": "7418963",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1173920",
+      "name": "Khewra",
+      "admin1": "04",
+      "admin2": "1175862",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1174376",
+      "name": "Garhi Khairo",
+      "admin1": "05",
+      "admin2": "1176514",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1175180",
+      "name": "Kalur Kot",
+      "admin1": "04",
+      "admin2": "7418966",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1175873",
+      "name": "Dera Allahyar",
+      "admin1": "02",
+      "admin2": "6641922",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1176452",
+      "name": "Jahangira",
+      "admin1": "03",
+      "admin2": "7419055",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1176470",
+      "name": "Jaglot",
+      "admin1": "07",
+      "admin2": "8358419",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1176515",
+      "name": "Jacobabad",
+      "admin1": "05",
+      "admin2": "1176514",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1177203",
+      "name": "Hangu",
+      "admin1": "03",
+      "admin2": "7419048",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1183460",
+      "name": "Bannu",
+      "admin1": "03",
+      "admin2": "1183459",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "1332083",
+      "name": "Bahawalnagar",
+      "admin1": "04",
+      "admin2": "7418888",
+      "reason": "conflict"
+    },
+    {
+      "country": "PK",
+      "level": "city",
+      "code": "6457378",
+      "name": "Malakwal City",
+      "admin1": "04",
+      "admin2": "7418963",
+      "reason": "conflict"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "27",
+      "name": "Maidan Wardak Province",
+      "ascii": "Maidan Wardak Province",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "39",
+      "name": "Oruzgan",
+      "ascii": "Oruzgan",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "19",
+      "name": "Nimroz",
+      "ascii": "Nimroz",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "09",
+      "name": "Ghowr",
+      "ascii": "Ghowr",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "08",
+      "name": "Ghazni",
+      "ascii": "Ghazni",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin1",
+      "code": "37",
+      "name": "Khowst",
+      "ascii": "Khowst",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.609",
+      "name": "Gēlān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1114",
+      "name": "Arghanj Khwāh",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1117",
+      "name": "Darwāz-e Bālā",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1110",
+      "name": "Darwāz-e Pā’īn",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1101",
+      "name": "Faīẕābād",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1107",
+      "name": "Ishkāshim",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1113",
+      "name": "Shahr-e Buzurg",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1121",
+      "name": "Shikī",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1122",
+      "name": "Shuhadā",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1123",
+      "name": "Tagāb",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1126",
+      "name": "Yaftal-e Suflá",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1127",
+      "name": "Yamgān",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "01.1105",
+      "name": "Zaybāk",
+      "state_place_id": "gb-adm1-AF-BDN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "02.1902",
+      "name": "Āb-e Kamarī",
+      "state_place_id": "gb-adm1-AF-BDG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "02.1904",
+      "name": "Jowand",
+      "state_place_id": "gb-adm1-AF-BDG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "02.1906",
+      "name": "Murghāb",
+      "state_place_id": "gb-adm1-AF-BDG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "02.1901",
+      "name": "Qal‘ah-ye Now",
+      "state_place_id": "gb-adm1-AF-BDG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1311",
+      "name": "Baghlān-e Jadīd",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1310",
+      "name": "Būrkah",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1303",
+      "name": "Dahanah-ye Ghōrī",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1312",
+      "name": "Deh-e Şalāḩ",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1304",
+      "name": "Dōshī",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1313",
+      "name": "Firing wa Ghārū",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1314",
+      "name": "Guz̄argāh-e Nūr",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1315",
+      "name": "Khwājah Hijrān",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1302",
+      "name": "Pul-e Ḩişār",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "03.1305",
+      "name": "Tālah wa Barfak",
+      "state_place_id": "gb-adm1-AF-BGL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2107",
+      "name": "Anār Darah",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2102",
+      "name": "Bakwāh",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2106",
+      "name": "Khāk-e Safēd",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2109",
+      "name": "Lāsh-e Juwayn",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2111",
+      "name": "Pusht-e Rōd",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2108",
+      "name": "Qal‘ah-ye Kāh",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "06.2110",
+      "name": "Shayb Kōh",
+      "state_place_id": "gb-adm1-AF-FRA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1811",
+      "name": "Khān-e Chahār Bāgh",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1806",
+      "name": "Bal Chirāgh",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1809",
+      "name": "Dowlatābād",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1813",
+      "name": "Khwājah Sabz Pōsh",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1801",
+      "name": "Maīmanah",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1804",
+      "name": "Qaīşār",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "07.1810",
+      "name": "Qaram Qōl",
+      "state_place_id": "gb-adm1-AF-FYB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.611",
+      "name": "Āb Band",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.605",
+      "name": "Ajristān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.614",
+      "name": "Andaṟ",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.602",
+      "name": "Bahrām-e Shahīd",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.615",
+      "name": "Deh Yak",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.601",
+      "name": "Ghaznī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.612",
+      "name": "Gīrō",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.607",
+      "name": "Jāghūrī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.603",
+      "name": "Khwājah ‘Omarī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.606",
+      "name": "Mālistān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.608",
+      "name": "Muqêr",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.610",
+      "name": "Nāwah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.604",
+      "name": "Nāwur",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.613",
+      "name": "Qarah Bāgh",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.617",
+      "name": "Rashīdān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.618",
+      "name": "Wāghaz̧",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.619",
+      "name": "Walī Muḩammad Shahīd Khūgyāṉī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "08.616",
+      "name": "Zanakhān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2701",
+      "name": "Chaghcharān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2708",
+      "name": "Chahār Şadah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2710",
+      "name": "Dū Laīnah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2709",
+      "name": "Dowlatyār",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2707",
+      "name": "La‘l wa Sar Jangal",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2706",
+      "name": "Pasāband",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2704",
+      "name": "Sāghar",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2702",
+      "name": "Shahrak",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2705",
+      "name": "Taywarah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "09.2703",
+      "name": "Tūlak",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "10.2304",
+      "name": "Mūsá Qal‘ah",
+      "state_place_id": "gb-adm1-AF-HEL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "10.2302",
+      "name": "Nahr-e Sarāj",
+      "state_place_id": "gb-adm1-AF-HEL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "10.2309",
+      "name": "Nāwah-ye Bārakzaī",
+      "state_place_id": "gb-adm1-AF-HEL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "10.2313",
+      "name": "Rēg-e Khān Neshīn",
+      "state_place_id": "gb-adm1-AF-HEL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2015",
+      "name": "Chisht-e Sharīf",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2009",
+      "name": "Ghōriyān",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2008",
+      "name": "Kuhsān",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2006",
+      "name": "Kushk",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2016",
+      "name": "Kushk-e Kuhnah",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2003",
+      "name": "Guz̄arah",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2012",
+      "name": "Ōbêh",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2010",
+      "name": "Zindah Jān",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.102",
+      "name": "Deh-e Sabz",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.115",
+      "name": "Farzah",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.113",
+      "name": "Gul Darah",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.111",
+      "name": "Khāk-e Jabār",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.103",
+      "name": "Mīr Bachah Kōṯ",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.114",
+      "name": "Mūsahī",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.105",
+      "name": "Qarah Bāgh",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "13.107",
+      "name": "Shakar Darah",
+      "state_place_id": "gb-adm1-AF-KAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "14.206",
+      "name": "Alah Sāy",
+      "state_place_id": "gb-adm1-AF-KAP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "14.202",
+      "name": "Ḩişah-ye Awal-e Kōhistān",
+      "state_place_id": "gb-adm1-AF-KAP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "14.207",
+      "name": "Ḩişah-ye Duwum-e Kōhistān",
+      "state_place_id": "gb-adm1-AF-KAP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "14.201",
+      "name": "Maḩmūd-e Rāqī",
+      "state_place_id": "gb-adm1-AF-KAP",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "17.506",
+      "name": "Azrah",
+      "state_place_id": "gb-adm1-AF-LOG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "17.505",
+      "name": "Muḩammad Āghah",
+      "state_place_id": "gb-adm1-AF-LOG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "17.501",
+      "name": "Pul-e ‘Alam",
+      "state_place_id": "gb-adm1-AF-LOG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.810",
+      "name": "Achīn",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.820",
+      "name": "Darah-ye Nūr",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.816",
+      "name": "Gōshtah",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.803",
+      "name": "Ḩişārak",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.818",
+      "name": "Kāmah",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.805",
+      "name": "Khūgyāṉī",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.815",
+      "name": "La‘lpūr",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.814",
+      "name": "Mohmand Darah",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.811",
+      "name": "Nāziyān",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.807",
+      "name": "Pachīr wa Āgām",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "18.804",
+      "name": "Shērzād",
+      "state_place_id": "gb-adm1-AF-NAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "19.2203",
+      "name": "Chahār Burjak",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "19.2202",
+      "name": "Kang",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "19.2205",
+      "name": "Khāsh Rōd",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "19.2201",
+      "name": "Zaranj",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "23.2413",
+      "name": "Ma‘rūf",
+      "state_place_id": "gb-adm1-AF_KAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "23.2414",
+      "name": "Myā Neshīn",
+      "state_place_id": "gb-adm1-AF_KAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "23.2408",
+      "name": "Panjwā’ī",
+      "state_place_id": "gb-adm1-AF_KAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "23.2416",
+      "name": "Zhaṟêy",
+      "state_place_id": "gb-adm1-AF_KAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "24.1407",
+      "name": "Dasht-e Archī",
+      "state_place_id": "gb-adm1-AF-KDZ",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "24.1403",
+      "name": "Qal‘ah-ye Zāl",
+      "state_place_id": "gb-adm1-AF-KDZ",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "26.1214",
+      "name": "Dasht-e Qal‘ah",
+      "state_place_id": "gb-adm1-AF-TAK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "26.1207",
+      "name": "Kalafgān",
+      "state_place_id": "gb-adm1-AF-TAK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "26.1216",
+      "name": "Khwājah Bahāwuddīn",
+      "state_place_id": "gb-adm1-AF-TAK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "26.1212",
+      "name": "Khwājah Ghār",
+      "state_place_id": "gb-adm1-AF-TAK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "26.1210",
+      "name": "Yangī Qal‘ah",
+      "state_place_id": "gb-adm1-AF-TAK",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.406",
+      "name": "Chak-e Wardak",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.403",
+      "name": "Ḩişah-ye Awal-e Bihsūd",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.409",
+      "name": "Jaghatū",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.402",
+      "name": "Jalrayz",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.401",
+      "name": "Maīdān Shahr",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.407",
+      "name": "Sayyidābād",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "28.2511",
+      "name": "Now Bahār",
+      "state_place_id": "gb-adm1-AF-ZAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "28.2502",
+      "name": "Shāh Jōy",
+      "state_place_id": "gb-adm1-AF-ZAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "28.2509",
+      "name": "Shamulzaī",
+      "state_place_id": "gb-adm1-AF-ZAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "28.2507",
+      "name": "Shīnkaī",
+      "state_place_id": "gb-adm1-AF-ZAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "28.2506",
+      "name": "Tarnêk wa Jaldak",
+      "state_place_id": "gb-adm1-AF-ZAB",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2909",
+      "name": "Bêrmal",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2903",
+      "name": "Ḏīlah",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2910",
+      "name": "Giyān",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2915",
+      "name": "Mutā Khān",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2913",
+      "name": "Nīkêh",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2907",
+      "name": "Ōmnah",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2914",
+      "name": "Sar Rowẕah",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2917",
+      "name": "Têrwō",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2904",
+      "name": "Wāzah Khwāh",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "29.2905",
+      "name": "Wuṟ Mamay",
+      "state_place_id": "gb-adm1-AF-PKA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1611",
+      "name": "Chahār Kent",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1612",
+      "name": "Dehdādī",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1605",
+      "name": "Dowlatābād",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1610",
+      "name": "Kishindeh",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1604",
+      "name": "Shōr Tepah",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1706",
+      "name": "Āqchah",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1708",
+      "name": "Faīẕābād",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1709",
+      "name": "Khamyāb",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1710",
+      "name": "Khānaqāh",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1702",
+      "name": "Khwājah Dū Kōh",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1707",
+      "name": "Mardīān",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1704",
+      "name": "Mingajik",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "31.1711",
+      "name": "Qūsh Tepah",
+      "state_place_id": "gb-adm1-AF-JOW",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1501",
+      "name": "Aībak",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1503",
+      "name": "Darah-ye Şūf-e Bālā",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1504",
+      "name": "Darah-ye Şūf-e Pā’īn",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1507",
+      "name": "Fayrōz Nakhchīr",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1502",
+      "name": "Ḩaẕrat-e Sulţān",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1506",
+      "name": "Khuram wa Sār Bāgh",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "32.1505",
+      "name": "Rūy Dūāb",
+      "state_place_id": "gb-adm1-AF-SAM",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "33.3101",
+      "name": "Sar-e Pul",
+      "state_place_id": "gb-adm1-AF-SAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "33.3106",
+      "name": "Şayād",
+      "state_place_id": "gb-adm1-AF-SAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "33.3105",
+      "name": "Sōzmah Qal‘ah",
+      "state_place_id": "gb-adm1-AF-SAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1009",
+      "name": "Chapah Darah",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1012",
+      "name": "Tsowkêy",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1010",
+      "name": "Darah-ye Pēch",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1002",
+      "name": "Marawarah",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1005",
+      "name": "Nāṟay",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1007",
+      "name": "Shīgal wa Shêltan",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1008",
+      "name": "Wuṯahpūr",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "35.905",
+      "name": "‘Alīsheng",
+      "state_place_id": "gb-adm1-AF-LAG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "35.904",
+      "name": "Dowlat Shāh",
+      "state_place_id": "gb-adm1-AF-LAG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "35.901",
+      "name": "Mehtar Lām",
+      "state_place_id": "gb-adm1-AF-LAG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "35.902",
+      "name": "Qarghah’ī",
+      "state_place_id": "gb-adm1-AF-LAG",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.705",
+      "name": "Aḩmadābād",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.708",
+      "name": "Tsamkanī",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.701",
+      "name": "Gardez",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.711",
+      "name": "Jājī",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.706",
+      "name": "Jānī Khēl",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.709",
+      "name": "Lajah Aḩmad Khēl",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.710",
+      "name": "Sayyid Karam",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.703",
+      "name": "Shwāk",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "36.704",
+      "name": "Dzadrān",
+      "state_place_id": "gb-adm1-AF-PIA",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3210",
+      "name": "Bāk",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3211",
+      "name": "Gurbuz",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3202",
+      "name": "Jājī Maīdān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3201",
+      "name": "Khōst",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3206",
+      "name": "Mandūzaī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3205",
+      "name": "Mūsá Khēl",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3208",
+      "name": "Nādir Shāh Kōṯ",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3212",
+      "name": "Qalandar",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3209",
+      "name": "Şabarī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3213",
+      "name": "Shamul",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3204",
+      "name": "Spērah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3207",
+      "name": "Têrayzaī",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "38.3005",
+      "name": "Barg-e Matāl",
+      "state_place_id": "gb-adm1-AF-NUR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "39.2602",
+      "name": "Chōrah",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "39.2605",
+      "name": "Deh Rāwud",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "39.2603",
+      "name": "Khāş Uruzgān",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "39.2604",
+      "name": "Shahīd-e Ḩasās",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "39.2601",
+      "name": "Tarīn Kōṯ",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.301",
+      "name": "Chārīkār",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.302",
+      "name": "Jabal us Sarāj",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.309",
+      "name": "Kōh-e Şāfī",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.310",
+      "name": "Sayyid Khēl",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.306",
+      "name": "Shaykh ‘Alī",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "40.305",
+      "name": "Siyāhgird Ghōrband",
+      "state_place_id": "gb-adm1-AF-PAR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "41.3406",
+      "name": "Gaytī",
+      "state_place_id": "gb-adm1-AF-DAY",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "41.3407",
+      "name": "Mīr Āmōr",
+      "state_place_id": "gb-adm1-AF-DAY",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "41.3408",
+      "name": "Sang-e Takht",
+      "state_place_id": "gb-adm1-AF-DAY",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3306",
+      "name": "‘Unābah",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3302",
+      "name": "Darah-e Hazara",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3303",
+      "name": "Khinj",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3304",
+      "name": "Parīān",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3307",
+      "name": "Rukhah",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "42.3305",
+      "name": "Shutul",
+      "state_place_id": "gb-adm1-AF-PAN",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "19.2204",
+      "name": "Chakhansur",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "10.2311",
+      "name": "Garmsīr",
+      "state_place_id": "gb-adm1-AF-HEL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.405",
+      "name": "Day Mirdad",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "37.3203",
+      "name": "Tani",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "34.1015",
+      "name": "Sirkanay",
+      "state_place_id": "gb-adm1-AF-KNR",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.404",
+      "name": "Markazi Bihsud",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "27.408",
+      "name": "Nirkh",
+      "reason": "admin1_unmatched"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "30.1601",
+      "name": "Mazār-e Sharīf",
+      "state_place_id": "gb-adm1-AF-BAL",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "admin2",
+      "code": "11.2001",
+      "name": "Herat District",
+      "state_place_id": "gb-adm1-AF-HER",
+      "reason": "unmatched_name"
+    },
+    {
+      "country": "AF",
+      "level": "city",
+      "code": "1126606",
+      "name": "Sidqābād",
+      "admin1": "14",
+      "admin2": "201",
+      "reason": "conflict"
+    },
+    {
+      "country": "AF",
+      "level": "city",
+      "code": "1129516",
+      "name": "Qarqīn",
+      "admin1": "31",
+      "admin2": "1705",
+      "reason": "conflict"
+    },
+    {
+      "country": "AF",
+      "level": "city",
+      "code": "1137247",
+      "name": "Khamyāb",
+      "admin1": "31",
+      "admin2": "1709",
+      "reason": "conflict"
+    },
+    {
+      "country": "AF",
+      "level": "city",
+      "code": "1145124",
+      "name": "Chinār",
+      "admin1": "23",
+      "admin2": "2406",
+      "reason": "conflict"
+    },
+    {
+      "country": "AF",
+      "level": "city",
+      "code": "1148695",
+      "name": "’Unābah",
+      "admin1": "42",
+      "admin2": "3306",
+      "reason": "conflict"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "note": "Aliases added because the upstream dataset has no row for them. Each source string is stored on the alias row.",
+  "aliases": [
+    {
+      "source_namespace": "geonames",
+      "source_feature_id": "1253577",
+      "alias": "वडनगर",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "GeoNames alternateNames IN dump (2026-10-11) has no hi row for geonameid 1253577, the populated place Vadnagar in Gujarat (admin1 09, admin2 471). The Devanagari endonym is attached only to that feature id."
+    },
+    {
+      "source_namespace": "geonames",
+      "source_feature_id": "1271631",
+      "alias": "गंगटोक",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "GeoNames populated place Gangtok in Sikkim. The India alternate-name dump has no Devanagari row for geonameid 1271631."
+    },
+    {
+      "source_namespace": "geoboundaries_adm1",
+      "source_feature_id": "1811400B82358585030651",
+      "alias": "ओडिशा",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "geoBoundaries ADM1 Odisha. Attached to that state polygon only."
+    },
+    {
+      "source_namespace": "geonames",
+      "source_feature_id": "1259184",
+      "alias": "पुरी",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "GeoNames populated place Puri in Odisha (geonameid 1259184), not the other populated places named Puri."
+    },
+    {
+      "source_namespace": "naturalearth",
+      "source_feature_id": "1159320319",
+      "alias": "अफगानिस्तान",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "Natural Earth NAME_HI for Afghanistan is अफ़्गानिस्तान. Hindi scripts also use अफगानिस्तान without that nukta. Attached only to the Afghanistan country feature."
+    },
+    {
+      "source_namespace": "naturalearth",
+      "source_feature_id": "1159320319",
+      "alias": "अफ़ग़ानिस्तान",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "Documentary spelling with nukta on both फ and ग. Natural Earth stores अफ़्गानिस्तान. Attached only to the Afghanistan country feature."
+    },
+    {
+      "source_namespace": "geonames",
+      "source_feature_id": "1133616",
+      "alias": "मजार-ए-शरीफ",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "GeoNames 1133616 (Mazār-e Sharīf, Balkh) has Hindi मज़ार-ए शरीफ, with a nukta and a space. The hyphenated documentary spelling मजार-ए-शरीफ is attached only to that geonameid."
+    },
+    {
+      "source_namespace": "geoboundaries_adm1",
+      "source_feature_id": "1811400B80305611676067",
+      "alias": "गुजरात",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "Hindi name of the Indian state. GeoNames also attaches गुजरात to Gujrat city in Pakistan (geonameid 1177654). Both records stay. A search without a country is ambiguous."
+    },
+    {
+      "source_namespace": "geoboundaries_adm1",
+      "source_feature_id": "1811400B91946361694107",
+      "alias": "पंजाब",
+      "language": "hi",
+      "source": "curated:devanagari_endonym",
+      "note": "Hindi name of Indian Punjab. The same string is also on Pakistan's Punjab and on an Afghanistan populated place. A search without a country is ambiguous."
+    }
+  ]
+}

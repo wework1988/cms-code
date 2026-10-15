@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:landscape",
+  "preset": "archival_editorial",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional quotation. The speaker and the sentence were written for this fixture.",
+  "overlays": [
+    {
+      "id": "demo_quote",
+      "type": "quote_translation",
+      "purpose": "Show a supplied quotation with attribution.",
+      "text": "यह एक काल्पनिक पंक्ति है।",
+      "attribution": "प्रदर्शन वक्ता",
+      "provenance": { "kind": "quotation", "note": "Written for the fixture. Not from a source document." },
+      "badge": "काल्पनिक प्रदर्शन",
+      "label_placement": "auto",
+      "prefer": "lower_left",
+      "template": "lower_left",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.55,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

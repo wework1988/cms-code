@@ -117,9 +117,9 @@ export default function NewProjectPage() {
           promptProfileId: promptProfileId || undefined,
           channelStyleId: channelStyleId || undefined,
           sources: sources.map((s) => ({
-            kind: s.kind,
+            kind: s.url.trim() ? "youtube" as const : "pasted" as const,
             title: s.title || undefined,
-            url: s.kind === "youtube" ? s.url : undefined,
+            url: s.url.trim() || undefined,
             transcript: s.transcript.trim() || undefined,
           })),
         }),
@@ -140,8 +140,7 @@ export default function NewProjectPage() {
         <div>
           <h1 className="text-3xl font-semibold">New story</h1>
           <p className="mt-2 text-slate-600">
-            Manual transcript mode is the default. Paste transcripts for every source before generating.
-            YouTube URLs are stored as references only — Story Studio does not scrape third-party captions.
+            Add a YouTube URL, paste a transcript, or both. Open the project and click Fetch transcript when you want captions. Fetching does not generate a story. If a fetch is blocked, paste the transcript manually.
           </p>
         </div>
 
@@ -295,43 +294,18 @@ export default function NewProjectPage() {
           <CardContent className="space-y-6">
             {sources.map((source, index) => (
               <div key={index} className="space-y-3 rounded-lg border border-slate-200 p-4">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={source.kind === "pasted" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => updateSource(index, { kind: "pasted" })}
-                  >
-                    Paste transcript
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={source.kind === "youtube" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => updateSource(index, { kind: "youtube" })}
-                  >
-                    YouTube reference + transcript
-                  </Button>
-                </div>
                 <Input
                   placeholder="Source title (optional)"
                   value={source.title}
                   onChange={(e) => updateSource(index, { title: e.target.value })}
                 />
-                {source.kind === "youtube" && (
-                  <Input
-                    placeholder="YouTube URL (reference only)"
-                    value={source.url}
-                    onChange={(e) => updateSource(index, { url: e.target.value })}
-                    required
-                  />
-                )}
+                <Input
+                  placeholder="YouTube URL (optional)"
+                  value={source.url}
+                  onChange={(e) => updateSource(index, { url: e.target.value })}
+                />
                 <Textarea
-                  placeholder={
-                    source.kind === "youtube"
-                      ? "Paste transcript (required before generation). For owned videos, fetch official captions in the workspace after connecting YouTube OAuth."
-                      : "Paste transcript with optional timestamps"
-                  }
+                  placeholder="Paste a transcript now, or leave this empty and fetch it from the YouTube URL in the project workspace."
                   value={source.transcript}
                   onChange={(e) => updateSource(index, { transcript: e.target.value })}
                 />

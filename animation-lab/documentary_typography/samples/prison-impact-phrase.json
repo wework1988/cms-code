@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "general/152-priso-story-updated/video/scene_1.mp4",
+  "preset": "documentary_bold",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Visual demonstration of an impact phrase. It is not a verified claim from the story and it is not a subtitle.",
+  "source_story": "152-priso-story-updated",
+  "source_scene": "scene_1",
+  "subtitle_area": { "y": 0.86, "height": 0.14 },
+  "protected_regions": [
+    { "id": "main_building", "x": 0.5, "y": 0.2, "width": 0.28, "height": 0.22 }
+  ],
+  "overlays": [
+    {
+      "id": "impact_phrase",
+      "type": "impact_phrase",
+      "purpose": "Show one emphasized word inside a short phrase.",
+      "timing_source": "manual",
+      "review_state": "demonstration",
+      "start_time": 0.55,
+      "reveal_duration": 0.55,
+      "hold_duration": 2.1,
+      "exit_duration": 0.45,
+      "label": { "x": 0.06, "y": 0.1 },
+      "runs": [
+        { "text": "भागना ", "emphasis": false },
+        { "text": "मुश्किल", "emphasis": true },
+        { "text": " था", "emphasis": false }
+      ]
+    }
+  ]
+}

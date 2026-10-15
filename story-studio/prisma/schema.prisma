@@ -58,8 +58,10 @@ model Source {
   videoId           String?
   sourceLabel       String?
   language          String?
+  captionKind       String?
   transcriptStatus  String   @default("waiting")
-  transcriptOrigin  String?  // manual | official_oauth
+  transcriptOrigin  String?  // manual | official_oauth | public_caption
+  transcriptRevision Int     @default(0)
   rawTranscript     String?
   normalizedHash    String?
   createdAt         DateTime @default(now())
@@ -69,6 +71,19 @@ model Source {
   segments  TranscriptSegment[]
   claims    Claim[]
   fingerprint NarrativeFingerprint?
+}
+
+model PublicCaptionCache {
+  id           String   @id @default(cuid())
+  cacheKey     String   @unique
+  videoId      String
+  language     String
+  captionKind  String
+  text         String
+  segmentsJson String
+  createdAt    DateTime @default(now())
+
+  @@index([videoId, language])
 }
 
 model TranscriptSegment {

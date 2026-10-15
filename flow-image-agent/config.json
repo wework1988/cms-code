@@ -19,5 +19,39 @@
   "min_landscape_width": 2048,
   "aspect_tolerance": 0.08,
   "token_file": ".local/pairing-token",
-  "state_dir": ".local/state"
+  "state_dir": ".local/state",
+  "flow_accounts": [
+    {
+      "id": "account-1",
+      "email": "wework1988@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-2",
+      "email": "engineersdakitchen@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-2",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-3",
+      "email": "kalindiverma1984@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-3",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    },
+    {
+      "id": "account-4",
+      "email": "alokverma18aug@gmail.com",
+      "profile_dir": "~/Library/Application Support/Google/Chrome-FlowAgent-4",
+      "project_url": "",
+      "max_images": 115,
+      "enabled": true
+    }
+  ]
 }

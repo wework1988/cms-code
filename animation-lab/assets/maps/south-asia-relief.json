@@ -1,0 +1,29 @@
+{
+  "url": "/assets/maps/south-asia-relief.jpg",
+  "extent": [
+    45,
+    0,
+    115,
+    50
+  ],
+  "coordinates": [
+    [
+      45,
+      50
+    ],
+    [
+      115,
+      50
+    ],
+    [
+      115,
+      0
+    ],
+    [
+      45,
+      0
+    ]
+  ],
+  "source": "Natural Earth II 50m shaded relief (public domain)",
+  "note": "Regional Web Mercator crop used for India/UP framing; still NE2 50m."
+}

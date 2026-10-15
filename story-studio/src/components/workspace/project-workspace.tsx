@@ -29,6 +29,7 @@ import {
   type OpeningHookOption,
   type StoryGenreOption,
 } from "@/lib/story-settings/options";
+import { captionKindLabel, languageLabel } from "@/lib/transcript/types";
 
 type ProjectData = {
   id: string;
@@ -64,6 +65,8 @@ type ProjectData = {
     transcriptStatus: string;
     transcriptOrigin?: string | null;
     url?: string | null;
+    language?: string | null;
+    captionKind?: string | null;
     rawTranscript?: string | null;
   }>;
   claims: Array<{ id: string; neutralClaim: string; supportExcerpt: string; storyRelevance: string }>;
@@ -141,6 +144,16 @@ type StorySettingsDraft = {
 
 const TABS = ["Sources", "Fact Bank", "Narrative Plan", "Script", "Originality QA"] as const;
 
+type AvailableCaption = { languageCode: string; language: string; captionKind: "manual" | "generated" };
+type TranscriptNotice = { tone: "info" | "success" | "error"; text: string; availableLanguages?: AvailableCaption[] };
+
+function preferredCaptionLanguage(projectLanguage?: string | null, sourceLanguage?: string | null): "hi" | "en" {
+  if ((sourceLanguage ?? "").toLowerCase().startsWith("en")) return "en";
+  if ((sourceLanguage ?? "").toLowerCase().startsWith("hi")) return "hi";
+  if ((projectLanguage ?? "").toLowerCase().startsWith("en")) return "en";
+  return "hi";
+}
+
 function statusColor(status: string) {
   if (status === "block") return "bg-red-100 text-red-800";
   if (status === "warn") return "bg-amber-100 text-amber-800";
@@ -151,10 +164,16 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Sources");
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
   const [running, setRunning] = useState(false);
   const [preparingFacts, setPreparingFacts] = useState(false);
   const [scriptDraft, setScriptDraft] = useState("");
   const [sourceDrafts, setSourceDrafts] = useState<Record<string, string>>({});
+  const [sourceUrlDrafts, setSourceUrlDrafts] = useState<Record<string, string>>({});
+  const [sourceLanguages, setSourceLanguages] = useState<Record<string, "hi" | "en">>({});
+  const [transcriptNotices, setTranscriptNotices] = useState<Record<string, TranscriptNotice>>({});
+  const [fetchingSourceId, setFetchingSourceId] = useState<string | null>(null);
+  const [fetchingMissing, setFetchingMissing] = useState(false);
   const [versionHistory, setVersionHistory] = useState<Array<{ versionNumber: number; changeNote?: string | null }>>([]);
   const [youtubeConnected, setYoutubeConnected] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -194,6 +213,13 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
   const refresh = useCallback(async () => {
     const res = await fetch(`/api/projects/${projectId}`);
     const data = await res.json();
+    if (!res.ok || !Array.isArray(data?.sources) || !Array.isArray(data?.pipelineRuns)) {
+      setProject(null);
+      setMissing(true);
+      setLoading(false);
+      return;
+    }
+    setMissing(false);
     setProject(data);
     setExternalWriterBrief(null);
     setScriptDraft(data.scriptVersions[0]?.content ?? "");
@@ -227,8 +253,16 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
       channelStyleId: data.channelStyleId ?? "",
     });
     const drafts: Record<string, string> = {};
-    for (const s of data.sources) drafts[s.id] = s.rawTranscript ?? "";
+    const urls: Record<string, string> = {};
+    const languages: Record<string, "hi" | "en"> = {};
+    for (const s of data.sources) {
+      drafts[s.id] = s.rawTranscript ?? "";
+      urls[s.id] = s.url ?? "";
+      languages[s.id] = preferredCaptionLanguage(data.outputLanguage, s.language);
+    }
     setSourceDrafts(drafts);
+    setSourceUrlDrafts(urls);
+    setSourceLanguages(languages);
     setLoading(false);
 
     const [versionsRes, ytRes, profilesRes, channelRes] = await Promise.all([
@@ -256,7 +290,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
   }, [refresh]);
 
   const activePipelineRun =
-    project?.pipelineRuns.find((run) => run.status === "running") ?? null;
+    project?.pipelineRuns?.find((run) => run.status === "running") ?? null;
   const pipelineBusy = running || Boolean(activePipelineRun);
 
   useEffect(() => {
@@ -371,24 +405,127 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
   }
 
   async function saveSource(sourceId: string) {
-    await fetch(`/api/projects/${projectId}/sources/${sourceId}`, {
+    const res = await fetch(`/api/projects/${projectId}/sources/${sourceId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rawTranscript: sourceDrafts[sourceId] }),
+      body: JSON.stringify({
+        rawTranscript: sourceDrafts[sourceId],
+        url: sourceUrlDrafts[sourceId] ?? "",
+        language: sourceLanguages[sourceId] ?? "hi",
+      }),
     });
+    const data = await res.json();
+    if (!res.ok) {
+      setTranscriptNotices((prev) => ({
+        ...prev,
+        [sourceId]: { tone: "error", text: data.error ?? "Could not save the transcript." },
+      }));
+      return;
+    }
     await refresh();
   }
 
   async function fetchOfficialCaptions(sourceId: string) {
+    const source = project?.sources.find((item) => item.id === sourceId);
+    const hasText = Boolean((sourceDrafts[sourceId] ?? source?.rawTranscript ?? "").trim());
+    if (hasText && !confirm("Replace the current transcript with official captions from your connected channel?")) return;
     const res = await fetch(`/api/projects/${projectId}/sources/${sourceId}/fetch-official-captions`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ replace: hasText }),
     });
     const data = await res.json();
     if (!res.ok) {
-      alert(data.error ?? "Failed to fetch official captions");
+      setTranscriptNotices((prev) => ({
+        ...prev,
+        [sourceId]: { tone: "error", text: data.error ?? "Failed to fetch official captions" },
+      }));
       return;
     }
     await refresh();
+  }
+
+  async function fetchPublicTranscript(
+    sourceId: string,
+    options?: { language?: "hi" | "en"; refresh?: boolean },
+  ) {
+    if (!project || fetchingSourceId || fetchingMissing) return;
+    const source = project.sources.find((item) => item.id === sourceId);
+    const draft = sourceDrafts[sourceId] ?? "";
+    const saved = source?.rawTranscript ?? "";
+    const language = options?.language ?? sourceLanguages[sourceId] ?? "hi";
+    const dirty = draft !== saved;
+    const hasText = Boolean(draft.trim() || saved.trim());
+    const explicitRefresh = Boolean(options?.refresh);
+    if (dirty && !confirm("You have unsaved transcript edits. Fetching replaces them only after you confirm. Continue?")) {
+      return;
+    }
+    if (!dirty && hasText && (explicitRefresh || source?.transcriptOrigin !== "public_caption" || source.language !== language)) {
+      if (!confirm("Replace the current transcript with fetched captions? The URL stays either way.")) return;
+    }
+    setFetchingSourceId(sourceId);
+    setTranscriptNotices((prev) => ({
+      ...prev,
+      [sourceId]: { tone: "info", text: "Fetching transcript…" },
+    }));
+    try {
+      const res = await fetch(`/api/projects/${projectId}/sources/${sourceId}/fetch-transcript`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language,
+          url: sourceUrlDrafts[sourceId] ?? "",
+          replace: hasText,
+          refresh: explicitRefresh || dirty,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTranscriptNotices((prev) => ({
+          ...prev,
+          [sourceId]: {
+            tone: "error",
+            text: data.error ?? "Could not fetch the transcript.",
+            availableLanguages: data.availableLanguages ?? [],
+          },
+        }));
+        return;
+      }
+      setTranscriptNotices((prev) => ({
+        ...prev,
+        [sourceId]: { tone: "success", text: data.message ?? "Transcript saved." },
+      }));
+      await refresh();
+    } finally {
+      setFetchingSourceId(null);
+    }
+  }
+
+  async function fetchMissingTranscripts() {
+    if (!project || fetchingSourceId || fetchingMissing) return;
+    setFetchingMissing(true);
+    setSettingsError(null);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/sources/fetch-missing`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: project.outputLanguage?.toLowerCase().startsWith("en") ? "en" : "hi" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Could not fetch transcripts");
+      const notices: Record<string, TranscriptNotice> = {};
+      for (const item of data.results ?? []) {
+        notices[item.sourceId] = item.ok
+          ? { tone: "success", text: item.message ?? "Transcript saved." }
+          : { tone: "error", text: item.error ?? "Could not fetch the transcript.", availableLanguages: item.availableLanguages ?? [] };
+      }
+      setTranscriptNotices((prev) => ({ ...prev, ...notices }));
+      await refresh();
+    } catch (error) {
+      setSettingsError(error instanceof Error ? error.message : "Could not fetch transcripts");
+    } finally {
+      setFetchingMissing(false);
+    }
   }
 
   function updateSettingsDraft<K extends keyof StorySettingsDraft>(key: K, value: StorySettingsDraft[K]) {
@@ -606,6 +743,20 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
     } catch {
       alert("Select the text below and copy it manually.");
     }
+  }
+
+  if (missing) {
+    return (
+      <AppShell>
+        <h1 className="text-2xl font-semibold">Project not found</h1>
+        <p className="mt-2 max-w-xl text-slate-600">
+          This project is not in Story Studio anymore. It may have been deleted.
+        </p>
+        <Link href="/" className="mt-4 inline-block text-sm underline">
+          Back to dashboard
+        </Link>
+      </AppShell>
+    );
   }
 
   if (loading || !project) {
@@ -1039,39 +1190,119 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
 
       {tab === "Sources" && (
         <div className="grid gap-4">
-          {project.sources.map((source) => (
-            <Card key={source.id}>
-              <CardHeader>
-                <CardTitle className="text-base">{source.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-slate-600">
-                <p>Status: {source.transcriptStatus.replaceAll("_", " ")}</p>
-                {source.transcriptOrigin && (
-                  <p className="text-slate-500">Origin: {source.transcriptOrigin.replaceAll("_", " ")}</p>
-                )}
-                {source.url && <p className="break-all text-slate-500">Reference: {source.url}</p>}
-                <Textarea
-                  placeholder="Paste or edit transcript (required before generation)"
-                  value={sourceDrafts[source.id] ?? ""}
-                  onChange={(e) => setSourceDrafts({ ...sourceDrafts, [source.id]: e.target.value })}
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => saveSource(source.id)}>Save transcript</Button>
-                  {source.kind === "youtube" && source.videoId && youtubeConnected && (
-                    <Button size="sm" variant="outline" onClick={() => fetchOfficialCaptions(source.id)}>
-                      Fetch official captions (owned videos)
-                    </Button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="max-w-2xl text-sm text-slate-600">
+              Fetch a transcript from a YouTube URL or paste one. Fetching does not generate a story. If a fetch is blocked, paste the transcript here.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void fetchMissingTranscripts()}
+              disabled={fetchingMissing || Boolean(fetchingSourceId)}
+            >
+              {fetchingMissing ? "Fetching missing transcripts…" : "Fetch missing transcripts"}
+            </Button>
+          </div>
+          {project.sources.map((source) => {
+            const notice = transcriptNotices[source.id];
+            const caption = captionKindLabel(source.captionKind);
+            const busy = fetchingSourceId === source.id || fetchingMissing;
+            return (
+              <Card key={source.id}>
+                <CardHeader>
+                  <CardTitle className="text-base">{source.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm text-slate-600">
+                  <p>Status: {busy && fetchingSourceId === source.id ? "fetching transcript" : source.transcriptStatus.replaceAll("_", " ")}</p>
+                  {source.transcriptOrigin && (
+                    <p className="text-slate-500">
+                      Origin: {source.transcriptOrigin.replaceAll("_", " ")}
+                      {source.language ? ` · ${languageLabel(source.language)}` : ""}
+                      {caption ? ` · ${caption}` : ""}
+                    </p>
                   )}
-                </div>
-                {source.transcriptStatus === "needs_transcript" && (
-                  <p className="text-amber-700">
-                    Transcript required — paste manually or fetch official captions for a video you own via{" "}
-                    <Link href="/settings/youtube" className="underline">YouTube OAuth</Link>.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                  <Input
+                    placeholder="YouTube URL (optional reference)"
+                    value={sourceUrlDrafts[source.id] ?? ""}
+                    onChange={(e) => setSourceUrlDrafts({ ...sourceUrlDrafts, [source.id]: e.target.value })}
+                  />
+                  <label className="block text-xs font-medium text-slate-600">
+                    Caption language
+                    <select
+                      className="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 text-sm"
+                      value={sourceLanguages[source.id] ?? "hi"}
+                      onChange={(e) =>
+                        setSourceLanguages({
+                          ...sourceLanguages,
+                          [source.id]: e.target.value === "en" ? "en" : "hi",
+                        })
+                      }
+                    >
+                      <option value="hi">Hindi</option>
+                      <option value="en">English</option>
+                    </select>
+                  </label>
+                  <Textarea
+                    placeholder="Paste or edit the transcript. Fetching fills this box and leaves it editable."
+                    value={sourceDrafts[source.id] ?? ""}
+                    onChange={(e) => setSourceDrafts({ ...sourceDrafts, [source.id]: e.target.value })}
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" onClick={() => saveSource(source.id)} disabled={busy}>Save transcript</Button>
+                    <Button size="sm" variant="outline" onClick={() => void fetchPublicTranscript(source.id)} disabled={busy}>
+                      {fetchingSourceId === source.id ? "Fetching…" : "Fetch transcript"}
+                    </Button>
+                    {source.transcriptOrigin === "public_caption" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void fetchPublicTranscript(source.id, { refresh: true })}
+                        disabled={busy}
+                      >
+                        Refresh transcript
+                      </Button>
+                    )}
+                    {source.videoId && youtubeConnected && (
+                      <Button size="sm" variant="outline" onClick={() => fetchOfficialCaptions(source.id)} disabled={busy}>
+                        Fetch official captions (owned videos only)
+                      </Button>
+                    )}
+                  </div>
+                  {notice && (
+                    <p className={notice.tone === "error" ? "text-red-700" : notice.tone === "success" ? "text-emerald-700" : "text-slate-600"}>
+                      {notice.text}
+                    </p>
+                  )}
+                  {notice?.availableLanguages?.some((language) => language.languageCode.toLowerCase().startsWith("hi") || language.languageCode.toLowerCase().startsWith("en")) && (
+                    <div className="flex flex-wrap gap-2">
+                      {notice.availableLanguages
+                        .filter((language) => language.languageCode.toLowerCase().startsWith("hi") || language.languageCode.toLowerCase().startsWith("en"))
+                        .map((language) => {
+                          const code = language.languageCode.toLowerCase().startsWith("en") ? "en" : "hi";
+                          return (
+                            <Button
+                              key={`${language.languageCode}-${language.captionKind}`}
+                              size="sm"
+                              variant="outline"
+                              disabled={busy}
+                              onClick={() => void fetchPublicTranscript(source.id, { language: code })}
+                            >
+                              Fetch {language.language} ({language.captionKind === "manual" ? "human" : "automatic"})
+                            </Button>
+                          );
+                        })}
+                    </div>
+                  )}
+                  {source.transcriptStatus === "needs_transcript" && !notice && (
+                    <p className="text-amber-700">
+                      Transcript required. Fetch public captions, paste them manually, or use{" "}
+                      <Link href="/settings/youtube" className="underline">YouTube OAuth</Link> only for a video you own.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 

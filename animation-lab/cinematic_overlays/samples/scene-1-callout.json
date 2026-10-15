@@ -1,0 +1,32 @@
+{
+  "input": "general/152-priso-story-updated/video/scene_1.mp4",
+  "automatic_tracking": false,
+  "limitation": "The camera drifts across this clip. The building anchor uses four hand-placed keyframes. That is not automatic tracking. A fixed screen position would slide off the building.",
+  "style": {
+    "line": "#f4f0e8",
+    "backing": "rgba(8, 12, 18, 0.72)",
+    "ink": "#f4f0e8"
+  },
+  "overlays": [
+    {
+      "id": "building_callout",
+      "type": "location_callout",
+      "purpose": "Point at the main building on the island without naming a specific prison.",
+      "text": "द्वीप पर स्थित जेल",
+      "start_time": 0.7,
+      "reveal_duration": 0.5,
+      "label_fade_duration": 0.35,
+      "hold_duration": 2.0,
+      "exit_duration": 0.45,
+      "anchor_mode": "manual_keyframes",
+      "limitation": "Keyframes were estimated by eye at 0s, 1.5s, 3.0s and 4.5s. They are not a tracker.",
+      "label": { "x": 0.055, "y": 0.16 },
+      "anchor_keyframes": [
+        { "t": 0.0, "x": 0.60, "y": 0.305 },
+        { "t": 1.5, "x": 0.605, "y": 0.310 },
+        { "t": 3.0, "x": 0.620, "y": 0.320 },
+        { "t": 4.5, "x": 0.600, "y": 0.335 }
+      ]
+    }
+  ]
+}

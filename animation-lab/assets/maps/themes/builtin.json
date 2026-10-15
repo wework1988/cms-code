@@ -1,0 +1,1204 @@
+{
+  "schema_version": 1,
+  "default_theme_id": "documentary_relief_bold",
+  "fonts": [
+    "Story Condensed",
+    "Story Devanagari Bold",
+    "Story Devanagari",
+    "Story Latin"
+  ],
+  "grade_note": "Flat atlas applies ocean and land colours directly and hides the relief raster. Graded relief keeps terrain detail. Its ocean colour is the background behind the raster, and land colour is a light wash. Saturation, contrast, brightness, and hue are grade controls, not exact land or ocean recolouring. Midnight Amber uses brightness_max 0.62 and hue_rotate 12. Archival Earth uses hue_rotate -16 and saturation 0.18.",
+  "themes": [
+    {
+      "schema_version": 1,
+      "id": "documentary_relief_bold",
+      "name": "Documentary Relief",
+      "description": "The current default. Graded relief, glowing location dots, and the approved documentary framing.",
+      "revision": 1,
+      "builtin": true,
+      "theme_hash": "d073c409ad5c678ca0c8504b242cda5f7e4b594bdf04827d19266b4ccc11ef23",
+      "capabilities": {
+        "presentation": "documentary",
+        "basemap_mode": "graded_relief",
+        "fill_treatment": "terrain_color",
+        "marker_shape": "glow_dot",
+        "boundary_treatment": "canvas",
+        "banner_treatment": "bar",
+        "camera_profile": "documentary",
+        "apply_palette": true,
+        "vignette": "subtle",
+        "border_glow": true,
+        "exact_land_ocean": false
+      },
+      "tokens": {
+        "background": {
+          "ocean": "#103E4A",
+          "oceanDeep": "#082831",
+          "land": "#8d7352",
+          "contextBorder": "#e6d7a8"
+        },
+        "highlights": {
+          "country": "#A32320",
+          "countryDeep": "#651B1B",
+          "primaryRegion": "#D4B300",
+          "secondaryRegion": "#278FAF",
+          "tertiaryRegion": "#074DB5",
+          "activeLocation": "#FFF400"
+        },
+        "borders": {
+          "selected": "#FFF5C5",
+          "glow": "#FFD86B"
+        },
+        "marker": {
+          "fill": "#FFF400",
+          "outline": "#FFFDF5",
+          "hole": "#FFFDF5",
+          "shadow": "#FFF400",
+          "roles": [
+            "#FFF400",
+            "#17C9FF",
+            "#FFF400"
+          ]
+        },
+        "labels": {
+          "text": "#FFFDF5",
+          "outline": "#0000008C",
+          "shadow": "rgba(0,0,0,0.72)",
+          "secondaryText": "#d7c7a4"
+        },
+        "callout": {
+          "background": "rgba(23,22,15,0.0)",
+          "text": "#FFFDF5",
+          "arrow": "#FFD86B",
+          "border": "#FFF5C5"
+        },
+        "dateBanner": {
+          "background": "#17160F",
+          "text": "#FFFDF5"
+        },
+        "routes": {
+          "primary": "#FFD86B",
+          "secondary": "#278FAF"
+        }
+      },
+      "marker_shape": "glow_dot",
+      "resolved": {
+        "id": "documentary_relief_bold",
+        "ocean": "#103E4A",
+        "ocean_deep": "#082831",
+        "ocean_openlayers": "#103E4A",
+        "land": "#8d7352",
+        "land_opacity": 0.05,
+        "ink": "#FFFDF5",
+        "gold": "#FFD86B",
+        "muted": "#d7c7a4",
+        "border": "#e6d7a8",
+        "border_selected": "#FFF5C5",
+        "border_glow": "#FFD86B",
+        "vignette": "#08283144",
+        "vignette_inner": "#00000000",
+        "caption_bg": "#17160F",
+        "callout_box": "rgba(23,22,15,0.0)",
+        "callout_border": "#FFF5C5",
+        "persist_parent_fill": true,
+        "palette": {
+          "country_red": "#A32320",
+          "country_red_deep": "#651B1B",
+          "region_red": "#C34332",
+          "yellow": "#D4B300",
+          "cyan": "#278FAF",
+          "royal_blue": "#074DB5",
+          "marker_yellow": "#FFF400",
+          "marker_cyan": "#17C9FF",
+          "label": "#FFFDF5",
+          "date_banner": "#17160F"
+        },
+        "fill": {
+          "mode": "terrain_color",
+          "blend": "multiply",
+          "hue_blend": "color",
+          "opacity_scale": 1,
+          "hue_opacity": 0.66
+        },
+        "terrain": {
+          "saturation": -0.12,
+          "contrast": 0.08,
+          "regional_saturation": -0.08,
+          "regional_contrast": 0.1,
+          "brightness_min": 0,
+          "brightness_max": 0.9,
+          "hue_rotate": 0,
+          "use_graded_relief": true
+        },
+        "boundary": {
+          "renderer": "canvas",
+          "country_core": 1.7,
+          "country_glow": 0,
+          "country_blur": 8,
+          "country_glow_opacity": 0.9,
+          "region_core": 1.15,
+          "region_glow": 0,
+          "region_blur": 2.4,
+          "region_glow_opacity": 0.45
+        },
+        "marker": {
+          "core": 3.1,
+          "halo": 8.5,
+          "glow": 18,
+          "arrival_seconds": 0.38,
+          "shape": "glow_dot"
+        },
+        "label": {
+          "font_latin": "Story Condensed",
+          "font_devanagari": "Story Devanagari Bold",
+          "color": "#FFFDF5",
+          "shadow": "rgba(0,0,0,0.72)",
+          "shadow_blur": 2.5,
+          "shadow_offset_y": 1.5,
+          "stroke_width": 0,
+          "uppercase_latin": true,
+          "orientation": "screen",
+          "reveal_after_camera": true,
+          "persist_after_focus": true,
+          "city_above_marker": true,
+          "safe_margin": 0.06,
+          "min_size": 28,
+          "max_size": 96,
+          "supporting_size": 44,
+          "sizes": {
+            "country": 72,
+            "state": 88,
+            "district": 68,
+            "city": 92,
+            "region": 48
+          }
+        },
+        "date_banner": {
+          "fill": "#17160F",
+          "edge": "#0c0b08",
+          "text": "#FFFDF5",
+          "text_size": 92,
+          "height": 146,
+          "font": "Story Condensed"
+        },
+        "camera": {
+          "max_pitch": 0,
+          "bearing": 0
+        },
+        "schema_version": 1,
+        "name": "Documentary Relief",
+        "description": "The current default. Graded relief, glowing location dots, and the approved documentary framing.",
+        "revision": 1,
+        "builtin": true,
+        "capabilities": {
+          "presentation": "documentary",
+          "basemap_mode": "graded_relief",
+          "fill_treatment": "terrain_color",
+          "marker_shape": "glow_dot",
+          "boundary_treatment": "canvas",
+          "banner_treatment": "bar",
+          "camera_profile": "documentary",
+          "apply_palette": true,
+          "vignette": "subtle",
+          "border_glow": true,
+          "exact_land_ocean": false
+        },
+        "tokens": {
+          "background": {
+            "ocean": "#103E4A",
+            "oceanDeep": "#082831",
+            "land": "#8d7352",
+            "contextBorder": "#e6d7a8"
+          },
+          "highlights": {
+            "country": "#A32320",
+            "countryDeep": "#651B1B",
+            "primaryRegion": "#D4B300",
+            "secondaryRegion": "#278FAF",
+            "tertiaryRegion": "#074DB5",
+            "activeLocation": "#FFF400"
+          },
+          "borders": {
+            "selected": "#FFF5C5",
+            "glow": "#FFD86B"
+          },
+          "marker": {
+            "fill": "#FFF400",
+            "outline": "#FFFDF5",
+            "hole": "#FFFDF5",
+            "shadow": "#FFF400",
+            "roles": [
+              "#FFF400",
+              "#17C9FF",
+              "#FFF400"
+            ]
+          },
+          "labels": {
+            "text": "#FFFDF5",
+            "outline": "#0000008C",
+            "shadow": "rgba(0,0,0,0.72)",
+            "secondaryText": "#d7c7a4"
+          },
+          "callout": {
+            "background": "rgba(23,22,15,0.0)",
+            "text": "#FFFDF5",
+            "arrow": "#FFD86B",
+            "border": "#FFF5C5"
+          },
+          "dateBanner": {
+            "background": "#17160F",
+            "text": "#FFFDF5"
+          },
+          "routes": {
+            "primary": "#FFD86B",
+            "secondary": "#278FAF"
+          }
+        },
+        "role_opacity": {
+          "country": 0.72,
+          "focus": [
+            0.34,
+            0.4,
+            0.42
+          ]
+        },
+        "theme_hash": "d073c409ad5c678ca0c8504b242cda5f7e4b594bdf04827d19266b4ccc11ef23"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "clean_atlas",
+      "name": "Clean Atlas",
+      "description": "Flat ocean and land, a red teardrop pin, and no heavy vignette.",
+      "revision": 1,
+      "builtin": true,
+      "theme_hash": "352e1a98653f1560b732af5abc385b5abc604c0dc7f6c96a2b2095b723d3428f",
+      "capabilities": {
+        "presentation": "documentary",
+        "basemap_mode": "flat_atlas",
+        "fill_treatment": "solid",
+        "marker_shape": "pin",
+        "boundary_treatment": "canvas",
+        "banner_treatment": "bar",
+        "camera_profile": "documentary",
+        "apply_palette": true,
+        "vignette": "none",
+        "border_glow": false,
+        "exact_land_ocean": true
+      },
+      "tokens": {
+        "background": {
+          "ocean": "#DDECF3",
+          "land": "#EEECE5",
+          "contextBorder": "#B8C2CB"
+        },
+        "highlights": {
+          "country": "#D5DDE7",
+          "countryDeep": "#AEBCCB",
+          "primaryRegion": "#F4C95D",
+          "secondaryRegion": "#61B3C9",
+          "tertiaryRegion": "#A993D6",
+          "activeLocation": "#E60023"
+        },
+        "borders": {
+          "selected": "#FFFFFF",
+          "glow": "#FFFFFF"
+        },
+        "marker": {
+          "fill": "#E60023",
+          "outline": "#FFFFFF",
+          "hole": "transparent",
+          "shadow": "#172B4D33"
+        },
+        "labels": {
+          "text": "#172B4D",
+          "outline": "#FFFFFF",
+          "shadow": "#FFFFFF",
+          "secondaryText": "#526477"
+        },
+        "callout": {
+          "background": "#FFFFFFF2",
+          "text": "#172B4D",
+          "arrow": "#E60023",
+          "border": "#D4DCE4"
+        },
+        "dateBanner": {
+          "background": "#172B4D",
+          "text": "#FFFFFF"
+        },
+        "routes": {
+          "primary": "#E60023",
+          "secondary": "#237E99"
+        }
+      },
+      "marker_shape": "pin",
+      "resolved": {
+        "schema_version": 1,
+        "id": "clean_atlas",
+        "name": "Clean Atlas",
+        "description": "Flat ocean and land, a red teardrop pin, and no heavy vignette.",
+        "revision": 1,
+        "builtin": true,
+        "capabilities": {
+          "presentation": "documentary",
+          "basemap_mode": "flat_atlas",
+          "fill_treatment": "solid",
+          "marker_shape": "pin",
+          "boundary_treatment": "canvas",
+          "banner_treatment": "bar",
+          "camera_profile": "documentary",
+          "apply_palette": true,
+          "vignette": "none",
+          "border_glow": false,
+          "exact_land_ocean": true
+        },
+        "tokens": {
+          "background": {
+            "ocean": "#DDECF3",
+            "land": "#EEECE5",
+            "contextBorder": "#B8C2CB"
+          },
+          "highlights": {
+            "country": "#D5DDE7",
+            "countryDeep": "#AEBCCB",
+            "primaryRegion": "#F4C95D",
+            "secondaryRegion": "#61B3C9",
+            "tertiaryRegion": "#A993D6",
+            "activeLocation": "#E60023"
+          },
+          "borders": {
+            "selected": "#FFFFFF",
+            "glow": "#FFFFFF"
+          },
+          "marker": {
+            "fill": "#E60023",
+            "outline": "#FFFFFF",
+            "hole": "transparent",
+            "shadow": "#172B4D33"
+          },
+          "labels": {
+            "text": "#172B4D",
+            "outline": "#FFFFFF",
+            "shadow": "#FFFFFF",
+            "secondaryText": "#526477"
+          },
+          "callout": {
+            "background": "#FFFFFFF2",
+            "text": "#172B4D",
+            "arrow": "#E60023",
+            "border": "#D4DCE4"
+          },
+          "dateBanner": {
+            "background": "#172B4D",
+            "text": "#FFFFFF"
+          },
+          "routes": {
+            "primary": "#E60023",
+            "secondary": "#237E99"
+          }
+        },
+        "ocean": "#DDECF3",
+        "ocean_deep": "#DDECF3",
+        "ocean_openlayers": "#DDECF3",
+        "land": "#EEECE5",
+        "land_opacity": 1,
+        "ink": "#172B4D",
+        "gold": "#E60023",
+        "muted": "#526477",
+        "border": "#B8C2CB",
+        "border_selected": "#FFFFFF",
+        "border_glow": "#FFFFFF",
+        "vignette": "#00000000",
+        "vignette_inner": "#00000000",
+        "caption_bg": "#172B4D",
+        "callout_box": "#FFFFFFF2",
+        "callout_border": "#D4DCE4",
+        "callout_text": "#172B4D",
+        "persist_parent_fill": true,
+        "palette": {
+          "country_red": "#D5DDE7",
+          "country_red_deep": "#AEBCCB",
+          "region_red": "#F4C95D",
+          "yellow": "#F4C95D",
+          "cyan": "#61B3C9",
+          "royal_blue": "#A993D6",
+          "marker_yellow": "#E60023",
+          "marker_cyan": "#E60023",
+          "label": "#172B4D",
+          "date_banner": "#172B4D"
+        },
+        "fill": {
+          "mode": "solid",
+          "blend": "normal",
+          "opacity_scale": 1
+        },
+        "terrain": {
+          "saturation": 0,
+          "contrast": 0,
+          "brightness_min": 0,
+          "brightness_max": 1,
+          "hue_rotate": 0,
+          "use_graded_relief": false
+        },
+        "boundary": {
+          "renderer": "canvas",
+          "country_core": 1.5,
+          "country_glow": 0,
+          "country_blur": 0,
+          "country_glow_opacity": 0,
+          "region_core": 1.2,
+          "region_glow": 0,
+          "region_blur": 0,
+          "region_glow_opacity": 0
+        },
+        "marker": {
+          "shape": "pin",
+          "fill": "#E60023",
+          "outline": "#FFFFFF",
+          "hole": "transparent",
+          "hole_color": "#FFFFFF",
+          "shadow": "#172B4D33",
+          "height": 54,
+          "outline_width": 2.25,
+          "shadow_strength": 0.4,
+          "pulse": false,
+          "core": 3.1,
+          "halo": 8.5,
+          "glow": 0,
+          "arrival_seconds": 0.38
+        },
+        "label": {
+          "font_latin": "Story Condensed",
+          "font_devanagari": "Story Devanagari Bold",
+          "color": "#172B4D",
+          "shadow": "#FFFFFF",
+          "shadow_blur": 2.5,
+          "shadow_offset_y": 1.5,
+          "stroke_width": 3,
+          "uppercase_latin": true,
+          "orientation": "screen",
+          "reveal_after_camera": true,
+          "persist_after_focus": true,
+          "city_above_marker": true,
+          "safe_margin": 0.06,
+          "min_size": 28,
+          "max_size": 96,
+          "supporting_size": 44,
+          "sizes": {
+            "country": 72,
+            "state": 88,
+            "district": 68,
+            "city": 92,
+            "region": 48
+          }
+        },
+        "date_banner": {
+          "fill": "#172B4D",
+          "edge": "#0E1C33",
+          "text": "#FFFFFF",
+          "text_size": 92,
+          "height": 146,
+          "font": "Story Condensed"
+        },
+        "camera": {
+          "max_pitch": 0,
+          "bearing": 0
+        },
+        "role_opacity": {
+          "country": 0.7,
+          "focus": [
+            0.84,
+            0.8,
+            0.76
+          ]
+        },
+        "theme_hash": "352e1a98653f1560b732af5abc385b5abc604c0dc7f6c96a2b2095b723d3428f"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "midnight_amber",
+      "name": "Midnight Amber",
+      "description": "Dark graded relief, amber pin, and a restrained border glow.",
+      "revision": 1,
+      "builtin": true,
+      "theme_hash": "1c9438f05acb5bf66d01b55bfb392611162bf147b474e376da3d4b4e64d4dee7",
+      "capabilities": {
+        "presentation": "documentary",
+        "basemap_mode": "graded_relief",
+        "fill_treatment": "terrain_color",
+        "marker_shape": "pin",
+        "boundary_treatment": "canvas",
+        "banner_treatment": "bar",
+        "camera_profile": "documentary",
+        "apply_palette": true,
+        "vignette": "subtle",
+        "border_glow": true,
+        "exact_land_ocean": false
+      },
+      "tokens": {
+        "background": {
+          "ocean": "#071923",
+          "land": "#263A3D",
+          "contextBorder": "#536768"
+        },
+        "highlights": {
+          "country": "#294B59",
+          "countryDeep": "#122B37",
+          "primaryRegion": "#D99A2B",
+          "secondaryRegion": "#279EAD",
+          "tertiaryRegion": "#8B74C8",
+          "activeLocation": "#FFD166"
+        },
+        "borders": {
+          "selected": "#FFF0C2",
+          "glow": "#FFC857"
+        },
+        "marker": {
+          "fill": "#FFC857",
+          "outline": "#FFF3D1",
+          "hole": "transparent",
+          "shadow": "#00000066"
+        },
+        "labels": {
+          "text": "#FFF8E8",
+          "outline": "#07131D",
+          "shadow": "#07131D",
+          "secondaryText": "#B7C7CC"
+        },
+        "callout": {
+          "background": "#102630E8",
+          "text": "#FFF8E8",
+          "arrow": "#FFC857",
+          "border": "#52676D"
+        },
+        "dateBanner": {
+          "background": "#102630",
+          "text": "#FFD166"
+        },
+        "routes": {
+          "primary": "#FFC857",
+          "secondary": "#49C6D5"
+        }
+      },
+      "marker_shape": "pin",
+      "resolved": {
+        "schema_version": 1,
+        "id": "midnight_amber",
+        "name": "Midnight Amber",
+        "description": "Dark graded relief, amber pin, and a restrained border glow.",
+        "revision": 1,
+        "builtin": true,
+        "capabilities": {
+          "presentation": "documentary",
+          "basemap_mode": "graded_relief",
+          "fill_treatment": "terrain_color",
+          "marker_shape": "pin",
+          "boundary_treatment": "canvas",
+          "banner_treatment": "bar",
+          "camera_profile": "documentary",
+          "apply_palette": true,
+          "vignette": "subtle",
+          "border_glow": true,
+          "exact_land_ocean": false
+        },
+        "tokens": {
+          "background": {
+            "ocean": "#071923",
+            "land": "#263A3D",
+            "contextBorder": "#536768"
+          },
+          "highlights": {
+            "country": "#294B59",
+            "countryDeep": "#122B37",
+            "primaryRegion": "#D99A2B",
+            "secondaryRegion": "#279EAD",
+            "tertiaryRegion": "#8B74C8",
+            "activeLocation": "#FFD166"
+          },
+          "borders": {
+            "selected": "#FFF0C2",
+            "glow": "#FFC857"
+          },
+          "marker": {
+            "fill": "#FFC857",
+            "outline": "#FFF3D1",
+            "hole": "transparent",
+            "shadow": "#00000066"
+          },
+          "labels": {
+            "text": "#FFF8E8",
+            "outline": "#07131D",
+            "shadow": "#07131D",
+            "secondaryText": "#B7C7CC"
+          },
+          "callout": {
+            "background": "#102630E8",
+            "text": "#FFF8E8",
+            "arrow": "#FFC857",
+            "border": "#52676D"
+          },
+          "dateBanner": {
+            "background": "#102630",
+            "text": "#FFD166"
+          },
+          "routes": {
+            "primary": "#FFC857",
+            "secondary": "#49C6D5"
+          }
+        },
+        "ocean": "#071923",
+        "ocean_deep": "#071923",
+        "ocean_openlayers": "#071923",
+        "land": "#263A3D",
+        "land_opacity": 0.08,
+        "ink": "#FFF8E8",
+        "gold": "#FFC857",
+        "muted": "#B7C7CC",
+        "border": "#536768",
+        "border_selected": "#FFF0C2",
+        "border_glow": "#FFC857",
+        "vignette": "#07131D55",
+        "vignette_inner": "#00000000",
+        "caption_bg": "#102630",
+        "callout_box": "#102630E8",
+        "callout_border": "#52676D",
+        "callout_text": "#FFF8E8",
+        "persist_parent_fill": true,
+        "palette": {
+          "country_red": "#294B59",
+          "country_red_deep": "#122B37",
+          "region_red": "#D99A2B",
+          "yellow": "#D99A2B",
+          "cyan": "#279EAD",
+          "royal_blue": "#8B74C8",
+          "marker_yellow": "#FFC857",
+          "marker_cyan": "#FFC857",
+          "label": "#FFF8E8",
+          "date_banner": "#102630"
+        },
+        "fill": {
+          "mode": "terrain_color",
+          "blend": "multiply",
+          "hue_blend": "color",
+          "opacity_scale": 1,
+          "hue_opacity": 0.72
+        },
+        "terrain": {
+          "saturation": -0.28,
+          "contrast": 0.14,
+          "regional_saturation": -0.22,
+          "regional_contrast": 0.16,
+          "brightness_min": 0,
+          "brightness_max": 0.62,
+          "hue_rotate": 12,
+          "use_graded_relief": true
+        },
+        "boundary": {
+          "renderer": "canvas",
+          "country_core": 1.6,
+          "country_glow": 0,
+          "country_blur": 6,
+          "country_glow_opacity": 0.55,
+          "region_core": 1.15,
+          "region_glow": 0,
+          "region_blur": 2.2,
+          "region_glow_opacity": 0.35
+        },
+        "marker": {
+          "shape": "pin",
+          "fill": "#FFC857",
+          "outline": "#FFF3D1",
+          "hole": "transparent",
+          "hole_color": "#FFFFFF",
+          "shadow": "#00000066",
+          "height": 54,
+          "outline_width": 2.25,
+          "shadow_strength": 0.4,
+          "pulse": false,
+          "core": 3.1,
+          "halo": 8.5,
+          "glow": 0,
+          "arrival_seconds": 0.38
+        },
+        "label": {
+          "font_latin": "Story Condensed",
+          "font_devanagari": "Story Devanagari Bold",
+          "color": "#FFF8E8",
+          "shadow": "#07131D",
+          "shadow_blur": 2.5,
+          "shadow_offset_y": 1.5,
+          "stroke_width": 3,
+          "uppercase_latin": true,
+          "orientation": "screen",
+          "reveal_after_camera": true,
+          "persist_after_focus": true,
+          "city_above_marker": true,
+          "safe_margin": 0.06,
+          "min_size": 28,
+          "max_size": 96,
+          "supporting_size": 44,
+          "sizes": {
+            "country": 72,
+            "state": 88,
+            "district": 68,
+            "city": 92,
+            "region": 48
+          }
+        },
+        "date_banner": {
+          "fill": "#102630",
+          "edge": "#07131D",
+          "text": "#FFD166",
+          "text_size": 92,
+          "height": 146,
+          "font": "Story Condensed"
+        },
+        "camera": {
+          "max_pitch": 0,
+          "bearing": 0
+        },
+        "role_opacity": {
+          "country": 0.72,
+          "focus": [
+            0.34,
+            0.4,
+            0.42
+          ]
+        },
+        "theme_hash": "1c9438f05acb5bf66d01b55bfb392611162bf147b474e376da3d4b4e64d4dee7"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "archival_earth",
+      "name": "Archival Earth",
+      "description": "Warm graded relief and an earth-red pin. Geography stays clear of decorative texture.",
+      "revision": 1,
+      "builtin": true,
+      "theme_hash": "a2454e2be886625da010545f6baeb26f8612589363c8436324db1d68b9dd07c9",
+      "capabilities": {
+        "presentation": "documentary",
+        "basemap_mode": "graded_relief",
+        "fill_treatment": "terrain_color",
+        "marker_shape": "pin",
+        "boundary_treatment": "canvas",
+        "banner_treatment": "bar",
+        "camera_profile": "documentary",
+        "apply_palette": true,
+        "vignette": "subtle",
+        "border_glow": false,
+        "exact_land_ocean": false
+      },
+      "tokens": {
+        "background": {
+          "ocean": "#526F73",
+          "land": "#C2AD83",
+          "contextBorder": "#8B795F"
+        },
+        "highlights": {
+          "country": "#AD604B",
+          "countryDeep": "#6D3E35",
+          "primaryRegion": "#D1AA4E",
+          "secondaryRegion": "#628F8B",
+          "tertiaryRegion": "#9582A5",
+          "activeLocation": "#9C302C"
+        },
+        "borders": {
+          "selected": "#FFF0C7",
+          "glow": "#FFF0C7"
+        },
+        "marker": {
+          "fill": "#9C302C",
+          "outline": "#FFF0D2",
+          "hole": "transparent",
+          "shadow": "#34271D55"
+        },
+        "labels": {
+          "text": "#FFF5DC",
+          "outline": "#352A20",
+          "shadow": "#352A20",
+          "secondaryText": "#E2D3B5"
+        },
+        "callout": {
+          "background": "#342A20EB",
+          "text": "#FFF5DC",
+          "arrow": "#D1AA4E",
+          "border": "#BBA47A"
+        },
+        "dateBanner": {
+          "background": "#342A20",
+          "text": "#FFF5DC"
+        },
+        "routes": {
+          "primary": "#D1AA4E",
+          "secondary": "#9C302C"
+        }
+      },
+      "marker_shape": "pin",
+      "resolved": {
+        "schema_version": 1,
+        "id": "archival_earth",
+        "name": "Archival Earth",
+        "description": "Warm graded relief and an earth-red pin. Geography stays clear of decorative texture.",
+        "revision": 1,
+        "builtin": true,
+        "capabilities": {
+          "presentation": "documentary",
+          "basemap_mode": "graded_relief",
+          "fill_treatment": "terrain_color",
+          "marker_shape": "pin",
+          "boundary_treatment": "canvas",
+          "banner_treatment": "bar",
+          "camera_profile": "documentary",
+          "apply_palette": true,
+          "vignette": "subtle",
+          "border_glow": false,
+          "exact_land_ocean": false
+        },
+        "tokens": {
+          "background": {
+            "ocean": "#526F73",
+            "land": "#C2AD83",
+            "contextBorder": "#8B795F"
+          },
+          "highlights": {
+            "country": "#AD604B",
+            "countryDeep": "#6D3E35",
+            "primaryRegion": "#D1AA4E",
+            "secondaryRegion": "#628F8B",
+            "tertiaryRegion": "#9582A5",
+            "activeLocation": "#9C302C"
+          },
+          "borders": {
+            "selected": "#FFF0C7",
+            "glow": "#FFF0C7"
+          },
+          "marker": {
+            "fill": "#9C302C",
+            "outline": "#FFF0D2",
+            "hole": "transparent",
+            "shadow": "#34271D55"
+          },
+          "labels": {
+            "text": "#FFF5DC",
+            "outline": "#352A20",
+            "shadow": "#352A20",
+            "secondaryText": "#E2D3B5"
+          },
+          "callout": {
+            "background": "#342A20EB",
+            "text": "#FFF5DC",
+            "arrow": "#D1AA4E",
+            "border": "#BBA47A"
+          },
+          "dateBanner": {
+            "background": "#342A20",
+            "text": "#FFF5DC"
+          },
+          "routes": {
+            "primary": "#D1AA4E",
+            "secondary": "#9C302C"
+          }
+        },
+        "ocean": "#526F73",
+        "ocean_deep": "#526F73",
+        "ocean_openlayers": "#526F73",
+        "land": "#C2AD83",
+        "land_opacity": 0.07,
+        "ink": "#FFF5DC",
+        "gold": "#D1AA4E",
+        "muted": "#E2D3B5",
+        "border": "#8B795F",
+        "border_selected": "#FFF0C7",
+        "border_glow": "#FFF0C7",
+        "vignette": "#34271D33",
+        "vignette_inner": "#00000000",
+        "caption_bg": "#342A20",
+        "callout_box": "#342A20EB",
+        "callout_border": "#BBA47A",
+        "callout_text": "#FFF5DC",
+        "persist_parent_fill": true,
+        "palette": {
+          "country_red": "#AD604B",
+          "country_red_deep": "#6D3E35",
+          "region_red": "#D1AA4E",
+          "yellow": "#D1AA4E",
+          "cyan": "#628F8B",
+          "royal_blue": "#9582A5",
+          "marker_yellow": "#9C302C",
+          "marker_cyan": "#9C302C",
+          "label": "#FFF5DC",
+          "date_banner": "#342A20"
+        },
+        "fill": {
+          "mode": "terrain_color",
+          "blend": "multiply",
+          "hue_blend": "color",
+          "opacity_scale": 1,
+          "hue_opacity": 0.62
+        },
+        "terrain": {
+          "saturation": 0.18,
+          "contrast": 0.06,
+          "regional_saturation": 0.14,
+          "regional_contrast": 0.08,
+          "brightness_min": 0,
+          "brightness_max": 0.96,
+          "hue_rotate": -16,
+          "use_graded_relief": true
+        },
+        "boundary": {
+          "renderer": "canvas",
+          "country_core": 1.55,
+          "country_glow": 0,
+          "country_blur": 1.2,
+          "country_glow_opacity": 0.15,
+          "region_core": 1.1,
+          "region_glow": 0,
+          "region_blur": 0,
+          "region_glow_opacity": 0
+        },
+        "marker": {
+          "shape": "pin",
+          "fill": "#9C302C",
+          "outline": "#FFF0D2",
+          "hole": "transparent",
+          "hole_color": "#FFFFFF",
+          "shadow": "#34271D55",
+          "height": 54,
+          "outline_width": 2.25,
+          "shadow_strength": 0.4,
+          "pulse": false,
+          "core": 3.1,
+          "halo": 8.5,
+          "glow": 0,
+          "arrival_seconds": 0.38
+        },
+        "label": {
+          "font_latin": "Story Condensed",
+          "font_devanagari": "Story Devanagari Bold",
+          "color": "#FFF5DC",
+          "shadow": "#352A20",
+          "shadow_blur": 2.5,
+          "shadow_offset_y": 1.5,
+          "stroke_width": 3,
+          "uppercase_latin": true,
+          "orientation": "screen",
+          "reveal_after_camera": true,
+          "persist_after_focus": true,
+          "city_above_marker": true,
+          "safe_margin": 0.06,
+          "min_size": 28,
+          "max_size": 96,
+          "supporting_size": 44,
+          "sizes": {
+            "country": 72,
+            "state": 88,
+            "district": 68,
+            "city": 92,
+            "region": 48
+          }
+        },
+        "date_banner": {
+          "fill": "#342A20",
+          "edge": "#241C16",
+          "text": "#FFF5DC",
+          "text_size": 92,
+          "height": 146,
+          "font": "Story Condensed"
+        },
+        "camera": {
+          "max_pitch": 0,
+          "bearing": 0
+        },
+        "role_opacity": {
+          "country": 0.72,
+          "focus": [
+            0.34,
+            0.4,
+            0.42
+          ]
+        },
+        "theme_hash": "a2454e2be886625da010545f6baeb26f8612589363c8436324db1d68b9dd07c9"
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "cinematic_terrain",
+      "name": "Cinematic Terrain",
+      "description": "Earlier terrain look. Kept for plans that already request it.",
+      "revision": 1,
+      "builtin": true,
+      "theme_hash": "73ef49f700169100a877a179e1d959d3d84636435457b738b4d5319d9735e82b",
+      "capabilities": {
+        "presentation": "cinematic",
+        "basemap_mode": "graded_relief",
+        "fill_treatment": "translucent",
+        "marker_shape": "ring",
+        "boundary_treatment": "map",
+        "banner_treatment": "none",
+        "camera_profile": "cinematic",
+        "apply_palette": false,
+        "vignette": "cinematic",
+        "border_glow": true,
+        "exact_land_ocean": false
+      },
+      "tokens": {
+        "background": {
+          "ocean": "#0e1a2e",
+          "land": "#3d4a38",
+          "contextBorder": "#c9b896"
+        },
+        "highlights": {
+          "country": "#E52B32",
+          "countryDeep": "#8E1B22",
+          "primaryRegion": "#E6D545",
+          "secondaryRegion": "#3D7EA6",
+          "tertiaryRegion": "#C9852A",
+          "activeLocation": "#E6D545"
+        },
+        "borders": {
+          "selected": "#fff4d6",
+          "glow": "#ffd27a"
+        },
+        "marker": {
+          "fill": "#E6D545",
+          "outline": "#fff8ec",
+          "hole": "#fff8ec",
+          "shadow": "#00000055"
+        },
+        "labels": {
+          "text": "#fff8ec",
+          "outline": "#08121b",
+          "shadow": "#030917",
+          "secondaryText": "#9aa7b5"
+        },
+        "callout": {
+          "background": "rgba(18,28,48,0.92)",
+          "text": "#fff8ec",
+          "arrow": "#e8d5a3",
+          "border": "#e8d5a3"
+        },
+        "dateBanner": {
+          "background": "#08121bcc",
+          "text": "#fff8ec"
+        },
+        "routes": {
+          "primary": "#e8d5a3",
+          "secondary": "#9aa7b5"
+        }
+      },
+      "marker_shape": "ring",
+      "resolved": {
+        "id": "cinematic_terrain",
+        "ocean": "#0e1a2e",
+        "ocean_deep": "#0e1a2e",
+        "ocean_openlayers": "#0e1a2e",
+        "land": "#3d4a38",
+        "land_opacity": 0.04,
+        "ink": "#fff8ec",
+        "gold": "#e8d5a3",
+        "muted": "#9aa7b5",
+        "border": "#c9b896",
+        "border_selected": "#fff4d6",
+        "border_glow": "#ffd27a",
+        "vignette": "#03091740",
+        "caption_bg": "#08121bcc",
+        "callout_box": "rgba(18,28,48,0.92)",
+        "callout_border": "#e8d5a3",
+        "fill": {
+          "mode": "translucent"
+        },
+        "terrain": {
+          "saturation": -0.1,
+          "contrast": 0.16,
+          "regional_saturation": -0.08,
+          "regional_contrast": 0.2,
+          "brightness_min": 0,
+          "brightness_max": 1
+        },
+        "boundary": {
+          "renderer": "map"
+        },
+        "camera": {},
+        "label": {},
+        "schema_version": 1,
+        "name": "Cinematic Terrain",
+        "description": "Earlier terrain look. Kept for plans that already request it.",
+        "revision": 1,
+        "builtin": true,
+        "capabilities": {
+          "presentation": "cinematic",
+          "basemap_mode": "graded_relief",
+          "fill_treatment": "translucent",
+          "marker_shape": "ring",
+          "boundary_treatment": "map",
+          "banner_treatment": "none",
+          "camera_profile": "cinematic",
+          "apply_palette": false,
+          "vignette": "cinematic",
+          "border_glow": true,
+          "exact_land_ocean": false
+        },
+        "tokens": {
+          "background": {
+            "ocean": "#0e1a2e",
+            "land": "#3d4a38",
+            "contextBorder": "#c9b896"
+          },
+          "highlights": {
+            "country": "#E52B32",
+            "countryDeep": "#8E1B22",
+            "primaryRegion": "#E6D545",
+            "secondaryRegion": "#3D7EA6",
+            "tertiaryRegion": "#C9852A",
+            "activeLocation": "#E6D545"
+          },
+          "borders": {
+            "selected": "#fff4d6",
+            "glow": "#ffd27a"
+          },
+          "marker": {
+            "fill": "#E6D545",
+            "outline": "#fff8ec",
+            "hole": "#fff8ec",
+            "shadow": "#00000055"
+          },
+          "labels": {
+            "text": "#fff8ec",
+            "outline": "#08121b",
+            "shadow": "#030917",
+            "secondaryText": "#9aa7b5"
+          },
+          "callout": {
+            "background": "rgba(18,28,48,0.92)",
+            "text": "#fff8ec",
+            "arrow": "#e8d5a3",
+            "border": "#e8d5a3"
+          },
+          "dateBanner": {
+            "background": "#08121bcc",
+            "text": "#fff8ec"
+          },
+          "routes": {
+            "primary": "#e8d5a3",
+            "secondary": "#9aa7b5"
+          }
+        },
+        "marker": {
+          "shape": "ring"
+        },
+        "role_opacity": {
+          "country": 0.72,
+          "focus": [
+            0.34,
+            0.4,
+            0.42
+          ]
+        },
+        "theme_hash": "73ef49f700169100a877a179e1d959d3d84636435457b738b4d5319d9735e82b"
+      }
+    }
+  ]
+}

@@ -31,9 +31,9 @@ This page lists all stories and lets you **start** or **stop** background jobs.
 | Button | When to use |
 |--------|-------------|
 | **Write story from YouTube** | Story has YouTube URLs but no script yet |
-| **Build storyboard** | Full script is saved — creates scenes + image prompts (~10–20 min) |
-| **Build storyboard + narration audio** | Storyboard + ElevenLabs MP3s in one job |
-| **Full pipeline (all steps + audio)** | YouTube → script → storyboard → MP3s in one job (best for bulk) |
+| **Build storyboard (+ Flow images + Digen videos)** | Full script is saved — scenes + image prompts, then **all** Flow images into `<story>/images/`, then missing Digen videos into `<story>/videos/` (Chrome signed into Flow + Digen; long-running). Set `FLOW_IMAGES=0` / `DIGEN_VIDEOS=0` to skip. |
+| **Build storyboard + narration audio (+ Flow + Digen)** | Storyboard + Flow images + Digen videos + ElevenLabs MP3s in one job |
+| **Full pipeline (all steps + audio + Flow + Digen)** | YouTube → script → storyboard → Flow images → Digen videos → MP3s (best for bulk) |
 | **Create narration audio only** | Storyboard already done — MP3s from script only |
 | **Stop job** | Appears while a job is running — cancels the background process |
 

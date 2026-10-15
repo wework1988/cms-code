@@ -5,6 +5,7 @@
  * Story Pipeline hooks.
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -31,7 +32,62 @@ function story_pipeline_theme($existing, $type, $theme, $path): array {
       ],
       'template' => 'story-pipeline-workspace-nav',
     ],
+    'deepseek_billing_notice' => [
+      'variables' => [
+        'pricing_url' => 'https://api-docs.deepseek.com/quick_start/pricing',
+      ],
+      'template' => 'deepseek-billing-notice',
+    ],
   ];
+}
+
+/**
+ * Holiday and peak-window config for the DeepSeek billing notice.
+ */
+function story_pipeline_deepseek_billing_schedule(): array {
+  $relative = \Drupal::service('extension.list.module')->getPath('story_pipeline');
+  $path = \Drupal::root() . '/' . $relative . '/data/deepseek-billing-schedule.json';
+  if (!is_readable($path)) {
+    return [];
+  }
+  $raw = file_get_contents($path);
+  $data = is_string($raw) ? json_decode($raw, TRUE) : NULL;
+  if (!is_array($data)) {
+    return [];
+  }
+  // Makeup-weekend dates are documentation for tests. Do not send them to the
+  // browser, where they could be mistaken for a working-day switch.
+  unset($data['ignoredAdjustedWorkingDays']);
+  return $data;
+}
+
+/**
+ * Implements hook_page_bottom().
+ *
+ * Shows the billing estimate on every page that uses the admin toolbar.
+ */
+function story_pipeline_page_bottom(array &$page_bottom): void {
+  $element = [
+    '#cache' => [
+      'contexts' => ['user.permissions'],
+    ],
+  ];
+  if (\Drupal::currentUser()->hasPermission('access toolbar')) {
+    $schedule = story_pipeline_deepseek_billing_schedule();
+    $pricing_url = 'https://api-docs.deepseek.com/quick_start/pricing';
+    if (!empty($schedule['pricingUrl']) && is_string($schedule['pricingUrl']) && str_starts_with($schedule['pricingUrl'], 'https://api-docs.deepseek.com/')) {
+      $pricing_url = $schedule['pricingUrl'];
+    }
+    $element['#theme'] = 'deepseek_billing_notice';
+    $element['#pricing_url'] = $pricing_url;
+    $element['#attached'] = [
+      'library' => ['story_pipeline/deepseek-billing-notice'],
+      'drupalSettings' => [
+        'deepseekBilling' => $schedule,
+      ],
+    ];
+  }
+  $page_bottom['deepseek_billing_notice'] = $element;
 }
 
 /**
@@ -215,8 +271,14 @@ function story_pipeline_menu_local_tasks_alter(array &$data, $route_name, \Drupa
     return;
   }
   $node = \Drupal::routeMatch()->getParameter('node');
+  $story_tabs = [
+    'story_pipeline.story_characters_tab',
+    'story_pipeline.story_characters_view_tab',
+    'story_pipeline.story_animations_tab',
+    'story_pipeline.story_animations_view_tab',
+  ];
   if (!$node instanceof NodeInterface || $node->bundle() !== 'story') {
-    foreach (['story_pipeline.story_characters_tab', 'story_pipeline.story_characters_view_tab'] as $tab_id) {
+    foreach ($story_tabs as $tab_id) {
       if (isset($data['tabs'][0][$tab_id])) {
         unset($data['tabs'][0][$tab_id]);
       }
@@ -242,6 +304,48 @@ function story_pipeline_menu_local_tasks_alter(array &$data, $route_name, \Drupa
 }
 
 /**
+ * Adds an Animations operation on each story in content listings.
+ */
+function story_pipeline_entity_operation(EntityInterface $entity): array {
+  if ($entity->getEntityTypeId() !== 'node' || $entity->bundle() !== 'story') {
+    return [];
+  }
+  if (!\Drupal::currentUser()->hasPermission('generate story animations')) {
+    return [];
+  }
+  return [
+    'animations' => [
+      'title' => t('Animations'),
+      'url' => Url::fromRoute('story_pipeline.animations', ['node' => $entity->id()]),
+      'weight' => 50,
+    ],
+  ];
+}
+
+/**
+ * Puts an Animations button on the story page.
+ */
+function story_pipeline_node_view(array &$build, NodeInterface $node, EntityViewDisplayInterface $display, string $view_mode): void {
+  if ($node->bundle() !== 'story' || $view_mode !== 'full') {
+    return;
+  }
+  if (!\Drupal::currentUser()->hasPermission('generate story animations')) {
+    return;
+  }
+  $build['story_animations_link'] = [
+    '#type' => 'container',
+    '#attributes' => ['class' => ['story-animations-link']],
+    '#weight' => -100,
+    'link' => [
+      '#type' => 'link',
+      '#title' => t('Animations'),
+      '#url' => Url::fromRoute('story_pipeline.animations', ['node' => $node->id()]),
+      '#attributes' => ['class' => ['button', 'button--primary']],
+    ],
+  ];
+}
+
+/**
  * Configures form displays for Story and Story Type fields.
  */
 function story_pipeline_configure_displays(): void {
@@ -257,24 +361,25 @@ function story_pipeline_configure_displays(): void {
   $components = [
     'title' => ['type' => 'string_textfield', 'weight' => 0],
     'field_story_type' => ['type' => 'options_select', 'weight' => 1],
-    'field_youtube_urls' => ['type' => 'string_textfield', 'weight' => 2],
-    'field_transcript' => ['type' => 'text_textarea', 'weight' => 3],
-    'field_bullet_ledger' => ['type' => 'text_textarea', 'weight' => 4],
-    'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 5],
-    'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 6],
-    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 7],
-    'field_bilingual' => ['type' => 'boolean_checkbox', 'weight' => 8],
-    'field_full_story' => ['type' => 'text_textarea', 'weight' => 9],
-    'field_full_story_english' => ['type' => 'text_textarea', 'weight' => 10],
-    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 11],
-    'field_status' => ['type' => 'options_select', 'weight' => 12],
-    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 13],
-    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 14],
-    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 15],
-    'field_scene_file' => ['type' => 'file_generic', 'weight' => 16],
-    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 17],
-    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 18],
-    'field_eleven_labs_files_english' => ['type' => 'file_generic', 'weight' => 19],
+    'field_voice_type' => ['type' => 'options_select', 'weight' => 2],
+    'field_youtube_urls' => ['type' => 'string_textfield', 'weight' => 3],
+    'field_transcript' => ['type' => 'text_textarea', 'weight' => 4],
+    'field_bullet_ledger' => ['type' => 'text_textarea', 'weight' => 5],
+    'field_story_plan_raw' => ['type' => 'text_textarea', 'weight' => 6],
+    'field_story_raw_file' => ['type' => 'file_generic', 'weight' => 7],
+    'field_characters_info' => ['type' => 'text_textarea', 'weight' => 8],
+    'field_bilingual' => ['type' => 'boolean_checkbox', 'weight' => 9],
+    'field_full_story' => ['type' => 'text_textarea', 'weight' => 10],
+    'field_full_story_english' => ['type' => 'text_textarea', 'weight' => 11],
+    'field_story_meta' => ['type' => 'text_textarea', 'weight' => 12],
+    'field_status' => ['type' => 'options_select', 'weight' => 13],
+    'field_stage_a_output' => ['type' => 'text_textarea', 'weight' => 14],
+    'field_stage_b_output' => ['type' => 'text_textarea', 'weight' => 15],
+    'field_prompt_file' => ['type' => 'file_generic', 'weight' => 16],
+    'field_scene_file' => ['type' => 'file_generic', 'weight' => 17],
+    'field_image_prompts_file' => ['type' => 'file_generic', 'weight' => 18],
+    'field_eleven_labs_files' => ['type' => 'file_generic', 'weight' => 19],
+    'field_eleven_labs_files_english' => ['type' => 'file_generic', 'weight' => 20],
   ];
   foreach ($components as $name => $options) {
     $story_display->setComponent($name, $options);
@@ -304,6 +409,19 @@ function story_pipeline_configure_displays(): void {
     $term_display->setComponent($name, $options);
   }
   $term_display->save();
+
+  $voice_display = EntityFormDisplay::load('taxonomy_term.voice_type.default');
+  if (!$voice_display) {
+    $voice_display = EntityFormDisplay::create([
+      'targetEntityType' => 'taxonomy_term',
+      'bundle' => 'voice_type',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+  $voice_display->setComponent('name', ['type' => 'string_textfield', 'weight' => 0]);
+  $voice_display->setComponent('field_voice_id', ['type' => 'string_textfield', 'weight' => 1]);
+  $voice_display->save();
 
   story_pipeline_configure_taxonomy_term_diffs();
 }

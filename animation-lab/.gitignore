@@ -1,0 +1,15 @@
+.venv/
+output/
+__pycache__/
+.env
+.runtime/
+map-comparison/node_modules/
+map-comparison/.cache/
+map-story/node_modules/
+documentary-browser/node_modules/
+documentary-browser/vendor/
+assets/maps/catalog/downloads/
+assets/maps/catalog/*.sqlite
+assets/maps/catalog/*.sqlite.previous
+assets/maps/catalog/*.sqlite.building
+assets/maps/catalog/*.sqlite-journal

@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "installed": true,
+  "built_at": "2026-10-13T20:43:02+00:00",
+  "counts": {
+    "city": 547894,
+    "country": 3,
+    "district": 1259,
+    "state": 77,
+    "alias": 595040
+  },
+  "by_country": {
+    "AF": {
+      "city": 288,
+      "country": 1,
+      "district": 398,
+      "state": 34
+    },
+    "IN": {
+      "city": 547265,
+      "country": 1,
+      "district": 735,
+      "state": 36
+    },
+    "PK": {
+      "city": 341,
+      "country": 1,
+      "district": 126,
+      "state": 7
+    }
+  },
+  "unmatched_hierarchy": 3932,
+  "admin_labels": {
+    "IN": "State / Union territory",
+    "PK": "Province / Territory",
+    "AF": "Administrative region"
+  },
+  "levels": [
+    "country",
+    "state",
+    "district",
+    "city"
+  ],
+  "datasets": [
+    {
+      "namespace": "naturalearth",
+      "source_url": "https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/",
+      "licence": "Public domain",
+      "downloaded_at": "2026-10-13T20:29:49+00:00",
+      "version": "Natural Earth 1:50m admin-0",
+      "boundary_year": "current 50m cultural",
+      "checksum": "3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb",
+      "attribution": "Natural Earth",
+      "limitations": "Country outline only. Not a survey boundary. Not merged with geoBoundaries polygons."
+    },
+    {
+      "namespace": "geoboundaries_adm1",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM1/geoBoundaries-IND-ADM1_simplified.geojson",
+      "licence": "Creative Commons Attribution 2.5 India (CC BY 2.5 IN)",
+      "downloaded_at": "2026-10-13T20:29:49+00:00",
+      "version": "geoBoundaries gbOpen IND ADM1 simplified @ 9469f09",
+      "boundary_year": "2011",
+      "checksum": "4c63fe43294a391e8f2de4e9f86f3edb60f8688275b9fee90c61fb2aa0c26061",
+      "attribution": "geoBoundaries / DataMeet India / Election Commission of India",
+      "limitations": "Simplified ADM1. Delhi is the National Capital Territory, not a city polygon."
+    },
+    {
+      "namespace": "geoboundaries_adm1_PK",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/PAK/ADM1/geoBoundaries-PAK-ADM1_simplified.geojson",
+      "licence": "Public domain",
+      "downloaded_at": "2026-10-13T20:29:50+00:00",
+      "version": "geoBoundaries gbOpen PAK ADM1 simplified @ 9469f09",
+      "boundary_year": "2019",
+      "checksum": "c7ff4e70bcf740cfba47b871a7c2b2b2b243b59e4c0656e6e1bc2a64e295d93a",
+      "attribution": "geoBoundaries / Wikimedia",
+      "limitations": "Simplified provinces and territories, boundary year 2019. Units such as Azad Kashmir and Gilgit-Baltistan stay in this source's classification. They are not reassigned by overlapping them with the Natural Earth country outline."
+    },
+    {
+      "namespace": "geoboundaries_adm1_AF",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/AFG/ADM1/geoBoundaries-AFG-ADM1_simplified.geojson",
+      "licence": "Public domain",
+      "downloaded_at": "2026-10-13T20:29:50+00:00",
+      "version": "geoBoundaries gbOpen AFG ADM1 simplified @ 9469f09",
+      "boundary_year": "2007",
+      "checksum": "c0ae276c6df08d6619ce738720ea7a052079e2cb186f1d6e2de9a1d7aef7a86b",
+      "attribution": "geoBoundaries / Wikimedia",
+      "limitations": "Simplified provinces (wilayat), boundary year 2007. Not the same year as AFG ADM2."
+    },
+    {
+      "namespace": "geoboundaries_adm2",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM2/geoBoundaries-IND-ADM2_simplified.geojson",
+      "licence": "Open Data Commons Open Database License 1.0 (ODbL)",
+      "downloaded_at": "2026-10-13T20:29:50+00:00",
+      "version": "geoBoundaries gbOpen IND ADM2 simplified @ 9469f09",
+      "boundary_year": "2021",
+      "checksum": "d68db39cd3e2d0892af268e2b0454166368ce3b5b8a78fcda63069ec92a641db",
+      "attribution": "geoBoundaries / Pathways Data Pvt. Ltd. / lgdirectory.gov.in",
+      "limitations": "Simplified districts. Historical district boundaries are not included."
+    },
+    {
+      "namespace": "geoboundaries_adm2_PK",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/PAK/ADM2/geoBoundaries-PAK-ADM2_simplified.geojson",
+      "licence": "Public domain",
+      "downloaded_at": "2026-10-13T20:29:50+00:00",
+      "version": "geoBoundaries gbOpen PAK ADM2 simplified @ 9469f09",
+      "boundary_year": "2019",
+      "checksum": "f274cfc377b3b570b6fd620c2911b5e4acd14460f9cb48551747f1d698566f2e",
+      "attribution": "geoBoundaries / Wikimedia",
+      "limitations": "Simplified districts, boundary year 2019. Same release year as PAK ADM1."
+    },
+    {
+      "namespace": "geoboundaries_adm2_AF",
+      "source_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/AFG/ADM2/geoBoundaries-AFG-ADM2_simplified.geojson",
+      "licence": "Public domain",
+      "downloaded_at": "2026-10-13T20:29:51+00:00",
+      "version": "geoBoundaries gbOpen AFG ADM2 simplified @ 9469f09",
+      "boundary_year": "2014",
+      "checksum": "ded11c6a9b558170e7d52a23309106254608f269258e2ccf1ad464c9603fa169",
+      "attribution": "geoBoundaries / Afghanistan Information Management Services / Esri Disaster Response Program",
+      "limitations": "Simplified districts (wuleswali), boundary year 2014. ADM1 is 2007, so a district-to-province link from overlap is inferred_spatial, not a verified code crosswalk."
+    },
+    {
+      "namespace": "geonames",
+      "source_url": "https://download.geonames.org/export/dump/IN.zip",
+      "licence": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+      "downloaded_at": "2026-10-12T23:05:45+00:00",
+      "version": "GeoNames IN dump",
+      "boundary_year": "2026-10-12",
+      "checksum": "7d73b43041200df524920dfc1047a45081c7ee37a411c8bd5c8ab89f6f9a3ca8",
+      "attribution": "GeoNames (https://www.geonames.org/)",
+      "limitations": "Populated-place points. No settlement polygon is invented. Alternate names are incomplete, especially in Hindi."
+    },
+    {
+      "namespace": "geonames_PK",
+      "source_url": "https://download.geonames.org/export/dump/PK.zip",
+      "licence": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+      "downloaded_at": "2026-10-13T20:14:01+00:00",
+      "version": "GeoNames PK dump",
+      "boundary_year": "2026-10-13",
+      "checksum": "8edaf834ca519fb286a402ccea12c65c1985f70b07bc423f0ca651d04d6c0215",
+      "attribution": "GeoNames (https://www.geonames.org/)",
+      "limitations": "National capitals, first-order seats, second-order seats, and other populated places with population >= 25000. Smaller settlements are omitted. No city polygon is invented. Alternate names are incomplete."
+    },
+    {
+      "namespace": "geonames_AF",
+      "source_url": "https://download.geonames.org/export/dump/AF.zip",
+      "licence": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+      "downloaded_at": "2026-10-13T20:14:01+00:00",
+      "version": "GeoNames AF dump",
+      "boundary_year": "2026-10-13",
+      "checksum": "88c34f2dd5ccb79cd0036171c13739c3c5cd0d8cd5d26e01ae0e5233f1f07176",
+      "attribution": "GeoNames (https://www.geonames.org/)",
+      "limitations": "National capitals, first-order seats, second-order seats, and other populated places with population >= 25000. Smaller settlements are omitted. No city polygon is invented. Alternate names are incomplete."
+    }
+  ],
+  "limitations": [
+    "Story text is still sent to DeepSeek. Polygons, coordinates, and the catalogue dump are not.",
+    "Coverage is India (IN), Pakistan (PK), and Afghanistan (AF): Natural Earth admin-0, geoBoundaries ADM1 and ADM2, and GeoNames populated places.",
+    "India imports every GeoNames populated place. Pakistan and Afghanistan import national and provincial seats, second-order seats, and other populated places with population of at least 25000.",
+    "Natural Earth country outlines are not merged with geoBoundaries polygons. A first-level unit keeps its source country code even when the outlines disagree.",
+    "Afghanistan ADM1 is boundary year 2007 and ADM2 is 2014. Overlap between them is inferred_spatial, not a verified administrative code.",
+    "Historical boundary lines are not included. Historic GeoNames spellings for Pakistan and Afghanistan are aliases only.",
+    "Delhi ADM1 is the National Capital Territory, separate from populated-place points named Delhi. Islamabad Capital Territory is the same kind of distinction.",
+    "Fuzzy name matches are suggestions only. A fallback may choose one supplied candidate; it cannot add geometry.",
+    "A place with only a point is renderable with show_marker. No city polygon is invented.",
+    "Population is stored as a ranking hint and is not used by itself to pick an ambiguous place.",
+    "South Asia relief is Natural Earth II 50m across 45–115E, 0–50N. It covers India, Pakistan, and Afghanistan. It is not high-resolution imagery."
+  ]
+}

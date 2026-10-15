@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "module": "documentary_typography",
+  "input": "fixture:portrait",
+  "preset": "cinematic_minimal",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Portrait fixture. The place names are fictional demonstration text, not a reading of any footage.",
+  "overlays": [
+    {
+      "id": "demo_portrait",
+      "type": "location_title",
+      "purpose": "Centered two-line title in a portrait frame.",
+      "region": "उत्तराखंड",
+      "place": "उत्तरकाशी",
+      "badge": "काल्पनिक प्रदर्शन",
+      "template": "centered",
+      "label_placement": "auto",
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4
+    }
+  ]
+}

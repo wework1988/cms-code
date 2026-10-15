@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "module": "cinematic_overlays",
+  "input": "fixture:landscape",
+  "preset": "cinematic_minimal",
+  "timing_source": "manual",
+  "factual_claim": false,
+  "sample_note": "Fictional focus rectangle on a blank plate. The dimming holds steady and does not pulse.",
+  "overlays": [
+    {
+      "id": "demo_spotlight",
+      "type": "detail_spotlight",
+      "purpose": "Outline a supplied rectangle.",
+      "template": "focus_rect",
+      "dim": true,
+      "timing_source": "manual",
+      "review_state": "fictional_demonstration",
+      "start_time": 0.35,
+      "reveal_duration": 0.5,
+      "hold_duration": 2.2,
+      "exit_duration": 0.4,
+      "rect": { "x": 0.34, "y": 0.3, "width": 0.32, "height": 0.28 }
+    }
+  ]
+}

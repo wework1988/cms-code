@@ -55,6 +55,23 @@ def parse_audio_languages(bundle: dict[str, Any]) -> list[str]:
     return normalized
 
 
+def _apply_voice_type_filename(audio_out: Path, voice_type: str) -> None:
+    """Rename a single full_narration.mp3 to {voice_type}.mp3 for the audio/ folder."""
+    slug = (voice_type or "").strip().lower().replace("_", "-").replace(" ", "-")
+    if not slug or not audio_out.is_dir():
+        return
+    mp3s = sorted(p for p in audio_out.glob("*.mp3") if p.is_file())
+    if len(mp3s) != 1:
+        return
+    target = audio_out / f"{slug}.mp3"
+    if mp3s[0].resolve() == target.resolve():
+        return
+    if target.exists():
+        target.unlink()
+    mp3s[0].replace(target)
+    print(f"[elevenlabs] renamed → {target.name}")
+
+
 def generate_story_audio(
     repo: Path,
     story_dir: Path,
@@ -72,6 +89,7 @@ def generate_story_audio(
     settings = bundle.get("settings") or {}
     hindi_voice = (settings.get("voice_id") or "").strip() or None
     english_voice = (settings.get("english_voice_id") or "").strip() or None
+    voice_type = (settings.get("voice_type") or "").strip()
 
     api_key = require_elevenlabs(keys)
     produced = False
@@ -83,10 +101,15 @@ def generate_story_audio(
         else:
             audio_out = story_dir / "eleven-labs"
             print(f"[elevenlabs] hindi MP3s → {audio_out}")
+            if voice_type:
+                print(f"[elevenlabs] voice_type: {voice_type}")
             if hindi_voice:
                 print(f"[elevenlabs] hindi voice_id: {hindi_voice}")
             else:
-                print("[elevenlabs] hindi voice_id: (default from config — set on Story Type term in Drupal)")
+                print(
+                    "[elevenlabs] hindi voice_id: (default from config — "
+                    "set Voice type on the Story, or voice ID on Story Type)"
+                )
             generate_eleven_labs(
                 repo,
                 full_story,
@@ -95,6 +118,7 @@ def generate_story_audio(
                 voice_id=hindi_voice,
                 language_code="hi",
             )
+            _apply_voice_type_filename(audio_out, voice_type)
             mp3_payload = collect_mp3_payload(audio_out)
             if mp3_payload:
                 payload["eleven_labs_files"] = mp3_payload
